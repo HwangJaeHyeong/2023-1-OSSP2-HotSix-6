@@ -1,51 +1,44 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Text, FlatList,StyleSheet} from 'react-native';
 
-const GroupScreen = () => {
-  return (
-    <View>
-      <Text>그룹 페이지</Text>
-      {/* 추가 */}
+const GroupScreen = ({route}) => {
+  const { userId } = route.params;
+  const [groups, setGroups] = useState([]);
+  
+  
+  useEffect(() => {
+    fetch(`http://172.30.1.10:3000/groupMembers`)
+      .then((response) => response.json())
+      .then((groupMembersData) => {
+        const userGroupCodes = groupMembersData
+          .filter((groupMember) => groupMember.Member_ID === userId)
+          .map((groupMember) => groupMember.Group_Code);
+  
+        fetch(`http://172.30.1.10:3000/groups`)
+          .then((response) => response.json())
+          .then((groupsData) => {
+            const filteredGroups = groupsData.filter((group) =>
+              userGroupCodes.includes(group.Group_Code)
+            );
+            setGroups(filteredGroups);
+          });
+      });
+  }, [userId]);
+
+  const renderGroupItem = ({item}) => (
+    <View style={styles.groupItem}>
+      <Text style={styles.groupName}>{item.Group_Name}</Text>
     </View>
   );
-};
 
-export default GroupScreen;
-
-/*import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
-import { getMyGroups } from '../services/groupService';
-
-const GroupPage = ({ navigation }) => {
-  const [groups, setGroups] = useState([]);
-
-  useEffect(() => {
-    async function fetchGroups() {
-      const myGroups = await getMyGroups();
-      setGroups(myGroups);
-    }
-
-    fetchGroups();
-  }, []);
-
-  const handleGroupSelect = (groupId) => {
-    navigation.navigate('선택한 그룹 페이지', { groupId });
-  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>내 그룹</Text>
+      <Text style={styles.title}>User Groups</Text>
       <FlatList
         data={groups}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.groupItem}
-            onPress={() => handleGroupSelect(item.id)}
-          >
-            <Text style={styles.groupName}>{item.name}</Text>
-          </TouchableOpacity>
-        )}
+        keyExtractor={(item) => item.Group_Code.toString()}
+        renderItem={renderGroupItem}
       />
     </View>
   );
@@ -54,24 +47,25 @@ const GroupPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    paddingHorizontal: 16,
+    backgroundColor: '#fff',
+    padding: 20,
   },
   title: {
-    fontSize: 24,
-    marginTop: 16,
-    marginBottom: 24,
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
   groupItem: {
-    marginBottom: 12,
-    padding: 16,
-    borderRadius: 4,
-    backgroundColor: '#f1f3f5',
+    backgroundColor: '#007AFF',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 10,
   },
   groupName: {
     fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
-export default GroupPage;
-*/
+export default GroupScreen;
