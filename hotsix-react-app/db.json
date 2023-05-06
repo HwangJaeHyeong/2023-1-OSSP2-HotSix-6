@@ -1,0 +1,25 @@
+{
+  "users": [
+    {
+      "username": "",
+      "password": "",
+      "email": "",
+      "nickname": "",
+      "id": 1
+    },
+    {
+      "username": "Test1",
+      "password": "!1abcdefjhi",
+      "email": "example@naver.com",
+      "nickname": "Test1",
+      "id": 2
+    },
+    {
+      "username": "Test2",
+      "password": "!!a1234567!",
+      "email": "example2@naver.com",
+      "nickname": "Test2",
+      "id": 3
+    }
+  ]
+}

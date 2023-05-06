@@ -1,48 +1,67 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import axios from 'axios';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // 로그인 처리 수행
-    // 로그인 성공 시 MainScreen으로 이동
+  const handleLoginChange = (username) => {
+    setUsername(removeWhitespace(username));
+  }
+  
+  // 이름 Reset -> Change 로 바꿈
+  const handlePasswordChange = (password) => {
+    setPassword(removeWhitespace(password));    
   };
 
-  const handlePasswordReset = () => {
-    //비밀번호 찾기 페이지로 이동 -->이메일을 보낼지 어떨지는 차후 논의
+  // 로그인 수행 버튼
+  const handleLoginButtonPress = async () => {
+    try {
+      // 서버 측 api 호출 
+      const response = await axios.get(`http://192.168.0.63:3000/users`);
+      const data = await response.data;
+      const exists = data.some(user => user.username === username && user.password === password);
+
+      if(exists) {
+        Alert.alert("로그인 성공!");
+        navigation.navigate("Main");
+      } else {
+        Alert.alert("로그인 실패. 아이디와 패스워드를 확인해주세요.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    
     <View style={styles.container}>
       <Text style={styles.title}>로그인</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="아이디"
-        onChangeText={setUsername}
-        value={username}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="비밀번호"
-        secureTextEntry
-        onChangeText={setPassword}
-        value={password}
-      />
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>로그인</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handlePasswordReset}>
-        <Text style={styles.resetPasswordText}>비밀번호 찾기</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-        <Text>메인화면으로 이동</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-        <Text>회원가입 이동</Text>
-      </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder="아이디"
+          onChangeText={setUsername}
+          value={username}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="비밀번호"
+          secureTextEntry
+          onChangeText={setPassword}
+          value={password}
+        />
+        <TouchableOpacity style={styles.loginButton} onPress={handleLoginButtonPress}>
+          <Text style={styles.loginButtonText}>로그인</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePasswordChange}>
+          <Text style={styles.resetPasswordText}>비밀번호 찾기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+          <Text>메인화면으로 이동</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+          <Text>회원가입 이동</Text>
+        </TouchableOpacity>
     </View>
   );
 };
