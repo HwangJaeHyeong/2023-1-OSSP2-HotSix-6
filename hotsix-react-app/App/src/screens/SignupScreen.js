@@ -1,4 +1,5 @@
 import React, { useState, } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import {
   StyleSheet,
@@ -9,7 +10,9 @@ import {
   Alert,
 } from 'react-native';
 
-const SignupPage = ( {navigation} ) => {
+const SERVER_URL = 'http://localhost:3001'; //백엔드 서버 주소로 변경해야함
+
+const SignupPage = (  ) => {
   const [username, setUsername] = useState('');
   const [duplicateusername, setDuplicateusername] = useState('');
   const [password, setPassword] = useState('');
@@ -34,10 +37,10 @@ const SignupPage = ( {navigation} ) => {
     if(!isUsernameAvailable) {Alert.alert("형식에 맞는 아이디를 입력하세요!"); return;}
     try {
       // 서버 측 api 호출
-      const response = await axios.get(`http://192.168.0.63:3000/users`);
+      const response = await axios.get(`${SERVER_URL}/users`); 
       const data = await response.data;
       const exists = data.some(user => user.username === username);
-
+      
       if(!exists) {
         Alert.alert("사용 가능한 아이디입니다!");
         // 중복 확인된 username 저장. -> 회원가입할때 사용하는 username이랑 맞는지 확인
@@ -73,6 +76,25 @@ const SignupPage = ( {navigation} ) => {
     setIsNicknameAvailable(nicknameRegex.test(nickname));
   }
 
+
+  const navigation = useNavigation();
+  // 이메일 인증 요청
+  const handleVerification = () => {
+    navigation.navigate('Verification', {email:email}); //위치 수정해야함
+    axios
+      .post(`${SERVER_URL}/send-email/`, { email })
+      .then((response) => {
+        Alert.alert('인증 메일 발송', '이메일로 인증 메일이 발송되었습니다.');
+        //navigation.navigate('Verification', {'email': 'hayeon_song@naver.com'}); 
+      })
+      .catch((error) => {
+        Alert.alert('오류', '이메일 전송에 실패하였습니다.');
+      });
+  };
+
+ 
+
+
   const handleSignup = async () => {
     // 회원가입 처리를 위한 백엔드 API 호출
     if (!isUsernameAvailable) {Alert.alert('올바른 아이디를 입력해주세요'); return;};
@@ -81,7 +103,7 @@ const SignupPage = ( {navigation} ) => {
     if (!isEmailAvailable) {Alert.alert('올바른 이메일을 입력해주세요');return;};
     if (!isNicknameAvailable) {Alert.alert('올바른 별명을 입력해주세요');return;};
     try {
-      const response = await fetch('http://192.168.0.63:3000/users', {
+      const response = await fetch(`${SERVER_URL}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -153,6 +175,9 @@ const SignupPage = ( {navigation} ) => {
             onChangeText={handleEmailValid}
             placeholder="이메일을 입력하세요"
           />
+          <TouchableOpacity style={styles.checkButton} onPress={(handleVerification)}>
+            <Text style={styles.checkButtonText}>인증 메일 전송</Text>
+          </TouchableOpacity>
           </View>
             {!email && (<Text style={{color:'red'}}>이메일을 입력해주세요.</Text>)}
             {email && !isEmailAvailable && (<Text style={{color:'red'}}>사용 불가능한 이메일입니다.</Text>)}
