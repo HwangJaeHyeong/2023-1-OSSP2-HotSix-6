@@ -9,48 +9,15 @@ import {
   Alert,
 } from 'react-native';
 
+const SERVER_URL = 'http://localhost:3001'; // 백엔드 서버 주소로 변경해야함
+
 const SignupPage = ( {navigation} ) => {
-  const [username, setUsername] = useState('');
-  const [duplicateusername, setDuplicateusername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [nickname, setNickname] = useState('');
-  const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
-  const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
+  const [name, setName] = useState('');
   const [isPasswordAvailable, setIsPasswordAvailable] = useState(false);
   const [isEmailAvailable, setIsEmailAvailable] = useState(false); 
-  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
-
-  // 아이디 형식 확인. 4~10자 & 모든 형식 입력 가능
-  const handleCheckUsername = (username) => {
-    const UsernameRegex = /^[\wㄱ-ㅎㅏ-ㅣ가-힣!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{4,10}$/;
-    setUsername(username);
-    setIsUsernameAvailable(UsernameRegex.test(username));
-  }
-
-  // 아이디 중복 확인
-  const duplicateCheckUsername = async () => {
-    // 형식 안맞으면 바로 return
-    if(!isUsernameAvailable) {Alert.alert("형식에 맞는 아이디를 입력하세요!"); return;}
-    try {
-      // 서버 측 api 호출
-      const response = await axios.get(`http://192.168.0.63:3000/users`);
-      const data = await response.data;
-      const exists = data.some(user => user.username === username);
-
-      if(!exists) {
-        Alert.alert("사용 가능한 아이디입니다!");
-        // 중복 확인된 username 저장. -> 회원가입할때 사용하는 username이랑 맞는지 확인
-        setDuplicateusername(username);
-      } else {
-        Alert.alert("중복된 아이디입니다. 다시 입력해주세요!");
-      } 
-      setIsUsernameAvailable(!exists);
-      setIsUsernameDuplicate(!exists);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  const [isNameAvailable, setIsNameAvailable] = useState(false);
 
   // 패스워드 형식 확인. 11~20자 & 영문, 숫자, 특수문자 1자 이상씩 포함해야함.
   const handleCheckPassword = (password) => {
@@ -66,31 +33,45 @@ const SignupPage = ( {navigation} ) => {
     setIsEmailAvailable(emailRegex.test(email));
   }
 
-  // 별명 형식 확인. 1~15자 & 모든 형식 가능.
-  const handleNickname = (nickname) => {
-    const nicknameRegex = /^[\wㄱ-ㅎㅏ-ㅣ가-힣!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{1,15}$/;
-    setNickname(nickname);
-    setIsNicknameAvailable(nicknameRegex.test(nickname));
+  // 이름 형식 확인. 1~10자 & 모든 형식 가능.
+  const handleNameValid = (name) => {
+    const nameRegex = /^[\wㄱ-ㅎㅏ-ㅣ가-힣!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{1,10}$/;
+    setName(name);
+    setIsNameAvailable(nameRegex.test(name));
   }
+
+  // 이메일 인증 요청
+  const handleVerification = () => {
+    navigation.navigate('Verification', {email:email}); // 위치 수정해야함
+    axios
+      .post(`${SERVER_URL}/send-email/`, { email })
+      .then((response) => {
+        Alert.alert('인증 메일 발송', '이메일로 인증 메일이 발송되었습니다.');
+        //navigation.navigate('Verification', {'email': 'hayeon_song@naver.com'}); 
+      })
+      .catch((error) => {
+        Alert.alert('오류', '이메일 전송에 실패하였습니다.');
+      });
+  };
 
   const handleSignup = async () => {
     // 회원가입 처리를 위한 백엔드 API 호출
-    if (!isUsernameAvailable) {Alert.alert('올바른 아이디를 입력해주세요'); return;};
-    if (!isUsernameDuplicate || duplicateusername != username) {Alert.alert('아이디 중복확인을 해주세요'); return;};
-    if (!isPasswordAvailable) {Alert.alert('올바른 비밀번호를 입력해주세요');return;};
-    if (!isEmailAvailable) {Alert.alert('올바른 이메일을 입력해주세요');return;};
-    if (!isNicknameAvailable) {Alert.alert('올바른 별명을 입력해주세요');return;};
+    if (!isPasswordAvailable) {Alert.alert('올바른 비밀번호를 입력해주세요'); return;};
+    if (!isEmailAvailable) {Alert.alert('올바른 이메일을 입력해주세요'); return;};
+    if (!isNameAvailable) {Alert.alert('올바른 별명을 입력해주세요'); return;};
+    
     try {
-      const response = await fetch('http://192.168.0.63:3000/users', {
+      const currentDate = new Date();
+      const response = await fetch(`${SERVER_URL}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username,
+          name,
           password,
           email,
-          nickname,
+          join_date : currentDate,
         }),
       });
       if (response.ok) {
@@ -111,21 +92,21 @@ const SignupPage = ( {navigation} ) => {
       <Text style={styles.title}>회원가입</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>아이디</Text>
+        <Text style={styles.label}>이메일</Text>
         <View style={styles.usernameContainer}>
           <TextInput
             style={styles.input}
-            value={username}
-            onChangeText={handleCheckUsername}
-            placeholder="아이디를 입력하세요(4~10자)"
+            value={email}
+            onChangeText={handleEmailValid}
+            placeholder="이메일을 입력하세요"
           />
-          <TouchableOpacity style={styles.checkButton} onPress={duplicateCheckUsername}>
-            <Text style={styles.checkButtonText}>중복확인</Text>
+          <TouchableOpacity style={styles.checkButton} onPress={(handleVerification)}>
+            <Text style={styles.checkButtonText}>인증 메일 전송</Text>
           </TouchableOpacity>
           </View>
-            {!username && (<Text style={{color:'red'}}>아이디를 입력해주세요.</Text>)}
-            {username && !isUsernameAvailable && (<Text style={{color:'red'}}>사용 불가능한 아이디입니다.</Text>)}
-            {username && isUsernameAvailable && (<Text style={{color:'green'}}>사용 가능한 아이디입니다.</Text>)}
+            {!email && (<Text style={{color:'red'}}>이메일을 입력해주세요.</Text>)}
+            {email && !isEmailAvailable && (<Text style={{color:'red'}}>사용 불가능한 이메일입니다.</Text>)}
+            {email && isEmailAvailable && (<Text style={{color:'green'}}>사용 가능한 이메일입니다.</Text>)}
       </View>
 
       <View style={styles.inputContainer}>
@@ -145,35 +126,19 @@ const SignupPage = ( {navigation} ) => {
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>이메일</Text>
+        <Text style={styles.label}>이름(영문,숫자,한글만 입력해주세요)</Text>
         <View style={styles.usernameContainer}>
           <TextInput
             style={styles.input}
-            value={email}
-            onChangeText={handleEmailValid}
-            placeholder="이메일을 입력하세요"
+            value={name}
+            onChangeText={handleNameValid}
+            placeholder="이름을 입력하세요(1~10자)"
           />
           </View>
-            {!email && (<Text style={{color:'red'}}>이메일을 입력해주세요.</Text>)}
-            {email && !isEmailAvailable && (<Text style={{color:'red'}}>사용 불가능한 이메일입니다.</Text>)}
-            {email && isEmailAvailable && (<Text style={{color:'green'}}>사용 가능한 이메일입니다.</Text>)}
+            {!name && (<Text style={{color:'red'}}>닉네임을 입력해주세요.</Text>)}
+            {name && !isNameAvailable && (<Text style={{color:'red'}}>사용 불가능한 닉네임입니다.</Text>)}
+            {name && isNameAvailable && (<Text style={{color:'green'}}>사용 가능한 닉네임입니다.</Text>)}
       </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>별명(영문,숫자,한글만 입력해주세요)</Text>
-        <View style={styles.usernameContainer}>
-          <TextInput
-            style={styles.input}
-            value={nickname}
-            onChangeText={handleNickname}
-            placeholder="별명을 입력하세요(1~15자)"
-          />
-          </View>
-            {!nickname && (<Text style={{color:'red'}}>닉네임을 입력해주세요.</Text>)}
-            {nickname && !isNicknameAvailable && (<Text style={{color:'red'}}>사용 불가능한 닉네임입니다.</Text>)}
-            {nickname && isNicknameAvailable && (<Text style={{color:'green'}}>사용 가능한 닉네임입니다.</Text>)}
-      </View>
-
       <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
         <Text style={styles.signupButtonText}>회원가입</Text>
       </TouchableOpacity>

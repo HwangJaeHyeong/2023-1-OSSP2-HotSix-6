@@ -2,15 +2,20 @@ import React, { useState, } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 
+// json-server --watch db.json --port 3000 --cors --host 본인 아이피
+
+const SERVER_URL = 'http://localhost:3001'; // 백엔드 서버 주소로 변경해야함
+
 const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLoginChange = (username) => {
-    setUsername(removeWhitespace(username));
+  // 로그인 바꾸기
+  const handleLoginChange = (email) => {
+    setUsername(removeWhitespace(email));
   }
   
-  // 이름 Reset -> Change 로 바꿈
+  // 비밀번호 바꾸기
   const handlePasswordChange = (password) => {
     setPassword(removeWhitespace(password));    
   };
@@ -18,17 +23,17 @@ const LoginScreen = ({ navigation }) => {
   // 로그인 수행 버튼
   const handleLoginButtonPress = async () => {
     try {
-      // 서버 측 api 호출 
-      const response = await axios.get(`http://192.168.0.63:3000/users`);
-      const data = await response.data;
-      const exists = data.some(user => user.username === username && user.password === password);
+      const response = await axios.post(`${SERVER_URL}/users`, {
+      email: email,
+      password: password,
+    });
 
-      if(exists) {
-        Alert.alert("로그인 성공!");
-        navigation.navigate("Main");
-      } else {
-        Alert.alert("로그인 실패. 아이디와 패스워드를 확인해주세요.");
-      }
+    if (response.status === 200) {
+      Alert.alert('로그인 성공!');
+      navigation.navigate('Main');
+    } else {
+      Alert.alert('로그인 실패. 아이디와 패스워드를 확인해주세요.');
+    }
     } catch (error) {
       console.error(error);
     }
@@ -39,9 +44,9 @@ const LoginScreen = ({ navigation }) => {
       <Text style={styles.title}>로그인</Text>
         <TextInput
           style={styles.input}
-          placeholder="아이디"
-          onChangeText={setUsername}
-          value={username}
+          placeholder="이메일"
+          onChangeText={setEmail}
+          value={email}
         />
         <TextInput
           style={styles.input}
