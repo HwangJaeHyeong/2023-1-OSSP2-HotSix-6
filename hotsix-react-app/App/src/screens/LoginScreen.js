@@ -64,7 +64,7 @@ const LoginScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Main')}>
           <Text>메인화면으로 이동</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Agreement')}>
           <Text>회원가입 이동</Text>
         </TouchableOpacity>
     </View>

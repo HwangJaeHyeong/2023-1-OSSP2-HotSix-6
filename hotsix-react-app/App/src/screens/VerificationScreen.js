@@ -18,16 +18,20 @@ function EmailVerificationScreen({ }) {
       .then((response) => {
         Alert.alert('인증 메일 발송', '이메일로 인증 메일이 발송되었습니다.');
       })
-      .catch((error) => {
+      .catch((error) => {Yy
         Alert.alert('오류', '이메일 전송에 실패하였습니다.');
       });
   };
 
   const verifyEmail = async () => { // 백에서 인증 요청 받아옴
-      console.log(email);
+    try{
       const response = await axios.get(`${SERVER_URL}/verify-email`);
       setIsVerified(response.data.is_verified); //is_verified(반환된 값) 가져와 setIsVerified 상태 업데이트
+    } catch (error) {
+      console.error(error);
+    };
   };
+
   
   useEffect(() => { // isVerified == true이면 "이메일 인증 성공" 출력 & 1초 후 Signup으로 창 전환
     if (isVerified == true) {
