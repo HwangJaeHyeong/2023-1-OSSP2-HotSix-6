@@ -28,7 +28,7 @@ function EmailVerificationScreen({ }) {
       const response = await axios.get(`${SERVER_URL}/verify-email`);
       setIsVerified(response.data.is_verified); //is_verified(반환된 값) 가져와 setIsVerified 상태 업데이트
   };
-
+  
   useEffect(() => { // isVerified == true이면 "이메일 인증 성공" 출력 & 1초 후 Signup으로 창 전환
     if (isVerified == true) {
       setTitle('이메일 인증 성공')
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center'
   },
-
+ 
   imageContainer: {
     alignItems: 'center',
   },
