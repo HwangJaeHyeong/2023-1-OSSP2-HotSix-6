@@ -6,7 +6,8 @@ import LoginScreen from '../screens/LoginScreen';
 import MainScreen from '../screens/MainScreen';
 import GroupScreen from '../screens/GroupScreen';
 import TimetableScreen from '../screens/TimetableScreen';
-import VerificationScreen from '../screens/VerificationScreen';
+import EmailVerificationScreen from '../screens/VerificationScreen';
+import CreateNewgroupPage from '../screens/CreateNewgroupScreen';
 
 const Stack = createStackNavigator();
 
@@ -19,7 +20,8 @@ const AppNavigator = () => {
         <Stack.Screen name="Main" component={MainScreen} />
         <Stack.Screen name="Group" component={GroupScreen} />
         <Stack.Screen name="Timetable" component={TimetableScreen} />
-        <Stack.Screen name="Verification" component={VerificationScreen} />
+        <Stack.Screen name="Verification" component={EmailVerificationScreen} />
+        <Stack.Screen name="Makegroup" component={CreateNewgroupPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

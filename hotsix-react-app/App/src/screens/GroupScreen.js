@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity} from 'react-native';
 
-const GroupScreen = () => {
+const GroupScreen = ({ navigation }) => {
   return (
     <View>
       <Text>그룹 페이지</Text>
-      {/* 추가 */}
+      <TouchableOpacity onPress={() => navigation.navigate('Makegroup')}>
+        <Text>새 그룹 만들기로 이동</Text>
+      </TouchableOpacity>
     </View>
   );
 };
