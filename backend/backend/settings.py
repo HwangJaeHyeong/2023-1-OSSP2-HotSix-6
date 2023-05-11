@@ -27,7 +27,7 @@ SECRET_KEY = my_settings.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] # test용으로 host 전부 허용(원래는 지정해줘야 함)
 
 
 # Application definition
@@ -40,13 +40,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django.contrib.sites',
-    'accounts',
-    'rest_framework',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
+     'django.contrib.sites', #e
+     'accounts',
+     'rest_framework',
+#     'allauth', #e
+#     'allauth.account', #e
+#     'allauth.socialaccount', #e
 ]
+
+# AUTH_USER_MODEL = 'accounts.User' #e
+# SITE_ID = 1 #e
+
+# #e
+# AUTHENTICATION_BACKENDS = {
+#     'django.contrib.auth.backends.ModelBackend',
+#     'allauth.account.auth_backends.AuthenticationBackend',
+# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
