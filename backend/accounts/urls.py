@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('duplicate/', views.duplicateCheck, name="duplicateCheck"),
     path('register/', views.register, name="register"),
+    path('login/', views.login, name="login"),
 
     # DB 확인을 위한 임시 - 나중에 지우기
     path('userdatas/', views.getUserDatas, name="userdatas"),

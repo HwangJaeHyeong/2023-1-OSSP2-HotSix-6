@@ -1,11 +1,10 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import User
 from .serializers import UserDataSerializer
 from rest_framework import status
-
-# Create your views here.
 
 # 이메일 중복 확인
 def duplicateCheck(request):
@@ -25,12 +24,34 @@ def duplicateCheck(request):
 
 # 회원가입 시 DB에 data 저장
 def register(request):
-    userData = request.data
-    serializer = UserDataSerializer(data=userData)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'POST':
+        reqData = request.data
+        serializer = UserDataSerializer(data=reqData)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# 로그인
+def login(request):
+    if request.method == 'POST':
+        reqData = request.data
+        
+        inputEmail = reqData['email']
+        inputPW = reqData['password']
+
+        # serializer = UserDataSerializer(data=reqData)
+
+        # DB에 ID가 있는 여부에 따라 response
+        if User.objects.filter(email=inputEmail).exists():
+            getUser = User.objects.get(email=inputEmail)
+            # ID에 맞는 PW 인지 여부에 따라 response
+            if getUser.password == inputPW:
+                    return Response(status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         
 
 
