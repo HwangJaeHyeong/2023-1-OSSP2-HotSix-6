@@ -8,27 +8,33 @@ from rest_framework import status
 
 # Create your views here.
 
+def duplicateCheck(request):
+    email = request.POST.get('email')
+
+    try:
+        _email = User.objects.get(email = email)
+    except:
+        _email = None
+        
+    if _email is None:
+        duplicate = "pass"
+    else:
+        duplicate = "fail"
+    context = {'duplicate' : duplicate}
+    return Response(context)
+
+
+
+
+
+
+
+
 @api_view(['GET'])
 def getUserDatas(request):
     datas = User.objects.all()
     serializer = UserDataSerializer(datas, many=True)
     return Response(serializer.data)
-
-# def duplicateCheck(request):
-#     user_id = request.GET.get('user_id')
-#     # user_id = request.get('user_id') 위, 아래 중에 뭔지 모르겠습니다...
-
-#     try:
-#         _id = User.objects.get(user_id = user_id)
-#     except:
-#         _id = None
-        
-#     if _id is None:
-#         duplicate = "pass"
-#     else:
-#         duplicate = "fail"
-#     context = {'duplicate' : duplicate}
-#     return Response(context)
 
 @api_view(['POST'])
 def postMember(request):
