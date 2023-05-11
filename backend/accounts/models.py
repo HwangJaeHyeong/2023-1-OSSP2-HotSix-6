@@ -61,6 +61,26 @@ class GroupSchedule(models.Model):
     class Meta:
         managed = False
         db_table = 'group_schedule'
+
+
+class GroupTimetable(models.Model):
+    timetable_id = models.IntegerField(db_column='Timetable_ID', primary_key=True)  # Field name made lowercase.
+    group_code = models.ForeignKey(Group, models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
+    start_time = models.DateField(db_column='Start_Time')  # Field name made lowercase.
+    end_time = models.DateField(db_column='End_Time')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'group_timetable'
+
+
+class Time(models.Model):
+    time_id = models.CharField(db_column='Time_ID', primary_key=True, max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.
+    email = models.ForeignKey('User', models.DO_NOTHING, db_column='Email')  # Field name made lowercase.
+    day = models.IntegerField(db_column='Day')  # Field name made lowercase.
+    time = models.IntegerField(db_column='Time')  # Field name made lowercase.
+    preference = models.IntegerField(db_column='Preference', blank=True, null=True)  # Field name made lowercase.
+
     class Meta:
         managed = False
         db_table = 'time'
