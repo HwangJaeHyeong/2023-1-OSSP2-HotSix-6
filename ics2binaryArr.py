@@ -29,8 +29,6 @@ def ics_to_binary_array(file_path):
                 event.insert(idx, temp[1])
                 event.insert(idx, temp[0])
 
-    for event in events:
-        print(event)
     return events
 
 # 사용 예시
