@@ -4,7 +4,13 @@ import Modal from 'react-native-modal';
 
 const GroupScreen = ({route}) => {
   const { userId } = route.params;
-  const [groups, setGroups] = useState([]);
+  //예시 하나 넣어놨습니다. 원래는 비워놓아야합니다.
+  const [groups, setGroups] = useState([
+    {
+      Group_Code: 12345,
+      Group_Name: 'Example Group',
+    },
+  ]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -41,7 +47,6 @@ const GroupScreen = ({route}) => {
         //await removeUserFromGroup(selectedGroup.Group_Code, userId);
         console.log('그룹에서 나갑니다...');
   
-        // 그룹 목록 업데이트
         //이게 백엔드에서는 느리니까 일시적으로 화면에서 지우고 나중에 백엔드가 되면 되는대로 바꾸는
         //최적화 방법이라고는 하는디 일단 이렇게 해놓겠음.
         const updatedGroups = groups.filter(
