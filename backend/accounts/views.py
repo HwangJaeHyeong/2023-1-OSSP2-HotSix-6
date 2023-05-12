@@ -23,18 +23,18 @@ def duplicateCheck(request):
     return Response(context)
 
 # 회원가입 시 DB에 data 저장
+@api_view(['POST'])
 def register(request):
-    if request.method == 'POST':
-        reqData = request.data
-        serializer = UserDataSerializer(data=reqData)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    reqData = request.data
+    serializer = UserDataSerializer(data=reqData)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # 로그인
+@api_view(['POST'])
 def login(request):
-    if request.method == 'POST':
         reqData = request.data
         
         inputEmail = reqData['email']
