@@ -8,6 +8,9 @@ const GroupScreen = ({ navigation }) => {
       <TouchableOpacity onPress={() => navigation.navigate('Makegroup')}>
         <Text>새 그룹 만들기로 이동</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('JoinGroup')}>
+        <Text>(테스트용 이거 내 그룹 리스트랑 연결하기)그룹 코드로 그룹 입장하기</Text>
+      </TouchableOpacity>
     </View>
   );
 };

@@ -29,19 +29,11 @@ const CreateNewgroupPage = ( {navigation} ) => {
     
     try {
       // 그룹 만들기를 위한 백엔드 API 호출
-      const response = await fetch(`${SERVER_URL}/group`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          Group_Name,
-        }),
+      const response = await axios.post(`${SERVER_URL}/group`, {
+          Group_Name: Group_Name,
       });
+
       if (response.ok) {
-        const Group_Code = await response.text();
-        // AsyncStorage에 Group_Code를 저장해서 다른 화면에서도 이 변수 사용 가능
-        await AsyncStorage.setItem('Group_Code', Group_Code);
         Alert.alert('그룹 생성이 완료되었습니다.');
         navigation.navigate('GroupScreen'); 
       } else {

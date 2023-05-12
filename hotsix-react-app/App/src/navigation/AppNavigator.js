@@ -8,6 +8,7 @@ import GroupScreen from '../screens/GroupScreen';
 import TimetableScreen from '../screens/TimetableScreen';
 import EmailVerificationScreen from '../screens/VerificationScreen';
 import CreateNewgroupPage from '../screens/CreateNewgroupScreen';
+import JoinGroupPage from '../screens/JoinGroupScreen';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Timetable" component={TimetableScreen} />
         <Stack.Screen name="Verification" component={EmailVerificationScreen} />
         <Stack.Screen name="Makegroup" component={CreateNewgroupPage} />
+        <Stack.Screen name="JoinGroup" component={JoinGroupPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

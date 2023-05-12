@@ -14,7 +14,7 @@ const SERVER_URL = 'http://localhost:3001'; // 백엔드 서버 주소로 변경
 const SignupPage = ( {navigation} ) => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+  const [name, setName] = useState(''); 
   const [isPasswordAvailable, setIsPasswordAvailable] = useState(false);
   const [isEmailAvailable, setIsEmailAvailable] = useState(false); 
   const [isNameAvailable, setIsNameAvailable] = useState(false);
@@ -62,17 +62,11 @@ const SignupPage = ( {navigation} ) => {
     
     try {
       const currentDate = new Date();
-      const response = await fetch(`${SERVER_URL}/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          password,
-          email,
-          join_date : currentDate,
-        }),
+      const response = await axios.post(`${SERVER_URL}/users`, {
+        name: name,
+        password: password,
+        email: email,
+        join_date: currentDate,
       });
       if (response.ok) {
         Alert.alert('회원가입이 완료되었습니다.');
