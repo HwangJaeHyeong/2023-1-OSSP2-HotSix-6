@@ -30,7 +30,7 @@ const TermsAndConditions = () => {
         <View style={styles.checkbox}>
           {agree1 && agree2 && <Text style={styles.checkmark}>✓</Text>}
         </View>
-        <Text style={styles.checkboxText}>전체 동의(필수)</Text>
+        <Text style={styles.checkboxText}>전체 동의</Text>
         </TouchableOpacity>
         <View style={styles.scrollContainer}> 
             <ScrollView>
@@ -437,7 +437,7 @@ const TermsAndConditions = () => {
         >
           {agree2 && <Text style={styles.checkmark}>✓</Text>}
         </TouchableOpacity>
-        <Text style={styles.checkboxText}>개인정보 수집 및 이용 동의</Text>
+        <Text style={styles.checkboxText}>개인정보 수집 및 이용 동의(필수)</Text>
       </View>
       
       

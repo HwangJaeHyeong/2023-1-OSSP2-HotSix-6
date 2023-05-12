@@ -3,9 +3,10 @@ import { View, Text, TouchableOpacity } from 'react-native';
 
 const MainScreen = ({ navigation }) => {
   return (
+    // user1으로 가정
     <View>
-      <Text>메인화면</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('Group')}>
+      <Text>메인화면</Text>  
+      <TouchableOpacity onPress={() => navigation.navigate('Group', { userId: 'user1' })}>
         <Text>내 그룹 페이지로 이동</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Timetable')}>
