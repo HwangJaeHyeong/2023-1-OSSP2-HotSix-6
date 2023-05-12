@@ -43,6 +43,7 @@ const LoginScreen = ({ navigation }) => {
       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
         <Text>회원가입 이동</Text>
       </TouchableOpacity>
+      
     </View>
   );
 };
