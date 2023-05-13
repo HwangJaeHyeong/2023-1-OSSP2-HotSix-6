@@ -6,7 +6,7 @@ const MainScreen = ({ navigation }) => {
     // user1으로 가정
     <View>
       <Text>메인화면</Text>  
-      <TouchableOpacity onPress={() => navigation.navigate('Group', { userId: 'user1' })}>
+      <TouchableOpacity onPress={() => navigation.navigate('ManageGroup')}>
         <Text>내 그룹 페이지로 이동</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Timetable')}>

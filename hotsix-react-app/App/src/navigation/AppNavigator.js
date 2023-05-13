@@ -8,10 +8,10 @@ import GroupScreen from '../screens/GroupScreen';
 import TimetableScreen from '../screens/TimetableScreen';
 import InsertScreen from '../screens/InsertScreen';
 import EmailVerificationScreen from '../screens/VerificationScreen';
-import CreateNewgroupPage from '../screens/CreateNewgroupScreen';
+import CreateNewgroupScreen from '../screens/CreateNewgroupScreen';
 import AgreementScreen from '../screens/AgreementScreen';
-import InsertScreen from '../screens/InsertScreen';
-import JoinGroupPage from '../screens/JoinGroupScreen';
+import JoinGroupScreen from '../screens/JoinGroupScreen';
+import ManageGroupScreen from '../screens/ManageGroupScreen';
 
 const Stack = createStackNavigator();
 
@@ -26,10 +26,10 @@ const AppNavigator = () => {
         <Stack.Screen name="Timetable" component={TimetableScreen} />
         <Stack.Screen name="Insert" component={InsertScreen} />
         <Stack.Screen name="Verification" component={EmailVerificationScreen} />
-        <Stack.Screen name="Makegroup" component={CreateNewgroupPage} />
+        <Stack.Screen name="Makegroup" component={CreateNewgroupScreen} />
         <Stack.Screen name="Agreement" component={AgreementScreen} />
-        <Stack.Screen name="Insert" component={InsertScreen} />
-        <Stack.Screen name="JoinGroup" component={JoinGroupPage} />
+        <Stack.Screen name="JoinGroup" component={JoinGroupScreen} />
+        <Stack.Screen name="ManageGroup" component={ManageGroupScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

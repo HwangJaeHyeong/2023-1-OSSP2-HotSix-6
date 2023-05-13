@@ -11,7 +11,7 @@ import {
 
 const SERVER_URL = 'http://localhost:3001'; // 백엔드 서버 주소로 변경해야함
 
-const SignupPage = ( {navigation} ) => {
+const SignupScreen = ( {navigation} ) => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [name, setName] = useState(''); 
@@ -193,5 +193,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignupPage;
+export default SignupScreen;
 
