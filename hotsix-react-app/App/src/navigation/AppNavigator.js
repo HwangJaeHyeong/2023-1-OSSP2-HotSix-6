@@ -6,7 +6,6 @@ import LoginScreen from '../screens/LoginScreen';
 import MainScreen from '../screens/MainScreen';
 import GroupScreen from '../screens/GroupScreen';
 import TimetableScreen from '../screens/TimetableScreen';
-import InsertScreen from '../screens/InsertScreen';
 import EmailVerificationScreen from '../screens/VerificationScreen';
 import CreateNewgroupPage from '../screens/CreateNewgroupScreen';
 import AgreementScreen from '../screens/AgreementScreen';
@@ -28,7 +27,6 @@ const AppNavigator = () => {
         <Stack.Screen name="Verification" component={EmailVerificationScreen} />
         <Stack.Screen name="Makegroup" component={CreateNewgroupPage} />
         <Stack.Screen name="Agreement" component={AgreementScreen} />
-        <Stack.Screen name="Insert" component={InsertScreen} />
         <Stack.Screen name="JoinGroup" component={JoinGroupPage} />
       </Stack.Navigator>
     </NavigationContainer>
