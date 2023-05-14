@@ -1,10 +1,26 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
+import jwt
+import json
+
 from .models import User
 from .serializers import UserDataSerializer
+from .tokens import account_activation_token
+from .text import message
+from my_settings import SECRET_KEY, EMAIL
+
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from rest_framework import status
+
+from django.views import View
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_text
+from django.core.mail import EmailMessage
+
 
 # 이메일 중복 확인
 def duplicateCheck(request):
@@ -27,8 +43,30 @@ def duplicateCheck(request):
 def register(request):
     reqData = request.data
     serializer = UserDataSerializer(data=reqData)
+    
     if serializer.is_valid():
         serializer.save()
+        
+        # user = User.objects.create(
+        #      email = reqData['email'],
+        #      password = reqData['password'],
+        #      name = reqData['name'],
+        #      join_date = reqData['join_date'],
+        #      is_active = False
+        # )
+        user = reqData['email']
+        
+        current_site = get_current_site(request)
+        domain = current_site.domain
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = account_activation_token.make_token(user)
+        message_data = message(domain, uidb64, token)
+
+        mail_title = "이메일 인증을 완료해주세요"
+        mail_to = reqData['email']
+        email = EmailMessage(mail_title, message_data, to=[mail_to])
+        email.send()
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -52,7 +90,8 @@ def login(request):
                 return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
+
+
 
 
 
