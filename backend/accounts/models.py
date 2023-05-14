@@ -91,7 +91,8 @@ class User(models.Model):
     password = models.CharField(db_column='Password', max_length=100)  # Field name made lowercase.
     name = models.CharField(db_column='Name', max_length=10)  # Field name made lowercase.
     join_date = models.DateField(db_column='Join_Date')  # Field name made lowercase.
-    authentication = models.IntegerField(db_column='Authentication')  # Field name made lowercase.
+    # authentication = models.IntegerField(db_column='Authentication')  # Field name made lowercase.
+    is_active = models.BooleanField(default=False)
 
     class Meta:
         managed = False
