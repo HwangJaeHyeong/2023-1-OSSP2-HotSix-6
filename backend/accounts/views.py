@@ -18,7 +18,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 
 
@@ -47,28 +47,37 @@ def register(request):
     if serializer.is_valid():
         serializer.save()
         
-        # user = User.objects.create(
-        #      email = reqData['email'],
-        #      password = reqData['password'],
-        #      name = reqData['name'],
-        #      join_date = reqData['join_date'],
-        #      is_active = False
-        # )
         user = reqData['email']
-        
+
         current_site = get_current_site(request)
         domain = current_site.domain
-        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+
+        uidb64 = urlsafe_base64_encode(force_bytes(user)) # user.pk
         token = account_activation_token.make_token(user)
         message_data = message(domain, uidb64, token)
 
         mail_title = "이메일 인증을 완료해주세요"
-        mail_to = reqData['email']
+        mail_to = user
         email = EmailMessage(mail_title, message_data, to=[mail_to])
         email.send()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class Activate(View):
+     def get(self, request, uidb64, token):
+          try:
+               uid = force_str(urlsafe_base64_decode(uidb64))
+               user = User.objects.get(pk=uid)
+               if user is not None:
+                if account_activation_token.check_token(uid, token):
+                        User.objects.filter(pk=uid).update(is_active=True) # membership_id=2
+                        return redirect(EMAIL['REDIRECT_PAGE'])
+               return Response({"error" : "AUTH_FAIL"}, status=status.HTTP_400_BAD_REQUEST)
+          except ValidationError:
+               return Response({"error" : "TYPE_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
+          except KeyError:
+               return Response({"error" : "KEY_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
 
 # 로그인
 @api_view(['POST'])

@@ -40,12 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-     'django.contrib.sites', #e
-     'accounts',
-     'rest_framework',
-#     'allauth', #e
-#     'allauth.account', #e
-#     'allauth.socialaccount', #e
+    # 'django.contrib.sites', #e
+    'accounts',
+    'rest_framework',
+    # 'allauth', #e
+    # 'allauth.account', #e
+    # 'allauth.socialaccount', #e
 ]
 
 # AUTH_USER_MODEL = 'accounts.User' #e
@@ -56,6 +56,22 @@ INSTALLED_APPS = [
 #     'django.contrib.auth.backends.ModelBackend',
 #     'allauth.account.auth_backends.AuthenticationBackend',
 # }
+# #e
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# ACCOUNT_CONFIRM_EMIAL_ON_GET = True
+
+EMAIL_BACKEND = my_settings.EMAIL['EMAIL_BACKEND']
+EMAIL_USE_TLS = my_settings.EMAIL['EMAIL_USE_TLS']      
+EMAIL_PORT = my_settings.EMAIL['EMAIL_PORT']                
+EMAIL_HOST = my_settings.EMAIL['EMAIL_HOST']
+EMAIL_HOST_USER = my_settings.EMAIL['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = my_settings.EMAIL['EMAIL_HOST_PASSWORD']
+SERVER_EMAIL = my_settings.EMAIL['SERVER_EMAIL']
+# 여기까지 email 인증
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
