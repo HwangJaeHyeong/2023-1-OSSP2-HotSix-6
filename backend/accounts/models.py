@@ -11,7 +11,7 @@ from django.db import models
 class Group(models.Model):
     group_code = models.IntegerField(db_column='Group_Code', primary_key=True)  # Field name made lowercase.
     group_name = models.CharField(db_column='Group_Name', max_length=10, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.
-    creator_id = models.CharField(db_column='Creator_ID', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.
+    creator_id = models.CharField(db_column='Creator_ID', max_length=100, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.
 
     class Meta:
         managed = False
