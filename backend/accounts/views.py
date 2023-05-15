@@ -1,5 +1,6 @@
 import jwt
 import json
+import bcrypt
 
 from .models import User
 from .serializers import UserDataSerializer
@@ -42,6 +43,10 @@ def duplicateCheck(request):
 @api_view(['POST'])
 def register(request):
     reqData = request.data
+    password = reqData['password']
+    hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    reqData['password'] = hashed_password.decode("utf-8")
+    
     serializer = UserDataSerializer(data=reqData)
     
     if serializer.is_valid():
@@ -92,8 +97,10 @@ def login(request):
         # DB에 ID가 있는 여부에 따라 response
         if User.objects.filter(email=inputEmail).exists():
             getUser = User.objects.get(email=inputEmail)
+            pw = getUser.password
             # ID에 맞는 PW 인지 여부에 따라 response
-            if getUser.password == inputPW:
+            # if getUser.password == inputPW:
+            if bcrypt.checkpw(inputPW.encode("utf-8"), getUser.password.encode("utf-8")):
                     return Response(status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND)
