@@ -42,7 +42,7 @@ const InsertScreen = () => {
           },
         };
 
-        const response = await axios.post('http://172.30.1.10:8000/receive_image/', formData, config);
+        const response = await axios.post('http://172.30.1.31:8000/receive_image/', formData, config);
         const imageData = response.data.image;
 
         Alert.alert('이미지 전송 성공', '이미지가 서버로 전송되었습니다.');
