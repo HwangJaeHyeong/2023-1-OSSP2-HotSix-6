@@ -1,51 +1,90 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-
+import React, { useState } from 'react';
+import { View, Button, Image, Dimensions, Alert, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location'; // expo-location을 추가로 import합니다.
+import axios from 'axios';
 
 const InsertPhotoScreen = ({navigation}) => {
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const selectImage = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync(); // 위치 권한을 요청합니다.
+    if (status !== 'granted') {
+      alert('카메라 권한이 필요합니다.');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage({ uri: result.assets[0].uri });
+    }
+  };
+
+  const sendImageToServer = async () => {
+    if (selectedImage) {
+      try {
+        const formData = new FormData();
+        formData.append('image', {
+          uri: selectedImage.uri,
+          name: 'image.jpg',
+          type: 'image/jpeg',
+        });
+
+        const config = {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        };
+
+        const response = await axios.post('http://172.30.1.31:8000/receive_image/', formData, config);
+        const imageData = response.data.image;
+
+        Alert.alert('이미지 전송 성공', '이미지가 서버로 전송되었습니다.');
+
+      } catch (error) {
+        Alert.alert('이미지 전송 실패', '이미지를 서버로 전송하는 데 실패했습니다.');
+      }
+    } else {
+      Alert.alert('이미지 선택', '전송할 이미지를 선택해주세요.');
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>시간표삽입</Text>
-      <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Ranking')}>
-        <Text style={styles.loginButtonText}>삽입 완료</Text>
-      </TouchableOpacity>
+      <Button title="JPG 파일 선택" onPress={selectImage} />
+      {selectedImage && (
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: selectedImage.uri }}
+            style={{ flex: 1, width: null, height: null }}
+            resizeMode="contain"
+          />
+          <View style={styles.buttonContainer}>
+            <Button title="확인" onPress={sendImageToServer} />
+          </View>
+        </View>
+      )}
     </View>
   );
 };
-
-export default InsertPhotoScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
   },
-  title: {
-    fontSize: 24,
-    marginBottom: 24,
-  },
-  input: {
-    width: '80%',
-    borderColor: '#dddddd',
-    borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 16,
-  },
-  loginButton: {
-    width: '80%',
-    marginTop: 5,
-    backgroundColor: '#1c7ed6',
-    borderRadius: 4,
-    paddingVertical: 12,
-    alignItems: 'center',
+  imageContainer: {
+    flex: 1,
     justifyContent: 'center',
   },
-  loginButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
+  buttonContainer: {
+    marginVertical: 10,
+    marginHorizontal: 20,
   },
 });
+
+export default InsertPhotoScreen;
