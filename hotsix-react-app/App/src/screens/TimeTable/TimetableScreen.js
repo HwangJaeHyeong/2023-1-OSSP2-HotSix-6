@@ -4,11 +4,11 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-nativ
 const TimetableScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-        <Text>메인화면으로 이동</Text>
+      <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Register')}>
+      <Text style={styles.loginButtonText}>시간표 등록하기</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Insert')}>
-        <Text>시간표 삽입</Text>
+      <TouchableOpacity style={styles.loginButton}>
+        <Text style={styles.loginButtonText}>시간표 수정하기</Text>
       </TouchableOpacity>
     </View>
   );
@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     width: '80%',
+    marginTop: 5,
     backgroundColor: '#1c7ed6',
     borderRadius: 4,
     paddingVertical: 12,
@@ -47,11 +48,6 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: '#ffffff',
     fontSize: 16,
-  },
-  resetPasswordText: {
-    marginTop: 16,
-    fontSize: 14,
-    color: '#1c7ed6',
   },
 });
 

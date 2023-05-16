@@ -18,6 +18,8 @@ const SignupScreen = ( {navigation} ) => {
   const [isPasswordAvailable, setIsPasswordAvailable] = useState(false);
   const [isEmailAvailable, setIsEmailAvailable] = useState(false); 
   const [isNameAvailable, setIsNameAvailable] = useState(false);
+  const [isDuplicateAvailable, setDuplicateAvailable] = useState(false);
+  const [EmailChange, setEmailChange] = useState(false);
 
   // 패스워드 형식 확인. 11~20자 & 영문, 숫자, 특수문자 1자 이상씩 포함해야함.
   const handleCheckPassword = (password) => {
@@ -40,7 +42,7 @@ const SignupScreen = ( {navigation} ) => {
     setIsNameAvailable(nameRegex.test(name));
   }
 
-  // 이메일 인증 요청
+  // 이메일 인증 요청 -> 이메일 중복 확인 만들기
   const handleVerification = () => {
     navigation.navigate('Verification', {email:email}); // 위치 수정해야함
     axios
@@ -54,10 +56,27 @@ const SignupScreen = ( {navigation} ) => {
       });
   };
 
+  const handleCheckDuplicate = async () => {
+    if(!handleEmailValid || !email) {Alert.alert("올바른 이메일 형식을 입력하세요!"); return;}
+
+    try {
+      const response = await axios.post(`${SERVER_URL}/users/duplicate`, {email: email,})
+      if(!response) { Alert.alert("중복된 이메일입니다. 다시 입력해주세요."); return;}
+      setIsEmailAvailable(response);
+      setDuplicateAvailable(response);
+      setEmailChange(email);
+      Alert.alert("사용 가능한 이메일입니다!");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("오류", "이메일 중복 확인에 실패했습니다.");
+    }
+  }
+
   const handleSignup = async () => {
     // 회원가입 처리를 위한 백엔드 API 호출
     if (!isPasswordAvailable) {Alert.alert('올바른 비밀번호를 입력해주세요'); return;};
     if (!isEmailAvailable) {Alert.alert('올바른 이메일을 입력해주세요'); return;};
+    if (!isDuplicateAvailable || EmailChange != email) {Alert.alert('이메일 중복확인을 해주세요'); return;};
     if (!isNameAvailable) {Alert.alert('올바른 별명을 입력해주세요'); return;};
     
     try {
@@ -94,8 +113,8 @@ const SignupScreen = ( {navigation} ) => {
             onChangeText={handleEmailValid}
             placeholder="이메일을 입력하세요"
           />
-          <TouchableOpacity style={styles.checkButton} onPress={(handleVerification)}>
-            <Text style={styles.checkButtonText}>인증 메일 전송</Text>
+          <TouchableOpacity style={styles.checkButton} onPress={(handleCheckDuplicate)}>
+            <Text style={styles.checkButtonText}>이메일 중복 확인</Text>
           </TouchableOpacity>
           </View>
             {!email && (<Text style={{color:'red'}}>이메일을 입력해주세요.</Text>)}

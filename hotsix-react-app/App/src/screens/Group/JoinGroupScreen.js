@@ -45,10 +45,11 @@ const JoinGroupScreen = ({route}) => {
     }
   };
 
+  // 그룹 가입하기 
   const JoinGroup = async(userId, Group_Code) => {
     try {
       const response = await axios.post(`${SERVER_URL}/groupMembers`, {
-        userId: userId, 
+        Member_Id: userId, 
         Group_Code: Group_Code,
       });
       return response.data;
@@ -57,7 +58,6 @@ const JoinGroupScreen = ({route}) => {
       Alert.alert("오류", "그룹 입장에 실패했습니다.");
     }
   }
-
 
   return (
     <View style={styles.container}>

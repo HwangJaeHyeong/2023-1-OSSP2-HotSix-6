@@ -15,6 +15,7 @@ const SERVER_URL = 'http://localhost:3001'; //백엔드 서버 주소로 변경�
 const CreateNewgroupScreen = ({route}) => {
   
   const navigation = useNavigation();
+  const { userId } = route.params;
   const [Group_Name, setGroup_Name] = useState('');
   const [isGroup_NameAvailable, setIsGroup_NameAvailable] = useState(false);  
 
@@ -32,7 +33,8 @@ const CreateNewgroupScreen = ({route}) => {
     try {
       // 그룹 만들기를 위한 백엔드 API 호출
       const response = await axios.post(`${SERVER_URL}/group`, {
-          Group_Name: Group_Name,
+        Creator_Id: userId,
+        Group_Name: Group_Name,
       });
       // 랜덤으로 생성된 그룹 코드 
       const groupcode = response.data;
