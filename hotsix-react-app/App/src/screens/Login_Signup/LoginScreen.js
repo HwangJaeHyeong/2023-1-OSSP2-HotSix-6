@@ -11,14 +11,14 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   // 로그인 바꾸기
-  const handleLoginChange = (email) => {
-    setUsername(removeWhitespace(email));
-  }
+  // const handleLoginChange = (email) => {
+  //   setUsername(removeWhitespace(email));
+  // }
   
   // 비밀번호 바꾸기
-  const handlePasswordChange = (password) => {
-    setPassword(removeWhitespace(password));    
-  };
+  // const handlePasswordChange = (password) => {
+  //   setPassword(removeWhitespace(password));    
+  // };
 
   // 로그인 수행 버튼
   const handleLoginButtonPress = async () => {
@@ -58,7 +58,7 @@ const LoginScreen = ({ navigation }) => {
         <TouchableOpacity style={styles.loginButton} onPress={handleLoginButtonPress}>
           <Text style={styles.loginButtonText}>로그인</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handlePasswordChange}>
+        <TouchableOpacity>
           <Text style={styles.resetPasswordText}>비밀번호 찾기</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Main')}>

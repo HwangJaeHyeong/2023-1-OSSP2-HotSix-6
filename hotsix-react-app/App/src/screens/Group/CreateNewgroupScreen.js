@@ -1,5 +1,6 @@
 import React, { useState, } from 'react';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 import {
   StyleSheet,
   Text,
@@ -11,8 +12,10 @@ import {
 
 const SERVER_URL = 'http://localhost:3001'; //백엔드 서버 주소로 변경해야함
 
-const CreateNewgroupPage = ( {navigation} ) => {
- 
+const CreateNewgroupScreen = ({route}) => {
+  
+  const navigation = useNavigation();
+  const { userId } = route.params;
   const [Group_Name, setGroup_Name] = useState('');
   const [isGroup_NameAvailable, setIsGroup_NameAvailable] = useState(false);  
 
@@ -30,16 +33,13 @@ const CreateNewgroupPage = ( {navigation} ) => {
     try {
       // 그룹 만들기를 위한 백엔드 API 호출
       const response = await axios.post(`${SERVER_URL}/group`, {
-          Group_Name: Group_Name,
+        Creator_Id: userId,
+        Group_Name: Group_Name,
       });
-
-      if (response.ok) {
-        Alert.alert('그룹 생성이 완료되었습니다.');
-        navigation.navigate('GroupScreen'); 
-      } else {
-        console.log(response.status);
-        Alert.alert('그룹 생성 중 오류가 발생했습니다.');
-      }
+      // 랜덤으로 생성된 그룹 코드 
+      const groupcode = response.data;
+      Alert.alert("그룹 생성이 완료됐습니다! 주어진 그룹 코드 : ", groupcode);
+      navigation.navigate('ManageGroup');   
     } catch (error) {
       console.error(error);
       Alert.alert('그룹 생성 중 오류가 발생했습니다.');
@@ -125,5 +125,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateNewgroupPage;
+export default CreateNewgroupScreen;
 

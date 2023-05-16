@@ -1,5 +1,6 @@
 import React, { useState, } from 'react';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 import {
   StyleSheet,
   Text,
@@ -11,8 +12,10 @@ import {
 
 const SERVER_URL = 'http://localhost:3001'; //백엔드 서버 주소로 변경해야함
 
-const JoinGroupPage = ( {navigation} ) => {
+const JoinGroupScreen = ({route}) => {
  
+  const navigation = useNavigation();
+  const { userId } = route.params; 
   const [Group_Code, setGroup_Code] = useState('');
   const [isGroup_CodeAvailable, setIsGroup_CodeAvailable] = useState(false);  
 
@@ -22,29 +25,39 @@ const JoinGroupPage = ( {navigation} ) => {
     setIsGroup_CodeAvailable(groupcodeRegex.test(Group_Code));
   }
 
-  // 그룹 코드로 그룹 입장하기
   const handleJoinGroup = async () => {    
     if(!isGroup_CodeAvailable) {Alert.alert("형식에 맞지 않는 코드 입니다."); return;};
     
     try {
-      // 그룹 입장을 위한 백엔드 API 호출
-      const response = await axios.post(`${SERVER_URL}/group`, {
-        Group_Code: Group_Code,
-      });
-      // 해당 그룹 코드가 존재하는지에 대한 값을 받는 변수
-      const Group_Code_check = await axios.get(`${SERVER_URL}/group`);
-      if (response.ok && Group_Code_check) {
-        // 서버에 이름 전송하여 그룹에 참여  
+      const response = await axios.post(`${SERVER_URL}/groups`, {Group_Code: Group_Code,});
+      const groupcode = response.data;
+      if(!groupcode) {
+        Alert.alert("존재하지 않는 코드입니다. 다시 입력해주세요."); return;
+      }
+      // db에 해당 코드가 존재하는 경우 사용자를 해당 그룹에 가입
+      const Response = await JoinGroup(userId, Group_Code);
+      if(Response) {
         Alert.alert("그룹 입장에 성공했습니다!");
-        // navigation.navigate('GroupScreen'); 나중에 
-      } else if (!Group_Code_check) {
-        Alert.alert('존재하지 않는 그룹 코드입니다. 다시 입력해 주세요.');
+        navigation.navigate("GroupScreen");
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert('그룹 입장 중 오류가 발생했습니다.');
+      Alert.alert("오류", "코드 전송에 실패했습니다.");
     }
   };
+
+  // 그룹 가입하기 
+  const JoinGroup = async(userId, Group_Code) => {
+    try {
+      const response = await axios.post(`${SERVER_URL}/groupMembers`, {
+        Member_Id: userId, 
+        Group_Code: Group_Code,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      Alert.alert("오류", "그룹 입장에 실패했습니다.");
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -124,5 +137,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default JoinGroupPage;
+export default JoinGroupScreen;
 

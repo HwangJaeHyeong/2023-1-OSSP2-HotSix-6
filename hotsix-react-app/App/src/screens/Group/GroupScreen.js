@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, FlatList, TouchableOpacity, TouchableWithoutFeedback, StyleSheet} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 
 const GroupScreen = ({route}) => {
+  const navigation = useNavigation();
   const { userId } = route.params;
   //예시 하나 넣어놨습니다. 원래는 비워놓아야합니다.
   const [groups, setGroups] = useState([
@@ -15,7 +17,6 @@ const GroupScreen = ({route}) => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
 
-  
   useEffect(() => {
     fetch(`http://172.30.1.36:3000/groupMembers`)
       .then((response) => response.json())
@@ -79,6 +80,10 @@ const GroupScreen = ({route}) => {
         keyExtractor={(item) => item.Group_Code.toString()}
         renderItem={renderGroupItem}
       />
+      <TouchableOpacity style={styles.JoinGroupButton} onPress={() => navigation.navigate('JoinGroup', {userId: 'user1'})}>
+        <Text style={styles.JoinGroupButtonText}>그룹 코드로 그룹 입장하기</Text>
+      </TouchableOpacity>
+
       <Modal isVisible={isModalVisible}>
         <View style={styles.modalContainer}>
           {selectedGroup && (
@@ -186,6 +191,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'blue',
     paddingHorizontal: 20,
+  },
+  JoinGroupButton: {
+    marginTop: 16,
+    backgroundColor: '#2196f3',
+    borderRadius: 4,
+    paddingVertical: 12,
+  },
+  JoinGroupButtonText: {
+    textAlign: 'center',
+    color: '#ffffff',
+    fontSize: 18,
   },
 });
 
