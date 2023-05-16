@@ -9,9 +9,9 @@ from django.db import models
 
 
 class Group(models.Model):
-    group_code = models.IntegerField(db_column='Group_Code', primary_key=True)  # Field name made lowercase.
+    group_code = models.CharField(db_column='Group_Code', primary_key=True, max_length=20)  # Field name made lowercase.
     group_name = models.CharField(db_column='Group_Name', max_length=10, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.
-    creator_id = models.CharField(db_column='Creator_ID', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.
+    creator_id = models.CharField(db_column='Creator_ID', max_length=100, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -19,7 +19,7 @@ class Group(models.Model):
 
 
 class GroupMember(models.Model):
-    group_code = models.OneToOneField(Group, models.DO_NOTHING, db_column='Group_Code', primary_key=True)  # Field name made lowercase.
+    group_code = models.OneToOneField('Group', models.DO_NOTHING, db_column='Group_Code', primary_key=True)  # Field name made lowercase.
     member = models.ForeignKey('User', models.DO_NOTHING, db_column='Member_ID')  # Field name made lowercase.
 
     class Meta:
@@ -29,7 +29,7 @@ class GroupMember(models.Model):
 
 class GroupNotice(models.Model):
     notice_id = models.IntegerField(db_column='Notice_ID', primary_key=True)  # Field name made lowercase.
-    group_code = models.ForeignKey(Group, models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
+    group_code = models.ForeignKey('Group', models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
     notice_title = models.CharField(db_column='Notice_Title', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.       
     notice_content = models.CharField(db_column='Notice_Content', max_length=100, db_collation='utf8mb4_0900_ai_ci', blank=True, null=True)  # Field name made lowercase.
     notice_date = models.DateField(db_column='Notice_Date')  # Field name made lowercase.
@@ -41,7 +41,7 @@ class GroupNotice(models.Model):
 
 class GroupProject(models.Model):
     project_id = models.IntegerField(db_column='Project_ID', primary_key=True)  # Field name made lowercase.
-    group_code = models.ForeignKey(Group, models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
+    group_code = models.ForeignKey('Group', models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
     project_name = models.CharField(db_column='Project_Name', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.       
     project_progress = models.IntegerField(db_column='Project_Progress')  # Field name made lowercase.
 
@@ -52,7 +52,7 @@ class GroupProject(models.Model):
 
 class GroupSchedule(models.Model):
     schedule_id = models.IntegerField(db_column='Schedule_ID', primary_key=True)  # Field name made lowercase.
-    group_code = models.ForeignKey(Group, models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
+    group_code = models.ForeignKey('Group', models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
     schedule_title = models.CharField(db_column='Schedule_Title', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.   
     schedule_content = models.CharField(db_column='Schedule_Content', max_length=100, db_collation='utf8mb4_0900_ai_ci', blank=True, null=True)  # Field name made lowercase.
     start_time = models.DateField(db_column='Start_Time')  # Field name made lowercase.
@@ -65,7 +65,7 @@ class GroupSchedule(models.Model):
 
 class GroupTimetable(models.Model):
     timetable_id = models.IntegerField(db_column='Timetable_ID', primary_key=True)  # Field name made lowercase.
-    group_code = models.ForeignKey(Group, models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
+    group_code = models.ForeignKey('Group', models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
     start_time = models.DateField(db_column='Start_Time')  # Field name made lowercase.
     end_time = models.DateField(db_column='End_Time')  # Field name made lowercase.
 
@@ -92,7 +92,8 @@ class User(models.Model):
     name = models.CharField(db_column='Name', max_length=10)  # Field name made lowercase.
     join_date = models.DateField(db_column='Join_Date')  # Field name made lowercase.
     # authentication = models.IntegerField(db_column='Authentication')  # Field name made lowercase.
-    is_active = models.BooleanField(default=False)
+    # is_active = models.BooleanField(default=False)
+    is_active = models.IntegerField(db_column='is_Active') # Field name made lowercase.
 
     class Meta:
         managed = False

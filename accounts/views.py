@@ -96,14 +96,17 @@ def login(request):
 
         # DB에 ID가 있는 여부에 따라 response
         if User.objects.filter(email=inputEmail).exists():
-            getUser = User.objects.get(email=inputEmail)
-            pw = getUser.password
-            # ID에 맞는 PW 인지 여부에 따라 response
-            # if getUser.password == inputPW:
-            if bcrypt.checkpw(inputPW.encode("utf-8"), getUser.password.encode("utf-8")):
-                    return Response(status=status.HTTP_200_OK)
+            if User.objects.filter(is_active=1):
+                getUser = User.objects.get(email=inputEmail)
+                pw = getUser.password
+                # ID에 맞는 PW 인지 여부에 따라 response
+                # if getUser.password == inputPW:
+                if bcrypt.checkpw(inputPW.encode("utf-8"), getUser.password.encode("utf-8")):
+                        return Response(status=status.HTTP_200_OK)
+                else:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
             else:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                 return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
