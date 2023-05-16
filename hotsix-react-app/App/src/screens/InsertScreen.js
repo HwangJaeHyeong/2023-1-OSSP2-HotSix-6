@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Button, Image, Dimensions, Alert, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location'; // expo-location을 추가로 import합니다.
 import axios from 'axios';
 
 
@@ -9,7 +9,7 @@ const InsertScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const selectImage = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    const { status } = await Location.requestForegroundPermissionsAsync(); // 위치 권한을 요청합니다.
     if (status !== 'granted') {
       alert('카메라 권한이 필요합니다.');
       return;
@@ -21,11 +21,10 @@ const InsertScreen = () => {
     });
 
     if (!result.canceled) {
-      setSelectedImage({ uri: result.uri });
+      setSelectedImage({ uri: result.assets[0].uri });
     }
   };
 
-  
   const sendImageToServer = async () => {
     if (selectedImage) {
       try {
@@ -46,7 +45,7 @@ const InsertScreen = () => {
         const imageData = response.data.image;
 
         Alert.alert('이미지 전송 성공', '이미지가 서버로 전송되었습니다.');
-        
+
       } catch (error) {
         Alert.alert('이미지 전송 실패', '이미지를 서버로 전송하는 데 실패했습니다.');
       }
@@ -61,7 +60,7 @@ const InsertScreen = () => {
       {selectedImage && (
         <View style={styles.imageContainer}>
           <Image
-            source={selectedImage}
+            source={{ uri: selectedImage.uri }}
             style={{ flex: 1, width: null, height: null }}
             resizeMode="contain"
           />
