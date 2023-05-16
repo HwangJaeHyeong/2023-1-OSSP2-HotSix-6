@@ -42,12 +42,11 @@ const SignupPage = ( {navigation} ) => {
 
   // 이메일 인증 요청
   const handleVerification = () => {
-    navigation.navigate('Verification', {email:email}); // 위치 수정해야함
     axios
-      .post(`${SERVER_URL}/send-email/`, { email })
+      .post(`https://hotsix-react-app-default-rtdb.firebaseio.com/send-email.json`, { email })
       .then((response) => {
         Alert.alert('인증 메일 발송', '이메일로 인증 메일이 발송되었습니다.');
-        //navigation.navigate('Verification', {'email': 'hayeon_song@naver.com'}); 
+        navigation.navigate('Verification', {email:email}); 
       })
       .catch((error) => {
         Alert.alert('오류', '이메일 전송에 실패하였습니다.');

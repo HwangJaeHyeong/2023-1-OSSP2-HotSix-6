@@ -18,15 +18,15 @@ function EmailVerificationScreen({ }) {
       .then((response) => {
         Alert.alert('인증 메일 발송', '이메일로 인증 메일이 발송되었습니다.');
       })
-      .catch((error) => {Yy
+      .catch((error) => {
         Alert.alert('오류', '이메일 전송에 실패하였습니다.');
       });
   };
 
   const verifyEmail = async () => { // 백에서 인증 요청 받아옴
     try{
-      const response = await axios.get(`${SERVER_URL}/verify-email`);
-      setIsVerified(response.data.is_verified); //is_verified(반환된 값) 가져와 setIsVerified 상태 업데이트
+      const response = await axios.get(`${SERVER_URL}/users/activate/<str:uidb64>/<str:token>`);
+      setIsVerified(Boolean(response.data.is_active)); //is_verified(반환된 값) 가져와 setIsVerified 상태 업데이트
     } catch (error) {
       console.error(error);
     };
@@ -37,7 +37,7 @@ function EmailVerificationScreen({ }) {
     if (isVerified == true) {
       setTitle('이메일 인증 성공')
       setTimeout(() => {
-        navigation.navigate('Signup');
+        navigation.navigate('Main');
       }, 1000);
     }
   }, [isVerified]);
@@ -63,9 +63,6 @@ function EmailVerificationScreen({ }) {
         </TouchableOpacity>
         <Text style={styles.label}>이메일을 받지 못하셨나요?</Text>
         <View style={styles.view}>
-        <TouchableOpacity >
-            <Text style={styles.text} onPress = {() => navigation.navigate('Signup')} >이메일 수정</Text> 
-        </TouchableOpacity>
         <TouchableOpacity > 
           <Text style={styles.text} onPress={handleVerification} >이메일 재전송</Text> 
         </TouchableOpacity>
