@@ -45,7 +45,7 @@ const SignupScreen = ( {navigation} ) => {
   // 이메일 인증 요청 -> 이메일 중복 확인 만들기
   const handleVerification = () => {
     axios
-      .post(`https://hotsix-react-app-default-rtdb.firebaseio.com/send-email.json`, { email })
+      .post(`${SERVER_URL}/send-email`, { email })
       .then((response) => {
         Alert.alert('인증 메일 발송', '이메일로 인증 메일이 발송되었습니다.');
         navigation.navigate('Verification', {email:email}); 
@@ -75,7 +75,7 @@ const SignupScreen = ( {navigation} ) => {
     // 회원가입 처리를 위한 백엔드 API 호출
     if (!isPasswordAvailable) {Alert.alert('올바른 비밀번호를 입력해주세요'); return;};
     if (!isEmailAvailable) {Alert.alert('올바른 이메일을 입력해주세요'); return;};
-    if (!isDuplicateAvailable || EmailChange != email) {Alert.alert('이메일 중복확인을 해주세요'); return;};
+    //if (!isDuplicateAvailable || EmailChange != email) {Alert.alert('이메일 중복확인을 해주세요'); return;};
     if (!isNameAvailable) {Alert.alert('올바른 별명을 입력해주세요'); return;};
     
     try {
@@ -88,14 +88,16 @@ const SignupScreen = ( {navigation} ) => {
       });
       if (response.ok) {
         Alert.alert('회원가입이 완료되었습니다.');
-        navigation.navigate('Login');
+        navigation.navigate('Verification');
       } else {
         console.log(response.status);
         Alert.alert('회원가입 중 오류가 발생했습니다.');
+        navigation.navigate('Verification', {email:email});
       }
     } catch (error) {
       console.error(error);
       Alert.alert('회원가입 중 오류가 발생했습니다.');
+      navigation.navigate('Verification',{email:email});
     }
   };
 
