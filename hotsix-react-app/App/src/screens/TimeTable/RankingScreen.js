@@ -1,106 +1,81 @@
-import React from 'react';
-import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, {useState, useEffect} from 'react';
+import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import TimeTable, { generateTimeTableData, } from 'react-native-timetable';
 import { addMinutes } from 'date-fns';
 import moment from 'moment';
 
-const schedules = [
-  [0,0,0,0,0,1,0], // 8시 
-  [0,0,0,0,0,1,0], // 8시 30분 
-  [0,0,0,0,0,1,0], // 9시
-  [0,0,0,0,0,1,0], // 9시 30분
-  [0,0,0,0,0,1,0], // 10시 
-  [0,0,0,0,0,1,0], // 10시 30분
-  [1,0,0,0,0,1,0], // 11시
-  [1,0,0,0,0,1,0], // 11시 30분
-  [1,1,0,0,0,0,0], // 12시
-  [1,1,0,0,0,0,0], // 12시 30분
-  [0,1,0,0,0,0,0], // 13시
-  [0,0,0,0,0,0,0], // 13시 30분 
-  [0,0,0,1,0,0,0], // 14시
-  [0,0,0,1,0,0,0], // 14시 30분
-  [0,0,0,1,0,0,0], // 15시 
-  [0,0,0,1,0,0,0], // 15시 30분 
-  [0,0,0,1,0,0,0], // 16시
-  [0,0,0,1,0,0,0], // 16시 30분 
-  [1,0,0,1,0,0,0], // 17시
-  [1,0,0,0,0,0,0], // 17시 30분
-  [1,0,0,0,0,0,0], // 18시 
-  [0,0,0,0,0,0,1], // 18시 30분
-  [0,0,0,0,0,0,1], // 19시 
-  [0,0,0,0,0,0,1], // 19시 30분
-  [0,0,0,0,0,0,1], // 20시 
-  [0,0,0,0,0,0,0], // 20시 30분
-  [0,0,0,0,0,0,0], // 21시
-  [0,0,0,0,0,0,0], // 21시 30분
-  [0,0,0,0,1,0,0], // 22시
-  [0,0,0,0,1,0,0], // 22시 30분
-  [0,0,0,0,1,0,0], // 23시 
-  [0,0,0,0,1,0,0], // 23시 30분
-  [0,0,0,0,1,0,0], // 24시 
-];
-
-const createEvent = (start, end, i) => {
-  const date = new Date('2023-05-01T00:00:00.000Z');
-  const startTime = addMinutes(date, start + 480);
-  const endTime = addMinutes(date, end + 480);
-  const Date1 = i;
-  return {
-    startTime: startTime,
-    endTime: endTime,
-    Date1: Date1, 
-  }
-};
-
-// 이진 배열을 Event 객체의 배열로 변환
-const events = [];
-
-for(let i = 0; i < schedules[0].length; i++) {
-  let start = null;
-  let end = null;
-  let flag = null; 
-  for(let j = 0; j < schedules.length; j++) {
-    const row = schedules[j];
-    const val = row[i];
-    if(val === 1 && start === null) {
-      start = j * 30;
-      flag = true; 
-    } else if (val === 0 && flag) {
-      end = (j-1) * 30; 
-      events.push(createEvent(start, end, i));
-      start = null;
-      end = null;
-      flag = null;
-    }
-  }
-  if (start !== null) {
-    end = (schedules.length - 1) * 30;
-    events.push(createEvent(start, end, i));
-  }
-} 
-
-const eventsFormatted = events.map(event => {
-  return {
-    ...event,
-    startTime: event.startTime.toISOString(),
-    endTime: event.endTime.toISOString(),
-    // Date1: event.Date1.toISOString(),
-  };
-});
-
 const RankingScreen = () => {
-  const navigation = useNavigation();
 
+  const route = useRoute();
+  const { schedules } = route.params;
+  const [events, setEvents] = useState([]);
+
+  // 전 화면에서 schedules 받아서 시간표에서 "1" 공강으로 인식 시키기
+  useEffect(() => {
+    const handleTimetable = (schedules) => {
+      const generatedEvents = [];
+      for (let i = 0; i < schedules[0].length; i++) {
+        let start = null;
+        let end = null;
+        let flag = null;
+        for (let j = 0; j < schedules.length; j++) {
+          const row = schedules[j];
+          const val = row[i];
+          if (val === 1 && start === null) {
+            start = j * 30;
+            flag = true;
+          } else if (val === 0 && flag) {
+            end = (j - 1) * 30;
+            generatedEvents.push(createEvent(start, end, i));
+            start = null;
+            end = null;
+            flag = null;
+          }
+        }
+        if (start !== null) {
+          end = (schedules.length - 1) * 30;
+          generatedEvents.push(createEvent(start, end, i));
+        }
+      }
+      setEvents(generatedEvents);
+    };
+
+    // 데이터 값 뽑아서 각각 startTime, endTime, Date1 에 저장
+    const createEvent = (start, end, i) => {
+      const date = new Date('2023-05-01T00:00:00.000Z');
+      const startTime = addMinutes(date, start + 480);
+      const endTime = addMinutes(date, end + 480);
+      const Date1 = i;
+      return {
+        startTime: startTime,
+        endTime: endTime,
+        Date1: Date1,
+      };
+    };
+
+    handleTimetable(schedules);
+  }, [schedules]);
+
+  // 초기화
+  const eventsFormatted = events.map(event => {
+    return {
+      ...event,
+      startTime: event.startTime.toISOString(),
+      endTime: event.endTime.toISOString(),
+    };
+  });
+
+  // 화면에 값 띄우기
   const renderGridItem = ({ item }) => {
     const start = moment.utc(item.startTime);
     const starttime = start.format('HH:mm');
-    
+
     const end = moment.utc(item.endTime);
     const endtime = end.format('HH:mm');
-    
+
     const Date1 = item.Date1;
-    const Date2 = ["월", "화", "수", "목", "금", "토", "일"];
+    const Date2 = ['월', '화', '수', '목', '금', '토', '일'];
     const viewdate = Date2[Date1];
 
     const duration = moment.duration(end.diff(start)).asMinutes() * 16 / 24;
@@ -111,11 +86,10 @@ const RankingScreen = () => {
 
     return (
       <TouchableOpacity
-        style={[styles.eventButton, { top: topOffset, height: height, width: width, left: leftOffset+5 }]}
+        style={[styles.eventButton, { top: topOffset, height: height, width: width, left: leftOffset}]}
         onPress={() => Alert.alert(`${viewdate}: ${starttime} ~ ${endtime}`)}
       >
         <Text style={styles.eventButtonText}>
-          {/* {start.format('HH:mm')} - {end.format('HH:mm')} */}
           {viewdate}
         </Text>
       </TouchableOpacity>
@@ -242,6 +216,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
+    marginLeft: 4,
     backgroundColor: '#3399ff',
     borderRadius: 5,
     padding: 5,
