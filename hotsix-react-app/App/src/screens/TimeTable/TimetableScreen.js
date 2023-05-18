@@ -12,8 +12,6 @@ const TimetableScreen = ({navigation}) => {
       </TouchableOpacity>
     </View>
   );
-
-  
 };
 
 const styles = StyleSheet.create({

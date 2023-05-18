@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-nativ
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 // InsertTextScreen -> RankingScreen 값 넘기는거 예시
+// 일단 이 스크린으로 예시 들었는데 나중에는 json으로 받아서 값 넘기기
+
 const schedules = [
   [0,0,0,1,0,1,0], // 8시 
   [0,0,0,1,0,1,0], // 8시 30분 
