@@ -16,6 +16,7 @@ def generateRandomCode(length=8):
         codecs.encode(uuid.uuid4().bytes, "base64").rstrip()
     ).decode()[:length]
 
+# generate group
 @api_view(['POST'])
 def groupGenerate(request):
     reqData = request.data # user email, group_name by request
@@ -28,23 +29,19 @@ def groupGenerate(request):
        
     return Response(Group_Code) # return group_code
 
+# join group with group code
 @api_view(['POST'])
 def joinGroup(request):
-    # if request.method == 'POST':
-        reqData = request.data # user email, group_code
-        Group_Code = reqData['group_code']
-        Member_ID = reqData['email']
+    reqData = request.data # user email, group_code
+    Group_Code = reqData['group_code']
+    Member_ID = reqData['email']
 
-        # group = Group.objects.get(group_code=Group_Code)
-        # if group is not None:
-        #     groupMember = GroupMember(group_code = group.group_code, member_id=Member_ID)
-        #     groupMember.save()
-        if Group.objects.filter(group_code=Group_Code).exists():
-            groupMember = GroupMember(group_code=Group.objects.get(pk=Group_Code), member_id=Member_ID)
-            groupMember.save()
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    
+    if Group.objects.filter(group_code=Group_Code).exists():
+        groupMember = GroupMember(group_code=Group.objects.get(pk=Group_Code), member_id=Member_ID)
+        groupMember.save()
+        return Response(status=status.HTTP_201_CREATED)
+    return Response(status=status.HTTP_404_NOT_FOUND)
+
 # # get group code by group name
 # @api_view(['GET'])
 # def getGroupCode(request): # only group name
@@ -54,3 +51,22 @@ def joinGroup(request):
 #     if Group_Code is not None:
 #         return Response(Group_Code)
 #     return Response()
+
+@api_view(['DELETE'])
+def deleteGroup(self, code):
+    try:
+        group = Group.objects.get(group_code=code)
+    except Group.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    group.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+    # reqData = request.data # group code
+    # Group_Code = reqData['group_code']
+
+    # if Group.objects.filter(group_code=Group_Code).exists():
+    #     group = Group.objects.get(group_code=Group_Code)
+    #     group.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+    # return Response(status=status.HTTP_404_NOT_FOUND)
