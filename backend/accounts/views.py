@@ -75,7 +75,7 @@ class Activate(View):
                uid = force_str(urlsafe_base64_decode(uidb64))
                user = User.objects.get(pk=uid)
                if user is not None:
-                if account_activation_token.check_token(uid, token):
+                    if account_activation_token.check_token(uid, token):
                         User.objects.filter(pk=uid).update(is_active=True) # membership_id=2
                         return redirect(EMAIL['REDIRECT_PAGE'])
                return Response({"error" : "AUTH_FAIL"}, status=status.HTTP_400_BAD_REQUEST)
@@ -83,6 +83,26 @@ class Activate(View):
                return Response({"error" : "TYPE_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
           except KeyError:
                return Response({"error" : "KEY_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
+
+# 이메일 인증 안 됐을 경우 다시 보내기기
+@api_view(['POST'])
+def resendEmail(request):
+     reqData = request.data
+     user = reqData['email']
+
+     current_site = get_current_site(request)
+     domain = current_site.domain
+
+     uidb64 = urlsafe_base64_encode(force_bytes(user)) # user.pk
+     token = account_activation_token.make_token(user)
+     message_data = message(domain, uidb64, token)
+
+     mail_title = "이메일 인증을 완료해주세요"
+     mail_to = user
+     email = EmailMessage(mail_title, message_data, to=[mail_to])
+     email.send()
+     
+     return Response(status=status.HTTP_202_ACCEPTED)
 
 # 로그인
 @api_view(['POST'])
@@ -109,7 +129,7 @@ def login(request):
                  return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
+        
 
 
 

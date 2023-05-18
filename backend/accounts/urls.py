@@ -6,6 +6,7 @@ urlpatterns = [
     path('register/', views.register, name="register"),
     path('login/', views.login, name="login"),
     path('activate/<str:uidb64>/<str:token>', views.Activate.as_view(), name="activate"),
+    path('send-email/', views.resendEmail, name="resendEmail"),
 
     # DB 확인을 위한 임시 - 나중에 지우기
     # path('userdatas/', views.getUserDatas, name="userdatas"),
