@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Image, StyleSheet, Text} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
@@ -7,14 +7,23 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('Login')}>
-        <View id="logo">
+      <TouchableOpacity  onPress={() => navigation.navigate('InsertIcs')}>
+        <View tyle={styles.logoContainer}>
           <Image
             source={require("hotsix-react-app/assets/MainLogo.png")}
             style={styles.logoImage}
           />
         </View>
       </TouchableOpacity>
+      <View style={styles.Textcontainer}>
+      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.Text}>로그인</Text>
+      </TouchableOpacity>
+        <Text style={styles.Text2} >or</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+          <Text style={styles.Text} >회원가입</Text>
+      </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -30,11 +39,35 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    
   },
   logoImage: {
-    width: 300,
+    width: 400,
     height: 300,
   },
+  Text :{
+    color: '#3679A4',
+    textAlign: 'center',
+    padding:10,
+    borderWidth: 1, 
+    borderRadius:50,
+    borderColor:"#fff",
+    backgroundColor : "#fff",
+    marginTop : 10,
+    fontSize: 15,
+  },
+  Text2 :{
+    marginTop : 10,
+    color: "#fff",
+    textAlign: 'center',
+  
+  },
+  Textcontainer:{
+    display: 'flex', 
+    flexDirection: 'column', 
+    marginTop: 40,
+    width: '75%',
+  }
 });
 
 export default HomeScreen;

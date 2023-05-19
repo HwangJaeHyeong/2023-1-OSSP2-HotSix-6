@@ -65,7 +65,7 @@ const GroupScreen = ({route}) => {
   };
 
   const renderGroupItem = ({item}) => (
-    <TouchableWithoutFeedback onLongPress={() => toggleModal(item)}>
+    <TouchableWithoutFeedback onLongPress={() => toggleModal(item)}  onPress={() => navigation.navigate('GroupDetails', { group: item })}>
       <View style={styles.groupItem}>
         <Text style={styles.groupName}>{item.Group_Name}</Text>
       </View>
