@@ -11,7 +11,7 @@ import uuid
 import base64
 import codecs
 
-# generate 8-character random code mixed with English case
+# generate 8-character random code mixed with English case and number
 def generateRandomCode(length=8):
     return base64.urlsafe_b64encode(
         codecs.encode(uuid.uuid4().bytes, "base64").rstrip()
@@ -57,18 +57,6 @@ def getGroupList(request):
         return Response({"error" : "TYPE_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
     except KeyError:
         return Response({"error" : "KEY_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# # get group code by group name
-# @api_view(['GET', 'POST'])
-# def getGroupCode(request): # only group name
-#     reqData = request.data
-#     Group_Name = reqData['group_name']
-#     Group_Code = Group.objects.filter(group_name=Group_Name)
-
-#     if Group_Code is not None:
-#         return Response(Group_Code)
-#     return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['DELETE'])
 def deleteGroup(self, code):
