@@ -2,11 +2,26 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const GroupDetailsScreen = ({route}) => {
+
+const GroupDetailsScreen = ({route , navigation}) => {
   const { group } = route.params;
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: ` ${group.Group_Name} ${group.Group_Code}`,
+      headerStyle: {
+        backgroundColor: '#3679A4', // 헤더 배경색 변경
+      },
+      headerTintColor: '#ffffff', // 헤더 텍스트 색상 변경
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    });
+    
+  }, [navigation, group]);
+
   return (
     <View style={styles.container}>
-        <Text style={styles.title}>Group Name: {group.Group_Name}</Text>
         <View style={styles.row}>
             <View style={styles.boxcontainer}>
                 <View style={styles.box}>
@@ -73,6 +88,7 @@ const styles = StyleSheet.create({
     margin: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius : 10,
    
   },
 

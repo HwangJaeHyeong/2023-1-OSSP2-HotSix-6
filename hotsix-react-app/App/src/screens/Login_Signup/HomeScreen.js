@@ -7,7 +7,7 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity  onPress={() => navigation.navigate('InsertIcs')}>
+      <TouchableOpacity >
         <View tyle={styles.logoContainer}>
           <Image
             source={require("hotsix-react-app/assets/MainLogo.png")}

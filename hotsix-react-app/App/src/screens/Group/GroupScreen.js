@@ -12,6 +12,10 @@ const GroupScreen = ({route}) => {
       Group_Code: 12345,
       Group_Name: 'Example Group',
     },
+    {
+      Group_Code: 1234235,
+      Group_Name: 'Example Group2',
+    },
   ]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);

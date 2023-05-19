@@ -3,6 +3,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import HomeScreen from '../screens/Login_Signup/HomeScreen';
 import LoginScreen from '../screens/Login_Signup/LoginScreen';
 import AgreementScreen from '../screens/Login_Signup/AgreementScreen';
 import SignupScreen from '../screens/Login_Signup/SignupScreen';
@@ -18,7 +19,7 @@ import InsertPhotoScreen from '../screens/TimeTable/InsertPhotoScreen';
 import InsertTextScreen from '../screens/TimeTable/InsertTextScreen';
 import RegisterScreen from '../screens/TimeTable/RegisterScreen';
 import RankingScreen from '../screens/TimeTable/RankingScreen';
-import HomeScreen from '../screens/HomeScreen';
+
 import InsertIcsScreen from '../screens/InsertIcsScreen';
 
 
