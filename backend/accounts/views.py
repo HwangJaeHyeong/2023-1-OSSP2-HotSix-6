@@ -129,25 +129,3 @@ def login(request):
                  return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
-
-
-
-
-
-
-# DB 확인을 위한 view 함수 - 나중에 지우기
-@api_view(['GET'])
-def getUserDatas(request):
-    datas = User.objects.all()
-    serializer = UserDataSerializer(datas, many=True)
-    return Response(serializer.data)
-
-@api_view(['POST'])
-def postMember(request):
-    reqData = request.data
-    serializer = UserDataSerializer(data=reqData)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
