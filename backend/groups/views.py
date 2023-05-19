@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from accounts.models import Group, GroupMember
-from accounts.serializers import GroupDataSerializer
+from accounts.serializers import GroupDataSerializer, GroupMemberSerializer
+from django.core.exceptions import ValidationError
 
 import uuid
 import base64
@@ -30,27 +31,44 @@ def groupGenerate(request):
     return Response(Group_Code) # return group_code
 
 # join group with group code
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def joinGroup(request):
     reqData = request.data # user email, group_code
     Group_Code = reqData['group_code']
     Member_ID = reqData['email']
 
-    if Group.objects.filter(group_code=Group_Code).exists():
-        groupMember = GroupMember(group_code=Group.objects.get(pk=Group_Code), member_id=Member_ID)
-        groupMember.save()
-        return Response(status=status.HTTP_201_CREATED)
-    return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'POST':
+        if Group.objects.filter(group_code=Group_Code).exists():
+            groupMember = GroupMember(group_code=Group.objects.get(pk=Group_Code), member_id=Member_ID)
+            groupMember.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+# 그룹 목록 가져오기
+@api_view(['GET'])
+def getGroupList(request):
+    try:
+        user = request.GET['email']
+
+        group_list = GroupMember.objects.filter(member=user)
+        serializer = GroupMemberSerializer(group_list, many=True)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+    except ValidationError:
+        return Response({"error" : "TYPE_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
+    except KeyError:
+        return Response({"error" : "KEY_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 # # get group code by group name
-# @api_view(['GET'])
+# @api_view(['GET', 'POST'])
 # def getGroupCode(request): # only group name
-#     Group_Name = request.data
+#     reqData = request.data
+#     Group_Name = reqData['group_name']
 #     Group_Code = Group.objects.filter(group_name=Group_Name)
 
 #     if Group_Code is not None:
 #         return Response(Group_Code)
-#     return Response()
+#     return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['DELETE'])
 def deleteGroup(self, code):
@@ -61,12 +79,3 @@ def deleteGroup(self, code):
     
     group.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
-
-    # reqData = request.data # group code
-    # Group_Code = reqData['group_code']
-
-    # if Group.objects.filter(group_code=Group_Code).exists():
-    #     group = Group.objects.get(group_code=Group_Code)
-    #     group.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
-    # return Response(status=status.HTTP_404_NOT_FOUND)
