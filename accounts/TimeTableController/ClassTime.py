@@ -48,10 +48,10 @@ class ClassTable:
 
     # 시간표 이차원 배열 출력
     def print(self):
-        count = 9
+        count = 0
         for i in self.table:
             print(f"{count} : ", end='\t')
             for j in i:
                 print(j, end=' ')
-            count += 0.5
+            count += 1
             print()
