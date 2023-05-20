@@ -8,7 +8,7 @@ const GroupDetailsScreen = ({route , navigation}) => {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      title: ` ${group.Group_Name} ${group.Group_Code}`,
+      title: ` ${group.Group_Name} `,
       headerStyle: {
         backgroundColor: '#3679A4', // 헤더 배경색 변경
       },
@@ -25,7 +25,7 @@ const GroupDetailsScreen = ({route , navigation}) => {
         <View style={styles.row}>
             <View style={styles.boxcontainer}>
                 <View style={styles.box}>
-                    <MaterialCommunityIcons name="calendar-month" style={styles.icon} />
+                    <MaterialCommunityIcons name="calendar-month" style={styles.icon}  onPress={() => navigation.navigate('GroupTimeTable',{group}) }/>
                     <Text style={styles.text}>그룹 시간표</Text>
                 </View>
             </View>
