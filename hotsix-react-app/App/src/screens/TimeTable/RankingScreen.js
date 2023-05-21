@@ -70,8 +70,17 @@ const RankingScreen = () => {
 
       schedule[day].push([str_idx, time_len]);
     });
-    Alert.alert("우선순위가 저장되었습니다.");
     console.log(schedule);
+
+    axios
+      .post("http://172.30.1.52:8000/test/", schedule)
+      .then((response) => {
+        console.log(response);
+        Alert.alert("백엔드로 데이터가 성공적으로 전송되었습니다.");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   // 전 화면에서 schedules 받아서 시간표에서 "1" 공강으로 인식 시키기
