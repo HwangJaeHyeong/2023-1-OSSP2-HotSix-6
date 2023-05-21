@@ -11,6 +11,7 @@ import { useRoute } from "@react-navigation/native";
 import TimeTable, { generateTimeTableData } from "react-native-timetable";
 import { addMinutes } from "date-fns";
 import moment from "moment";
+import axios from "axios";
 //시간표를 누르면 그것들을 배열에 추가하거나 제거한다.
 
 const RankingScreen = () => {
@@ -19,19 +20,58 @@ const RankingScreen = () => {
   const [events, setEvents] = useState([]);
   const [selectedEvents, setSelectedEvents] = useState([]);
 
+  const getTimeIndex = (time) => {
+    const [hours, minutes] = time.split(":");
+    const totalMinutes = parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+    return (totalMinutes - 480) / 30;
+  };
+
   const handleEventPress = (index) => {
-    console.log(index);
-    if (selectedEvents.includes(index)) {
+    const event = eventsFormatted[index];
+    const existingEventIndex = selectedEvents.findIndex(
+      (selectedEvent) => selectedEvent.index === index
+    );
+
+    if (existingEventIndex > -1) {
       // 이미 선택된 이벤트면 배열에서 제거
-      setSelectedEvents(selectedEvents.filter((item) => item !== index));
+      const newSelectedEvents = [...selectedEvents];
+      newSelectedEvents.splice(existingEventIndex, 1);
+      setSelectedEvents(newSelectedEvents);
     } else {
       // 선택 안된 이벤트면 배열에 추가
-      setSelectedEvents([...selectedEvents, index]);
+      setSelectedEvents([...selectedEvents, { ...event, index }]);
     }
   };
 
   const printSelectedEventsInfo = () => {
-    console.log(selectedEvents);
+    const schedule = {};
+    const weekDays = ["월", "화", "수", "목", "금", "토", "일"];
+
+    selectedEvents.forEach((selectedEvent) => {
+      const { startTime, endTime, Date1 } = selectedEvent;
+      const day = weekDays[Date1];
+
+      if (!startTime || !endTime) {
+        console.log("Invalid event time:", selectedEvent);
+        return;
+      }
+
+      const start = moment.utc(startTime);
+      const end = moment.utc(endTime);
+
+      const str_idx = getTimeIndex(start.format("HH:mm"));
+      const time_len = Math.round(
+        moment.duration(end.diff(start)).asMinutes() / 30
+      );
+
+      if (!schedule[day]) {
+        schedule[day] = [];
+      }
+
+      schedule[day].push([str_idx, time_len]);
+    });
+    Alert.alert("우선순위가 저장되었습니다.");
+    console.log(schedule);
   };
 
   // 전 화면에서 schedules 받아서 시간표에서 "1" 공강으로 인식 시키기
@@ -107,7 +147,8 @@ const RankingScreen = () => {
     const width = 44; // 버튼의 너비
     const leftOffset = width * Date1;
 
-    const isSelected = selectedEvents.includes(index); //선택됐는지.
+    const isSelected = selectedEvents.some((event) => event.index === index);
+
     return (
       <TouchableOpacity
         style={[
@@ -116,7 +157,6 @@ const RankingScreen = () => {
           isSelected ? styles.selectedEventButton : null,
         ]}
         onPress={() => {
-          Alert.alert(`${viewdate}: ${starttime} ~ ${endtime}`);
           handleEventPress(index);
         }}
       >
@@ -156,8 +196,11 @@ const RankingScreen = () => {
           ))}
         </View>
       </View>
-      <TouchableOpacity onPress={printSelectedEventsInfo}>
-        <Text>확인</Text>
+      <TouchableOpacity
+        style={styles.checkButton}
+        onPress={printSelectedEventsInfo}
+      >
+        <Text style={styles.checkButtonText}>확인</Text>
       </TouchableOpacity>
     </View>
   );
@@ -266,5 +309,16 @@ const styles = StyleSheet.create({
   },
   selectedEventButton: {
     backgroundColor: "#0000ff",
+  },
+  checkButton: {
+    marginTop: 16,
+    backgroundColor: "#2196f3",
+    borderRadius: 4,
+    paddingVertical: 12,
+  },
+  checkButtonText: {
+    textAlign: "center",
+    color: "#ffffff",
+    fontSize: 16,
   },
 });
