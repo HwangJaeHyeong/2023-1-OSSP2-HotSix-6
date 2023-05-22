@@ -10,7 +10,7 @@ import {
   Alert,
 } from 'react-native';
 
-const SERVER_URL = 'https://hotsix-react-app-default-rtdb.firebaseio.com'; //백엔드 서버 주소로 변경해야함
+const SERVER_URL = 'https://localhost:3001'; //백엔드 서버 주소로 변경해야함
 
 const CreateNewgroupScreen = ({route}) => {
   
@@ -32,7 +32,7 @@ const CreateNewgroupScreen = ({route}) => {
     
     try {
       // 그룹 만들기를 위한 백엔드 API 호출
-      const response = await axios.post(`${SERVER_URL}/group.json`, {
+      const response = await axios.post(`${SERVER_URL}/group`, {
         Creator_Id: userId,
         Group_Name: Group_Name,
       });

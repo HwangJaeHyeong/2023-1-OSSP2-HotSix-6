@@ -20,7 +20,7 @@ const HomeScreen = () => {
           <Text style={styles.Text}>로그인</Text>
       </TouchableOpacity>
         <Text style={styles.Text2} >or</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Agreement')}>
           <Text style={styles.Text} >회원가입</Text>
       </TouchableOpacity>
       </View>

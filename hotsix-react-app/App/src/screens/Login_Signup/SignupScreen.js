@@ -42,18 +42,6 @@ const SignupScreen = ( {navigation} ) => {
     setIsNameAvailable(nameRegex.test(name));
   }
 
-  // 이메일 인증 요청 -> 이메일 중복 확인 만들기
-  const handleVerification = () => {
-    axios
-      .post(`${SERVER_URL}/send-email`, { email })
-      .then((response) => {
-        Alert.alert('인증 메일 발송', '이메일로 인증 메일이 발송되었습니다.');
-        navigation.navigate('Verification', {email:email}); 
-      })
-      .catch((error) => {
-        Alert.alert('오류', '이메일 전송에 실패하였습니다.');
-      });
-  };
 
   const handleCheckDuplicate = async () => {
     if(!handleEmailValid || !email) {Alert.alert("올바른 이메일 형식을 입력하세요!"); return;}
@@ -75,7 +63,7 @@ const SignupScreen = ( {navigation} ) => {
     // 회원가입 처리를 위한 백엔드 API 호출
     if (!isPasswordAvailable) {Alert.alert('올바른 비밀번호를 입력해주세요'); return;};
     if (!isEmailAvailable) {Alert.alert('올바른 이메일을 입력해주세요'); return;};
-    //if (!isDuplicateAvailable || EmailChange != email) {Alert.alert('이메일 중복확인을 해주세요'); return;};
+    if (!isDuplicateAvailable || EmailChange != email) {Alert.alert('이메일 중복확인을 해주세요'); return;};
     if (!isNameAvailable) {Alert.alert('올바른 별명을 입력해주세요'); return;};
     
     try {
@@ -88,16 +76,16 @@ const SignupScreen = ( {navigation} ) => {
       });
       if (response.ok) {
         Alert.alert('회원가입이 완료되었습니다.');
-        navigation.navigate('Verification');
+        navigation.navigate('Verification', {email:email}); // 회원가입 완료 -> 이메일 인증 페이지로 넘어감
       } else {
         console.log(response.status);
         Alert.alert('회원가입 중 오류가 발생했습니다.');
-        navigation.navigate('Verification', {email:email});
+       
       }
     } catch (error) {
       console.error(error);
       Alert.alert('회원가입 중 오류가 발생했습니다.');
-      navigation.navigate('Verification',{email:email});
+     
     }
   };
 
