@@ -1,7 +1,14 @@
 from django.urls import path
 from . import views
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
-    path('userdatas/', views.getUserDatas, name="userdatas"),
-    path('postMember/', views.postMember, name="postMember"), # 이 경로로 json 데이터 던지면 db에 insert
+    path('duplicate/', views.duplicateCheck, name="duplicateCheck"),
+    path('register/', views.register, name="register"),
+    path('login/', views.login, name="login"),
+    path('activate/<str:uidb64>/<str:token>', views.Activate.as_view(), name="activate"),
+    path('send-email/', views.resendEmail, name="resendEmail"),
+    path('login-remain/', views.loginRemain, name="loginRemain"),
+    path('logout/', views.logout, name="logout"),
+    path('time-table/', views.TimeTable, name="TimeTable"),
 ]
