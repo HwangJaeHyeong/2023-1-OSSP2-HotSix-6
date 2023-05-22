@@ -6,6 +6,11 @@ class UserDataSerializer(ModelSerializer):
         model = User
         fields = '__all__'
 
+    def update_user_time_table(update_user, zdata):
+        user = User.objects.get(email=update_user)
+        user.time_table = zdata
+        user.save()
+
 class GroupDataSerializer(ModelSerializer):
     class Meta:
         model = Group
