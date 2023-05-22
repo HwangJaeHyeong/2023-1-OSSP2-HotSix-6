@@ -28,7 +28,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 
-DAYS = ['월', '화', '수', '목','금', '토','일']
+DAYS = ['월', '화', '수', '목', '금', '토','일']
 
 # 이메일 중복 확인
 def duplicateCheck(request):
@@ -126,10 +126,12 @@ def TimeTable(request):
         reqData = request.data
         put_email = reqData['email']
         put_file = reqData['table']
+        put_start_time = int(reqData['start_time'])
         put_prefers = json.loads(reqData["preference"])
 
         # 시간표 이미지 처리
         common_time = img2arr(put_file) # 이미지 -> 배열
+        [common_time.table.insert(0, common_time.table.pop()) for _ in range(put_start_time)] # 시간표 시작 시간 조정
         add_prefer(common_time, put_prefers) # 우선순위 배열에 추가
         zdata = compress_table(common_time) # 시간표 데이터 압축
 

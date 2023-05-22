@@ -1,9 +1,10 @@
 # 요일 : 월요일 ~ 일요일
 DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
-# 시간 : 1 ~ 32 = 9:00 ~ 23:59
+# 시간 : 1 ~ 48 = 0:00 ~ 23:59
 CLASS_TIMES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
                 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-                25, 26, 27, 28, 29, 30]
+                25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+                37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48]
 
 def common_class_table(class_tables):
     common_table = ClassTable()
@@ -53,5 +54,5 @@ class ClassTable:
             print(f"{count} : ", end='\t')
             for j in i:
                 print(j, end=' ')
-            count += 1
+            count += 0.5
             print()
