@@ -127,7 +127,7 @@ def TimeTable(request):
         put_email = reqData['email']
         put_file = reqData['table']
         put_start_time = int(reqData['start_time'])
-        put_prefers = json.loads(reqData["preference"])
+        put_prefers = json.loads(reqData["prefer"])
 
         # 시간표 이미지 처리
         common_time = img2arr(put_file) # 이미지 -> 배열
@@ -146,6 +146,7 @@ def TimeTable(request):
         getData = request.data
         get_email = getData['email']
         res_table = restore_table(get_email)
+        print_table(res_table)
         return Response({"Connect Success":res_table}) 
 
 # 이미지 파일 배열로 변환하는 함수
@@ -159,7 +160,7 @@ def img2arr(file):
 def add_prefer(common_time, prefers):
     for prefer in prefers: 
          for element in prefers[prefer]: # 우선순위 요일별로 분리
-              start_idx = int(element[0])
+              start_idx = element[0]
               end_idx = element[1] + start_idx
               for time in range(start_idx, end_idx): # 우선순위 추가
                 day = DAYS.index(prefer)
@@ -187,12 +188,21 @@ def restore_table(req_email):
         table_element.append(ch)
 
         if i % 7 == 0 and i != 0:
-            lst_table.append(table_element)
+            table_element_int = [int(i) for i in table_element]
+            lst_table.append(table_element_int)
             table_element = []
 
     return lst_table
 
-
+def print_table(table):
+    count = 0
+    for time in table:
+        print(count, "\t:\t", end='')
+        for day in time:
+            print(day, end=' ')
+        print()
+        count += 0.5
+    print()
 
 
 

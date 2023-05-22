@@ -9,9 +9,9 @@ from django.db import models
 
 
 class Group(models.Model):
-    group_code = models.CharField(db_column='Group_Code', primary_key=True, max_length=20)  # Field name made lowercase.
-    group_name = models.CharField(db_column='Group_Name', max_length=10, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.
-    creator_id = models.CharField(db_column='Creator_ID', max_length=100, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.
+    group_code = models.CharField(db_column='Group_Code', primary_key=True, max_length=20, db_collation='latin1_swedish_ci')  # Field name made lowercase.
+    group_name = models.CharField(db_column='Group_Name', max_length=10)  # Field name made lowercase.
+    creator_id = models.CharField(db_column='Creator_ID', max_length=100)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -19,7 +19,8 @@ class Group(models.Model):
 
 
 class GroupMember(models.Model):
-    group_code = models.OneToOneField(Group, models.DO_NOTHING, db_column='Group_Code', primary_key=True)  # Field name made lowercase.
+    member_id = models.AutoField(db_column='Member_ID', primary_key=True)  # Field name made lowercase.
+    group_code = models.ForeignKey(Group, models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
     email = models.ForeignKey('User', models.DO_NOTHING, db_column='Email')  # Field name made lowercase.
 
     class Meta:
@@ -78,7 +79,7 @@ class User(models.Model):
     email = models.CharField(db_column='Email', primary_key=True, max_length=100)  # Field name made lowercase.
     password = models.CharField(db_column='Password', max_length=100)  # Field name made lowercase.
     name = models.CharField(db_column='Name', max_length=10)  # Field name made lowercase.
-    time_table = models.BinaryField(db_column='Time_Table', max_length=300, blank=True, null=True)  # Field name made lowercase. 
+    time_table = models.BinaryField(db_column='Time_Table', max_length=255, blank=True, null=True)  # Field name made lowercase.
     join_date = models.DateField(db_column='Join_Date')  # Field name made lowercase.
     is_active = models.IntegerField(db_column='is_Active')  # Field name made lowercase.
 
