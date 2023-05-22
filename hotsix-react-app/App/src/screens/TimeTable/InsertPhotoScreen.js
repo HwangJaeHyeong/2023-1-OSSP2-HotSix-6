@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
-import { View, Button, Image, Dimensions, Alert, StyleSheet } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as Location from 'expo-location'; // expo-location을 추가로 import합니다.
-import axios from 'axios';
+import React, { useState } from "react";
+import { View, Button, Image, Alert, StyleSheet, Text } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
+import axios from "axios";
+import { Menu } from "react-native-paper"; // 변경
 
-const InsertPhotoScreen = ({navigation}) => {
+const InsertPhotoScreen = ({ navigation }) => {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedHour, setSelectedHour] = useState(null); // 변경
+  const [selectedMinute, setSelectedMinute] = useState(null); // 변경
 
   const selectImage = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync(); // 위치 권한을 요청합니다.
-    if (status !== 'granted') {
-      alert('카메라 권한이 필요합니다.');
+    const { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== "granted") {
+      alert("카메라 권한이 필요합니다.");
       return;
     }
 
@@ -25,37 +30,66 @@ const InsertPhotoScreen = ({navigation}) => {
   };
 
   const sendImageToServer = async () => {
-    if (selectedImage) {
+    if (selectedImage && selectedHour && selectedMinute) {
+      // 변경
       try {
         const formData = new FormData();
-        formData.append('image', {
+        formData.append("image", {
           uri: selectedImage.uri,
-          name: 'image.jpg',
-          type: 'image/jpeg',
+          name: "image.jpg",
+          type: "image/jpeg",
         });
+        formData.append("time", `${selectedHour}:${selectedMinute}`); // 변경
 
         const config = {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         };
 
-        const response = await axios.post('http://172.30.1.31:8000/receive_image/', formData, config);
+        const response = await axios.post(
+          "http://172.30.1.52:8000/receive_image/",
+          formData,
+          config
+        );
         const imageData = response.data.image;
 
-        Alert.alert('이미지 전송 성공', '이미지가 서버로 전송되었습니다.');
-
+        Alert.alert(
+          "이미지와 시간 전송 성공",
+          "이미지와 시간이 서버로 전송되었습니다."
+        );
       } catch (error) {
-        Alert.alert('이미지 전송 실패', '이미지를 서버로 전송하는 데 실패했습니다.');
+        Alert.alert(
+          "이미지와 시간 전송 실패",
+          "이미지와 시간을 서버로 전송하는 데 실패했습니다."
+        );
       }
     } else {
-      Alert.alert('이미지 선택', '전송할 이미지를 선택해주세요.');
+      Alert.alert(
+        "이미지 및 시간 선택",
+        "전송할 이미지와 시간을 선택해주세요."
+      );
     }
   };
 
+  const hours = [];
+  for (let i = 8; i <= 12; i++) {
+    hours.push(i);
+  }
+
+  const minutes = [];
+  for (let j = 0; j < 60; j += 10) {
+    minutes.push(j);
+  }
+
   return (
     <View style={styles.container}>
-      <Button title="JPG 파일 선택" onPress={selectImage} />
+      <Button
+        style={styles.selectButton}
+        title="JPG 파일 선택"
+        onPress={selectImage}
+      />
+
       {selectedImage && (
         <View style={styles.imageContainer}>
           <Image
@@ -63,6 +97,29 @@ const InsertPhotoScreen = ({navigation}) => {
             style={{ flex: 1, width: null, height: null }}
             resizeMode="contain"
           />
+          <View style={styles.questionBubble}>
+            <Text style={styles.questionText}>
+              일정에서 제일 빠른 시작시간을 입력해주세요.
+            </Text>
+          </View>
+          <Picker
+            selectedValue={selectedHour}
+            style={styles.pickerStyle}
+            onValueChange={(itemValue) => setSelectedHour(itemValue)}
+          >
+            {hours.map((hour, index) => (
+              <Picker.Item label={`${hour}시`} value={hour} key={index} />
+            ))}
+          </Picker>
+          <Picker
+            selectedValue={selectedMinute}
+            style={styles.pickerStyle}
+            onValueChange={(itemValue) => setSelectedMinute(itemValue)}
+          >
+            {minutes.map((minute, index) => (
+              <Picker.Item label={`${minute}분`} value={minute} key={index} />
+            ))}
+          </Picker>
           <View style={styles.buttonContainer}>
             <Button title="확인" onPress={sendImageToServer} />
           </View>
@@ -75,15 +132,36 @@ const InsertPhotoScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   imageContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   buttonContainer: {
     marginVertical: 10,
     marginHorizontal: 20,
+  },
+  questionBubble: {
+    marginVertical: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 20,
+  },
+  questionText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  pickerStyle: {
+    width: "80%",
+    height: 50,
+    color: "#344953",
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+    marginBottom: 20,
+    alignSelf: "center",
   },
 });
 
