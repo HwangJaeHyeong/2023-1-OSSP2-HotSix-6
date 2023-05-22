@@ -6,7 +6,7 @@ import axios from 'axios';
 
 function EmailVerificationScreen({ }) {
   const route = useRoute();
-  const { email } = route.params; //SignupScreen에서 받아온 값
+  const { email } = route.params; // SignupScreen에서 받아온 값
   const [title, setTitle] = useState('이메일 인증');
   const [isVerified, setIsVerified] = useState(false);
   const navigation = useNavigation();

@@ -12,8 +12,6 @@ const RegisterScreen = ({navigation}) => {
       </TouchableOpacity>
     </View>
   );
-
-  
 };
 
 export default RegisterScreen;
