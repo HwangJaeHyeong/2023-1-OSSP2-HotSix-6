@@ -1,6 +1,7 @@
 import jwt
 import json
 import bcrypt
+import datetime
 
 from .models import User
 from .serializers import UserDataSerializer
@@ -11,6 +12,8 @@ from my_settings import SECRET_KEY, EMAIL
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from django.views import View
 from django.http import HttpResponse, JsonResponse
@@ -50,6 +53,23 @@ def register(request):
     serializer = UserDataSerializer(data=reqData)
     
     if serializer.is_valid():
+        user  = serializer.save()
+
+        # payload = {
+        #      "id" : reqData['email'],
+        #      "exp" : datetime.datetime.now() + datetime.timedelta(minutes=60),
+        #      "iat" : datetime.datetime.now()
+        # }
+
+        # token = jwt.encode(payload, "secretJWTKey", algorithm="HS256")
+
+        # res = Response()
+        # res.set_cookie(key='jwt', value=True, httponly=True)
+        # res.data = {
+        #      'jwt' : token
+        # }
+
+        # return res
         serializer.save()
         
         user = reqData['email']
@@ -104,6 +124,17 @@ def resendEmail(request):
      
      return Response(status=status.HTTP_202_ACCEPTED)
 
+# # token
+# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+#      @classmethod
+#      def get_token(cls, user):
+#           token = super().get_token(user)
+#           token['username'] = user.username
+#           return token
+     
+# class MyTokenObtainPairView(TokenObtainPairView):
+#      serializer_class = MyTokenObtainPairSerializer
+
 # 로그인
 @api_view(['POST'])
 def login(request):
@@ -122,10 +153,54 @@ def login(request):
                 # ID에 맞는 PW 인지 여부에 따라 response
                 # if getUser.password == inputPW:
                 if bcrypt.checkpw(inputPW.encode("utf-8"), getUser.password.encode("utf-8")):
-                        return Response(status=status.HTTP_200_OK)
+                      payload = {
+                           "email" : inputEmail,
+                           "exp" : datetime.datetime.now() + datetime.timedelta(minutes=60),
+                           "iat" : datetime.datetime.now()
+                      }
+
+                      token = jwt.encode(payload, "secretJWTKey", algorithm="HS256")
+
+                      res = Response(status=status.HTTP_200_OK)
+                      res.set_cookie(key='jwt', value=True, httponly=True)
+                      res.data = {
+                           'jwt' : token
+                      }
+
+                      return res    # Response(status=status.HTTP_200_OK)
                 else:
                     return Response(status=status.HTTP_404_NOT_FOUND)
             else:
                  return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+# 로그인 유지
+@api_view(['GET'])
+def loginRemain(request):
+     token = request.COOKIE.get('jwt')
+
+     if not token:
+          return Response(status=status.HTTP_401_UNAUTHORIZED)
+     
+     try:
+          payload = jwt.decode(token, "SecretJWTKey", algorithms=['HS256'])
+
+     except jwt.ExpiredSignatureError:
+          return Response(status=status.HTTP_401_UNAUTHORIZED)
+     
+     user = User.objects.filter(email=payload['email']).first()
+     serializer = UserDataSerializer(user)
+
+     return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+#로그아웃
+@api_view(['POST'])
+def logout(request):
+     res = Response(status=status.HTTP_200_OK)
+     res.delete_cookie('jwt')
+     res.data = {
+          "message" : "logout success"
+     }
+
+     return res
