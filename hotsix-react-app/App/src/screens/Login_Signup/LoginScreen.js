@@ -8,6 +8,7 @@ import {
   Alert,
 } from "react-native";
 import axios from "axios";
+import { handleVerification } from './VerificationScreen';
 
 // json-server --watch db.json --port 3000 --cors --host 본인 아이피
 // 백엔드 서버 주소로 변경해야함
@@ -40,6 +41,10 @@ const LoginScreen = ({ navigation }) => {
       if (response.status === 200) {
         Alert.alert("로그인 성공!");
         navigation.navigate("Main");
+    } else if(response.status === 401) { //이메일 인증 완료 전일 때
+        Alert.alert('로그인 실패. 이메일 인증을 완료해주세요');
+        navigation.navigate('Verification', {email:email});
+        handleVerification(); //이메일 재전송 요청
       } else {
         Alert.alert("로그인 실패. 아이디와 패스워드를 확인해주세요.");
       }

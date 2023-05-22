@@ -1,43 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { View, Text, TextInput, TouchableOpacity, Alert, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Image, StyleSheet } from 'react-native';
 import axios from 'axios';
 
 
 function EmailVerificationScreen({ }) {
   const route = useRoute();
-  const { email } = route.params; // SignupScreen에서 받아온 값
+  const {email} = route.params; //SignupScreen에서 받아온 값
   const [title, setTitle] = useState('이메일 인증');
   const [isVerified, setIsVerified] = useState(false);
   const navigation = useNavigation();
   const SERVER_URL = 'http://localhost:3001'; //백엔드 서버 주소로 변경해야함
 
-  const handleVerification = () => { //이메일 재전송
-    axios
-      .post(`${SERVER_URL}/send-email/`, {email})
-      .then((response) => {
-        Alert.alert('인증 메일 발송', '이메일로 인증 메일이 발송되었습니다.');
-      })
-      .catch((error) => {Yy
-        Alert.alert('오류', '이메일 전송에 실패하였습니다.');
-      });
-  };
-
-  const verifyEmail = async () => { // 백에서 인증 요청 받아옴
+  
+  //이메일 인증 완료 버튼 눌렀을 때 인증 상태 백에서 받아옴
+  
+  const verifyEmail = async () => { 
     try{
-      const response = await axios.get(`${SERVER_URL}/verify-email`);
-      setIsVerified(response.data.is_verified); //is_verified(반환된 값) 가져와 setIsVerified 상태 업데이트
+      const response = await axios.get(`${SERVER_URL}/user/activate/${uidb64}/${token}`);
+      console.lod(response.data);
+      setIsVerified(Boolean(response.data.is_active)); //is_verified(반환된 값) 가져와 setIsVerified 상태 업데이트
     } catch (error) {
       console.error(error);
     };
   };
 
-  
-  useEffect(() => { // isVerified == true이면 "이메일 인증 성공" 출력 & 1초 후 Signup으로 창 전환
+
+
+ const handleVerification = () => {
+    const response = axios.post(`${SERVER_URL}/send-email`, { email })
+    try{
+        if (response.status === 202){
+        Alert.alert('인증 메일 발송', '이메일로 인증 메일이 발송되었습니다.');
+        }
+      }catch(error){
+        Alert.alert('오류', '이메일 전송에 실패하였습니다.')
+      }
+       
+  }
+ 
+  useEffect(() => { // isVerified == true이면 "이메일 인증 성공" 출력 & 1초 후 login으로 창 전환
     if (isVerified == true) {
       setTitle('이메일 인증 성공')
       setTimeout(() => {
-        navigation.navigate('Signup');
+        navigation.navigate('Login');
       }, 1000);
     }
   }, [isVerified]);
@@ -63,9 +69,6 @@ function EmailVerificationScreen({ }) {
         </TouchableOpacity>
         <Text style={styles.label}>이메일을 받지 못하셨나요?</Text>
         <View style={styles.view}>
-        <TouchableOpacity >
-            <Text style={styles.text} onPress = {() => navigation.navigate('Signup')} >이메일 수정</Text> 
-        </TouchableOpacity>
         <TouchableOpacity > 
           <Text style={styles.text} onPress={handleVerification} >이메일 재전송</Text> 
         </TouchableOpacity>

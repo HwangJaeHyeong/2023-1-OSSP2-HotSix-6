@@ -20,6 +20,9 @@ const MainScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.loginButton}>
         <Text style={styles.loginButtonText}>회원정보 수정</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('InsertIcs')}>
+        <Text style={styles.loginButtonText}>ics파일업로드</Text>
+      </TouchableOpacity>
     </View>
   );
 };

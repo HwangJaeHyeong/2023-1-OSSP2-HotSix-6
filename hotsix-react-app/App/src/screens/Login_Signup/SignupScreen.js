@@ -44,20 +44,6 @@ const SignupScreen = ({ navigation }) => {
     setIsNameAvailable(nameRegex.test(name));
   };
 
-  // 이메일 인증 요청 -> 이메일 중복 확인 만들기
-  const handleVerification = () => {
-    navigation.navigate("Verification", { email: email }); // 위치 수정해야함
-    axios
-      .post(`${SERVER_URL}/send-email/`, { email })
-      .then((response) => {
-        Alert.alert("인증 메일 발송", "이메일로 인증 메일이 발송되었습니다.");
-        //navigation.navigate('Verification', {'email': 'hayeon_song@naver.com'});
-      })
-      .catch((error) => {
-        Alert.alert("오류", "이메일 전송에 실패하였습니다.");
-      });
-  };
-
   const handleCheckDuplicate = async () => {
     if (!handleEmailValid || !email) {
       Alert.alert("올바른 이메일 형식을 입력하세요!");
@@ -110,15 +96,17 @@ const SignupScreen = ({ navigation }) => {
         join_date: currentDate,
       });
       if (response.ok) {
-        Alert.alert("회원가입이 완료되었습니다.");
-        navigation.navigate("Login");
+        Alert.alert('회원가입이 완료되었습니다.');
+        navigation.navigate('Verification', {email:email}); // 회원가입 완료 -> 이메일 인증 페이지로 넘어감
       } else {
         console.log(response.status);
-        Alert.alert("회원가입 중 오류가 발생했습니다.");
+        Alert.alert('회원가입 중 오류가 발생했습니다.');
+       
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("회원가입 중 오류가 발생했습니다.");
+      Alert.alert('회원가입 중 오류가 발생했습니다.');
+     
     }
   };
 
