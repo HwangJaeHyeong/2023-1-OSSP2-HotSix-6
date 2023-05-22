@@ -51,7 +51,7 @@ const [schedules, setSchedules] = useState([]);
     const fetchSchedules = async () => {
       try {
         // 데이터베이스에서 스케줄 값 가져오기
-        const response = await axios.get('http://192.168.0.9:3000/users');
+        const response = await axios.get('http://192.168.218.71:3000/users');
         const data = response.data;
         const user = data.find(item => item.id === 2);
         const userSchedules = user ? user.schedules : [];
