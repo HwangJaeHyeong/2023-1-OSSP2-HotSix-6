@@ -3,6 +3,12 @@ import json
 import bcrypt
 import datetime
 
+from sys import getsizeof
+import zlib
+
+from .TimeTableController.ImageFile import file_to_image
+from .TimeTableController.Service import calculate_common_time
+
 from .models import User
 from .serializers import UserDataSerializer
 from .tokens import account_activation_token
@@ -25,6 +31,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 
+DAYS = ['월', '화', '수', '목', '금', '토', '일']
 
 # 이메일 중복 확인
 def duplicateCheck(request):
@@ -204,3 +211,90 @@ def logout(request):
      }
 
      return res
+
+# 시간표 등록 및 조회
+@api_view(['PUT', 'GET'])
+def TimeTable(request):
+    # 시간표 등록
+    if request.method == 'PUT':
+        # 데이터 받기
+        reqData = request.data
+        put_email = reqData['email']
+        put_file = reqData['table']
+        put_start_time = int(reqData['start_time'])
+        put_prefers = json.loads(reqData["prefer"])
+
+        # 시간표 이미지 처리
+        common_time = img2arr(put_file) # 이미지 -> 배열
+        [common_time.table.insert(0, common_time.table.pop()) for _ in range(put_start_time)] # 시간표 시작 시간 조정
+        add_prefer(common_time, put_prefers) # 우선순위 배열에 추가
+        zdata = compress_table(common_time) # 시간표 데이터 압축
+
+        # 시간표 업데이트
+        if User.objects.filter(email=put_email).exists():
+            UserDataSerializer.update_user_time_table(put_email, zdata)
+            return Response(status=status.HTTP_200_OK) 
+        return Response(status=status.HTTP_404_NOT_FOUND)   
+    
+    # 시간표 조회
+    elif request.method == 'GET':
+        getData = request.data
+        get_email = getData['email']
+        res_table = restore_table(get_email)
+        print_table(res_table)
+        return Response({"Connect Success":res_table}) 
+
+# 이미지 파일 배열로 변환하는 함수
+def img2arr(file):
+    images = []
+    read_file = file.read()
+    images.append(file_to_image(read_file))
+    return calculate_common_time(images)
+
+# 우선순위 배열에 추가하는 함수
+def add_prefer(common_time, prefers):
+    for prefer in prefers: 
+         for element in prefers[prefer]: # 우선순위 요일별로 분리
+              start_idx = element[0]
+              end_idx = element[1] + start_idx
+              for time in range(start_idx, end_idx): # 우선순위 추가
+                day = DAYS.index(prefer)
+                if common_time.table[time][day] != 1: # 공강인 시간만 처리
+                    common_time.table[time][day] = 2
+    return common_time
+
+# 시간표 배열 문자열 변환 후 압축하는 함수
+def compress_table(common_time):
+    str_data = ""
+    for time in common_time.table:
+        str_data += ''.join([str(ch) for ch in time]) # 시간 리스트 -> 문자열
+    return zlib.compress(str_data.encode(encoding='utf-8'))
+
+# 압축한 시간표 리스트로 복원하는 함수
+def restore_table(req_email):
+    user = User.objects.get(email=req_email)
+    str_table = zlib.decompress(user.time_table).decode('utf-8')
+
+    lst_table = []
+    table_element = []
+    i = 0
+    for ch in str_table:
+        i += 1
+        table_element.append(ch)
+
+        if i % 7 == 0 and i != 0:
+            table_element_int = [int(i) for i in table_element]
+            lst_table.append(table_element_int)
+            table_element = []
+
+    return lst_table
+
+def print_table(table):
+    count = 0
+    for time in table:
+        print(count, "\t:\t", end='')
+        for day in time:
+            print(day, end=' ')
+        print()
+        count += 0.5
+    print()
