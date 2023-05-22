@@ -9,37 +9,8 @@ import {
 } from "react-native";
 
 const ManageGroupScreen = ({ navigation }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const images = [
-    require("../../components/1.png"),
-    require("../../components/2.png"),
-    require("../../components/3.png"),
-    // 추가 이미지 경로들
-  ];
-
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true,
-
-    onPanResponderMove: (evt, gestureState) => {
-      if (gestureState.dx < -50) {
-        const nextImageIndex = currentImageIndex + 1;
-        if (nextImageIndex < images.length) {
-          setCurrentImageIndex(nextImageIndex);
-        }
-      } else if (gestureState.dx > 50) {
-        const prevImageIndex = currentImageIndex - 1;
-        if (prevImageIndex >= 0) {
-          setCurrentImageIndex(prevImageIndex);
-        }
-      }
-    },
-  });
-
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer} {...panResponder.panHandlers}>
-        <Image style={styles.image} source={images[currentImageIndex]} />
-      </View>
       <TouchableOpacity
         style={styles.loginButton}
         onPress={() => navigation.navigate("Group", { userId: "user1" })}

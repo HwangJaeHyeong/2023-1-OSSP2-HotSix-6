@@ -10,8 +10,7 @@ import {
 import axios from "axios";
 
 // json-server --watch db.json --port 3000 --cors --host 본인 아이피
-
-const SERVER_URL = "http://localhost:3001"; // 백엔드 서버 주소로 변경해야함
+// 백엔드 서버 주소로 변경해야함
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -30,10 +29,13 @@ const LoginScreen = ({ navigation }) => {
   // 로그인 수행 버튼
   const handleLoginButtonPress = async () => {
     try {
-      const response = await axios.post(`${SERVER_URL}/users`, {
-        email: email,
-        password: password,
-      });
+      const response = await axios.post(
+        "http://192.168.0.242:8000/user/login/",
+        {
+          email: email,
+          password: password,
+        }
+      );
 
       if (response.status === 200) {
         Alert.alert("로그인 성공!");
