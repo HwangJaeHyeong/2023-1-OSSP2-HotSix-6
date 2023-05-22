@@ -123,19 +123,19 @@ def TimeTable(request):
     # 시간표 등록
     if request.method == 'PUT':
         # 데이터 받기
-        postData = request.data
-        post_email = postData['email']
-        post_file = postData['table']
-        post_prefers = json.loads(postData["preference"])
+        reqData = request.data
+        put_email = reqData['email']
+        put_file = reqData['table']
+        put_prefers = json.loads(reqData["preference"])
 
         # 시간표 이미지 처리
-        common_time = img2arr(post_file) # 이미지 -> 배열
-        add_prefer(common_time, post_prefers) # 우선순위 배열에 추가
+        common_time = img2arr(put_file) # 이미지 -> 배열
+        add_prefer(common_time, put_prefers) # 우선순위 배열에 추가
         zdata = compress_table(common_time) # 시간표 데이터 압축
 
         # 시간표 업데이트
-        if User.objects.filter(email=post_email).exists():
-            UserDataSerializer.update_user_time_table(post_email, zdata)
+        if User.objects.filter(email=put_email).exists():
+            UserDataSerializer.update_user_time_table(put_email, zdata)
             return Response(status=status.HTTP_200_OK) 
         return Response(status=status.HTTP_404_NOT_FOUND)   
     
