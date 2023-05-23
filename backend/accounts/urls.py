@@ -10,4 +10,5 @@ urlpatterns = [
     path('send-email/', views.resendEmail, name="resendEmail"),
     path('login-remain/', views.loginRemain, name="loginRemain"),
     path('logout/', views.logout, name="logout"),
+    path('time-table/', views.TimeTable, name="TimeTable"),
 ]

@@ -31,18 +31,17 @@ def groupGenerate(request):
     return Response(Group_Code) # return group_code
 
 # join group with group code
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def joinGroup(request):
     reqData = request.data # user email, group_code
     Group_Code = reqData['group_code']
     Member_ID = reqData['email']
 
-    if request.method == 'POST':
-        if Group.objects.filter(group_code=Group_Code).exists():
-            groupMember = GroupMember(group_code=Group.objects.get(pk=Group_Code), member_id=Member_ID)
-            groupMember.save()
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    if Group.objects.filter(group_code=Group_Code).exists():
+        groupMember = GroupMember(group_code=Group.objects.get(pk=Group_Code), member_id=Member_ID)
+        groupMember.save()
+        return Response(status=status.HTTP_201_CREATED)
+    return Response(status=status.HTTP_404_NOT_FOUND)
 
 # 그룹 목록 가져오기
 @api_view(['GET'])
