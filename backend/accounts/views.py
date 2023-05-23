@@ -5,6 +5,7 @@ import datetime
 
 from sys import getsizeof
 import zlib
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from .TimeTableController.ImageFile import file_to_image
 from .TimeTableController.Service import calculate_common_time
@@ -31,7 +32,8 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 
-DAYS = ['월', '화', '수', '목', '금', '토', '일']
+KOREAN_DAYS = ['월', '화', '수', '목', '금', '토', '일']
+ENGLISH_DAYS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
 
 # 이메일 중복 확인
 def duplicateCheck(request):
@@ -224,18 +226,28 @@ def TimeTable(request):
         put_start_time = int(reqData['start_time'])
         put_prefers = json.loads(reqData["prefer"])
 
-        # 시간표 이미지 처리
-        common_time = img2arr(put_file) # 이미지 -> 배열
-        [common_time.table.insert(0, common_time.table.pop()) for _ in range(put_start_time)] # 시간표 시작 시간 조정
-        add_prefer(common_time, put_prefers) # 우선순위 배열에 추가
-        zdata = compress_table(common_time) # 시간표 데이터 압축
+        if put_file.name.find(".ics"): # ics 파일 처리 (구글 캘린더 파일)
+            decode_file = put_file.read().decode() # 파일 읽기
+            file_lst = decode_file.split('\n') # 읽은 파일 분리
 
-        # 시간표 업데이트
-        if User.objects.filter(email=put_email).exists():
-            UserDataSerializer.update_user_time_table(put_email, zdata)
+            init_table = [[0 for _ in range(7)] for _ in range(48)] # 시간표 초기화 (7일 / 24시간 + 30분 단위 = 48)
+            # print_table(init_table)
             return Response(status=status.HTTP_201_CREATED) 
-        return Response(status=status.HTTP_404_NOT_FOUND)   
-    
+        
+
+        else: # 시간표 이미지 처리 (에브리타임 시간표)
+            # 시간표 이미지 처리
+            common_time = img2arr(put_file) # 이미지 -> 배열
+            [common_time.table.insert(0, common_time.table.pop()) for _ in range(put_start_time)] # 시간표 시작 시간 조정
+            add_prefer(common_time, put_prefers) # 우선순위 배열에 추가
+            zdata = compress_table(common_time) # 시간표 데이터 압축
+
+            # 시간표 업데이트
+            if User.objects.filter(email=put_email).exists():
+                UserDataSerializer.update_user_time_table(put_email, zdata)
+                return Response(status=status.HTTP_201_CREATED) 
+            return Response(status=status.HTTP_404_NOT_FOUND)   
+
     # 시간표 조회
     elif request.method == 'GET':
         getData = request.data
@@ -258,7 +270,7 @@ def add_prefer(common_time, prefers):
               start_idx = element[0]
               end_idx = element[1] + start_idx
               for time in range(start_idx, end_idx): # 우선순위 추가
-                day = DAYS.index(prefer)
+                day = KOREAN_DAYS.index(prefer)
                 if common_time.table[time][day] != 1: # 공강인 시간만 처리
                     common_time.table[time][day] = 2
     return common_time
