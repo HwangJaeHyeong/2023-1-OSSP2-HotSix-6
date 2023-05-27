@@ -11,46 +11,74 @@
   ],
   "todos": [
     {
-      "id": "1685181565119",
-      "text": "123",
+      "id": "1685187991246",
+      "text": "ㅡㅜ",
       "status": "진행 안됨",
       "color": "#888888",
-      "groupId": "Example Group"
-    },
-    {
-      "id": "1685181569742",
-      "text": "134",
-      "status": "진행 안됨",
-      "color": "#888888",
-      "groupId": "Example Group"
-    },
-    {
-      "id": "1685181698839",
-      "text": "261",
-      "status": "진행 중",
-      "color": "#FF4646",
       "groupId": "Example Group2"
     },
     {
-      "id": "1685181700810",
-      "text": "261",
+      "id": "1685188060634",
+      "text": "ㅡ",
+      "status": "진행 안됨",
+      "color": "#888888",
+      "groupId": "Example Group2"
+    },
+    {
+      "id": "1685188061171",
+      "text": "ㆍ",
       "status": "진행 완료",
       "color": "#3679A4",
       "groupId": "Example Group2"
     },
     {
-      "id": "1685181986769",
-      "text": "2523562",
+      "id": "1685188061585",
+      "text": "ㄴ",
       "status": "진행 안됨",
       "color": "#888888",
       "groupId": "Example Group2"
     },
     {
-      "id": "1685182001402",
-      "text": "17227",
-      "status": "진행 중",
-      "color": "#FF4646",
+      "id": "1685188061903",
+      "text": "ㄴ",
+      "status": "진행 안됨",
+      "color": "#888888",
       "groupId": "Example Group2"
+    },
+    {
+      "id": "1685188062203",
+      "text": "ㄴ",
+      "status": "진행 안됨",
+      "color": "#888888",
+      "groupId": "Example Group2"
+    }
+  ],
+  "groupMembers": [
+    {
+      "groupId": 1,
+      "members": [
+        {
+          "id": 1,
+          "name": "John"
+        },
+        {
+          "id": 2,
+          "name": "Jane"
+        }
+      ]
+    },
+    {
+      "groupId": 2,
+      "members": [
+        {
+          "id": 3,
+          "name": "Mike"
+        },
+        {
+          "id": 4,
+          "name": "Emily"
+        }
+      ]
     }
   ]
 }
