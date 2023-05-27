@@ -47,7 +47,7 @@ const GroupDetailsScreen = ({route , navigation}) => {
             </View>
             <View style={styles.boxcontainer}>
                 <View style={styles.box}>
-                    <MaterialCommunityIcons name="progress-check" style={styles.icon}/>
+                    <MaterialCommunityIcons name="progress-check" style={styles.icon}  onPress={() => navigation.navigate('GroupTasks',{group}) }/>
                     <Text style={styles.text}>팀원 업무 진행 상황</Text>
                 </View>
             </View>

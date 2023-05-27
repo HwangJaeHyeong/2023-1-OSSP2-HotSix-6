@@ -4,7 +4,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const SERVER_URL = 'http://localhost:3001'; //백엔드 서버 주소로 변경해야함
+const SERVER_URL = 'http://192.168.0.12:3001'; //백엔드 서버 주소로 변경해야함 + 토큰 추가
 
 const InsertIcsScreen = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -28,6 +28,7 @@ const InsertIcsScreen = () => {
     }
   };
   
+
   //파일 업로드
   const handleUpload = async () => {
     if (selectedFile) {
@@ -39,9 +40,9 @@ const InsertIcsScreen = () => {
           name: selectedFile.name,
           type: 'text/calendar',
         });
-  
+
         const response = await axios.post(
-          `${SERVER_URL}/receive_image`,
+          `${SERVER_URL}/receive_ics`,
           formData,
           {
             headers: {
@@ -49,7 +50,10 @@ const InsertIcsScreen = () => {
             },
           }
         );
+
         console.log(response.data);
+
+        
         Alert.alert('파일 전송 성공', '파일이 서버로 전송되었습니다.');
       } catch (error) {
         console.log(error);

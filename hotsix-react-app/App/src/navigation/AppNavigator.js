@@ -21,7 +21,7 @@ import InsertTextScreen from '../screens/TimeTable/InsertTextScreen';
 import RegisterScreen from '../screens/TimeTable/RegisterScreen';
 import RankingScreen from '../screens/TimeTable/RankingScreen';
 import InsertIcsScreen from '../screens/InsertIcsScreen';
-
+import GroupTasksScreen from '../screens/Group/GroupTasksScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -31,7 +31,7 @@ const TabNavigator = () => {
   
   return (
     <NavigationContainer>
-      <Tab.Navigator screenOptions={{headerShown: false}}>
+      <Tab.Navigator screenOptions={{headerShown: false}} >
         <Tab.Screen name="home" component={AppNavigator} options={{tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="home" color={color} size={size}/>
             ),
@@ -55,7 +55,10 @@ const TabNavigator = () => {
 const AppNavigator = () => {
  
   return (
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName="Home"  screenOptions={{ 
+      headerStyle: { backgroundColor: '#3679A4' }, 
+      headerTintColor: 'white', 
+    }}>
         <Stack.Screen name="Home" component={HomeScreen}  options={{headerShown: false}} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Agreement" component={AgreementScreen} />
@@ -68,6 +71,7 @@ const AppNavigator = () => {
         <Stack.Screen name="JoinGroup" component={JoinGroupScreen} />
         <Stack.Screen name="GroupDetails" component={GroupDetailsScreen} />
         <Stack.Screen name="GroupTimeTable" component={GroupTimeTableScreen} /> 
+        <Stack.Screen name="GroupTasks" component={GroupTasksScreen} />
         <Stack.Screen name="Timetable" component={TimetableScreen} />
         <Stack.Screen name="InsertPhoto" component={InsertPhotoScreen} />
         <Stack.Screen name="InsertText" component={InsertTextScreen} />

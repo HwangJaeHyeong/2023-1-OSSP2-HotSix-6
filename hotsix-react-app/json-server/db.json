@@ -1,0 +1,56 @@
+{
+  "groups": [
+    {
+      "id": 1,
+      "Group_Name": "Example Group"
+    },
+    {
+      "id": 2,
+      "Group_Name": "Example Group2"
+    }
+  ],
+  "todos": [
+    {
+      "id": "1685181565119",
+      "text": "123",
+      "status": "진행 안됨",
+      "color": "#888888",
+      "groupId": "Example Group"
+    },
+    {
+      "id": "1685181569742",
+      "text": "134",
+      "status": "진행 안됨",
+      "color": "#888888",
+      "groupId": "Example Group"
+    },
+    {
+      "id": "1685181698839",
+      "text": "261",
+      "status": "진행 중",
+      "color": "#FF4646",
+      "groupId": "Example Group2"
+    },
+    {
+      "id": "1685181700810",
+      "text": "261",
+      "status": "진행 완료",
+      "color": "#3679A4",
+      "groupId": "Example Group2"
+    },
+    {
+      "id": "1685181986769",
+      "text": "2523562",
+      "status": "진행 안됨",
+      "color": "#888888",
+      "groupId": "Example Group2"
+    },
+    {
+      "id": "1685182001402",
+      "text": "17227",
+      "status": "진행 중",
+      "color": "#FF4646",
+      "groupId": "Example Group2"
+    }
+  ]
+}
