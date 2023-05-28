@@ -162,8 +162,8 @@ def login(request):
                 if bcrypt.checkpw(inputPW.encode("utf-8"), getUser.password.encode("utf-8")):
                       payload = {
                            "email" : inputEmail,
-                           "exp" : datetime.datetime.now() + datetime.timedelta(minutes=60),
-                           "iat" : datetime.datetime.now()
+                           "exp" : datetime.datetime.now() + datetime.timedelta(minutes=60), # 토큰 만료
+                           "iat" : datetime.datetime.now() # 토큰 생성
                       }
 
                       token = jwt.encode(payload, "secretJWTKey", algorithm="HS256")
@@ -174,7 +174,7 @@ def login(request):
                            'jwt' : token
                       }
 
-                      return res    # Response(status=status.HTTP_200_OK)
+                      return res
                 else:
                     return Response(status=status.HTTP_404_NOT_FOUND)
             else:
