@@ -5,7 +5,6 @@ import datetime
 
 from sys import getsizeof
 import zlib
-from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from .TimeTableController.ImageFile import file_to_image
 from .TimeTableController.Service import calculate_common_time
@@ -32,8 +31,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 
-KOREAN_DAYS = ['월', '화', '수', '목', '금', '토', '일']
-ENGLISH_DAYS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
+DAYS = ['월', '화', '수', '목', '금', '토', '일']
 
 # 이메일 중복 확인
 def duplicateCheck(request):
@@ -164,8 +162,8 @@ def login(request):
                 if bcrypt.checkpw(inputPW.encode("utf-8"), getUser.password.encode("utf-8")):
                       payload = {
                            "email" : inputEmail,
-                           "exp" : datetime.datetime.now() + datetime.timedelta(minutes=60),
-                           "iat" : datetime.datetime.now()
+                           "exp" : datetime.datetime.now() + datetime.timedelta(minutes=60), # 토큰 만료
+                           "iat" : datetime.datetime.now() # 토큰 생성
                       }
 
                       token = jwt.encode(payload, "secretJWTKey", algorithm="HS256")
@@ -176,7 +174,7 @@ def login(request):
                            'jwt' : token
                       }
 
-                      return res    # Response(status=status.HTTP_200_OK)
+                      return res
                 else:
                     return Response(status=status.HTTP_404_NOT_FOUND)
             else:
@@ -254,6 +252,7 @@ def TimeTable(request):
         get_email = getData['email']
         res_table = restore_table(get_email)
         print_table(res_table)
+
         return Response({"User_Table":res_table}) 
 
 # 이미지 파일 배열로 변환하는 함수
@@ -294,12 +293,14 @@ def restore_table(req_email):
         i += 1
         table_element.append(ch)
 
+
         if i % 7 == 0 and i != 0: 
             table_element_int = [int(i) for i in table_element]
             lst_table.append(table_element_int)
             table_element = []
 
     return lst_table
+
 
 # 시간표 확인용 출력
 def print_table(table):

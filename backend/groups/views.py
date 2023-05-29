@@ -3,7 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from accounts.views import restore_table, print_table
+
+from accounts.views import restore_table, print_table, loginRemain
 from accounts.models import Group, GroupMember, User
 from accounts.serializers import GroupDataSerializer, GroupMemberSerializer
 from django.core.exceptions import ValidationError
@@ -44,20 +45,27 @@ def joinGroup(request):
         return Response(status=status.HTTP_201_CREATED)
     return Response(status=status.HTTP_404_NOT_FOUND)
 
-# 그룹 목록 가져오기
+# get user group list
 @api_view(['GET'])
 def getGroupList(request):
     try:
         user = request.GET['email']
 
-        group_list = GroupMember.objects.filter(member=user)
-        serializer = GroupMemberSerializer(group_list, many=True)
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        group_codes = GroupMember.objects.filter(member=user).values('group_code')
+        group_list = Group.objects.filter(group_code__in=group_codes).values('group_name')
+
+        # 그룹 전체 정보 받아오고 싶으면?
+        # group_list = Group.objects.filter(group_code__in=group_codes)
+        # serializer = GroupDataSerializer(group_list, many=True)
+        # return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+        return Response({"group_name" : group_list}, status=status.HTTP_202_ACCEPTED)
     except ValidationError:
         return Response({"error" : "TYPE_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
     except KeyError:
         return Response({"error" : "KEY_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
 
+# group delete
 @api_view(['DELETE'])
 def deleteGroup(self, code):
     try:
