@@ -19,7 +19,7 @@ const GroupScreen = ({ route }) => {
   const [groups, setGroups] = useState([
     {
       Group_Code: 12345,
-      Group_Name: "Example Group",
+      Group_Name: "Example Group1",
     },
     {
       Group_Code: 1234235,
