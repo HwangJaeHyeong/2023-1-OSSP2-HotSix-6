@@ -31,7 +31,7 @@ const LoginScreen = ({ navigation }) => {
   const handleLoginButtonPress = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.0.242:8000/user/login/",
+        "http://192.168.200.24:8000/user/login/",
         {
           email: email,
           password: password,

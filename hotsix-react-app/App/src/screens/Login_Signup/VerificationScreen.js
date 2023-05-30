@@ -25,8 +25,6 @@ function EmailVerificationScreen({ }) {
     };
   };
 
-
-
  const handleVerification = () => {
     const response = axios.post(`${SERVER_URL}/send-email`, { email })
     try{
@@ -36,7 +34,6 @@ function EmailVerificationScreen({ }) {
       }catch(error){
         Alert.alert('오류', '이메일 전송에 실패하였습니다.')
       }
-       
   }
  
   useEffect(() => { // isVerified == true이면 "이메일 인증 성공" 출력 & 1초 후 login으로 창 전환

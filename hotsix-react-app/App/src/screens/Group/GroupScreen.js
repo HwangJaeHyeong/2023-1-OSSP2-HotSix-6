@@ -84,7 +84,7 @@ const GroupScreen = ({route}) => {
         keyExtractor={(item) => item.Group_Code.toString()}
         renderItem={renderGroupItem}
       />
-      <TouchableOpacity style={styles.JoinGroupButton} onPress={() => navigation.navigate('JoinGroup', {userId: 'user1'})}>
+      <TouchableOpacity style={styles.JoinGroupButton} onPress={() => navigation.navigate('JoinGroup', {email: 'example@naver.com'})}>
         <Text style={styles.JoinGroupButtonText}>그룹 코드로 그룹 입장하기</Text>
       </TouchableOpacity>
 

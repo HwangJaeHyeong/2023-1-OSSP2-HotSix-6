@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Button, Image, Alert, StyleSheet, Text } from "react-native";
+import { View, Button, Image, Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
@@ -10,10 +10,11 @@ const InsertPhotoScreen = ({ navigation }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedHour, setSelectedHour] = useState(null); // 변경
   const [selectedMinute, setSelectedMinute] = useState(null); // 변경
-
+  const [schedules, setschedules] = useState(null);
+  
   const selectImage = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
-
+    
     if (status !== "granted") {
       alert("카메라 권한이 필요합니다.");
       return;
@@ -39,20 +40,22 @@ const InsertPhotoScreen = ({ navigation }) => {
           name: "image.jpg",
           type: "image/jpeg",
         });
-        formData.append("time", `${selectedHour}:${selectedMinute}`); // 변경
 
-        const config = {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        };
+        formData.append("time", `${selectedHour}`); // 변경
+
+        // const config = {
+        //   headers: {
+        //     "Content-Type": "multipart/form-data",
+        //   },
+        // };
 
         const response = await axios.post(
-          "http://172.30.1.52:8000/receive_image/",
-          formData,
-          config
-        );
+          `http://192.168.200.24:8000/user/time-table/`, {
+          email: `test1@test.com`,
+          formData, 
+          });
         const imageData = response.data.image;
+        setschedules(imageData);
 
         Alert.alert(
           "이미지와 시간 전송 성공",
@@ -76,7 +79,6 @@ const InsertPhotoScreen = ({ navigation }) => {
   for (let i = 8; i <= 12; i++) {
     hours.push(i);
   }
-
   const minutes = [];
   for (let j = 0; j < 60; j += 10) {
     minutes.push(j);
@@ -125,6 +127,16 @@ const InsertPhotoScreen = ({ navigation }) => {
           </View>
         </View>
       )}
+      {/* {sendImageToServer && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() => navigation.navigate("Ranking", { schedules: schedules })}
+          >
+          <Text style={styles.questionText}>삽입 완료</Text>
+        </TouchableOpacity>
+        </View>
+      )} */}
     </View>
   );
 };

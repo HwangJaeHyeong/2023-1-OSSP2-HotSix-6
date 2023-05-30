@@ -19,7 +19,7 @@ const ManageGroupScreen = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => navigation.navigate("Makegroup", { userId: "user1" })}
+        onPress={() => navigation.navigate("Makegroup", { email: "example@naver.com" })}
       >
         <Text style={styles.loginButtonText}>새 그룹 만들기</Text>
       </TouchableOpacity>
