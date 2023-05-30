@@ -7,6 +7,8 @@ import axios from "axios";
 import { Menu } from "react-native-paper"; // 변경
 
 const InsertPhotoScreen = ({ navigation }) => {
+  const SERVER_URL = "http://172.30.1.38:8000"; // 백엔드 서버 주소로 변경해야함
+
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedHour, setSelectedHour] = useState(null); // 변경
   const [selectedMinute, setSelectedMinute] = useState(null); // 변경
@@ -50,10 +52,10 @@ const InsertPhotoScreen = ({ navigation }) => {
         // };
 
         const response = await axios.post(
-          `http://192.168.200.24:8000/user/time-table/`, {
-          email: `test1@test.com`,
-          formData, 
-          });
+          `${SERVER_URL}/user/images/`,
+          formData,
+          config
+        );
         const imageData = response.data.image;
         setschedules(imageData);
 

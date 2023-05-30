@@ -8,10 +8,11 @@ import {
   Alert,
 } from "react-native";
 import axios from "axios";
-import { handleVerification } from './VerificationScreen';
+import { handleVerification } from "./VerificationScreen";
 
 // json-server --watch db.json --port 3000 --cors --host 본인 아이피
 // 백엔드 서버 주소로 변경해야함
+const SERVER_URL = "http://192.168.200.164:8000/";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -30,20 +31,19 @@ const LoginScreen = ({ navigation }) => {
   // 로그인 수행 버튼
   const handleLoginButtonPress = async () => {
     try {
-      const response = await axios.post(
-        "http://192.168.200.24:8000/user/login/",
-        {
-          email: email,
-          password: password,
-        }
-      );
+      const response = await axios.post(`${SERVER_URL}/user/login/`, {
+        email: email,
+        password: password,
+      });
 
       if (response.status === 200) {
         Alert.alert("로그인 성공!");
+        console.log("JWT:", response.data.jwt);
         navigation.navigate("Main");
-    } else if(response.status === 401) { //이메일 인증 완료 전일 때
-        Alert.alert('로그인 실패. 이메일 인증을 완료해주세요');
-        navigation.navigate('Verification', {email:email});
+      } else if (response.status === 401) {
+        //이메일 인증 완료 전일 때
+        Alert.alert("로그인 실패. 이메일 인증을 완료해주세요");
+        navigation.navigate("Verification", { email: email });
         handleVerification(); //이메일 재전송 요청
       } else {
         Alert.alert("로그인 실패. 아이디와 패스워드를 확인해주세요.");

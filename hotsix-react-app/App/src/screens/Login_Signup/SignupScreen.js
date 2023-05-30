@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 
-const SERVER_URL = "http://192.168.0.242:8000/"; // 백엔드 서버 주소로 변경해야함
+const SERVER_URL = "http://192.168.200.164:8000/"; // 백엔드 서버 주소로 변경해야함
 
 const SignupScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
@@ -51,20 +51,17 @@ const SignupScreen = ({ navigation }) => {
     }
 
     try {
-      const response = await axios.post(`${SERVER_URL}/users/duplicate`, {
+      const response = await axios.post(`${SERVER_URL}/user/duplicate/`, {
         email: email,
       });
-      if (!response) {
-        Alert.alert("중복된 이메일입니다. 다시 입력해주세요.");
-        return;
+      if (response.status === 200) {
+        setIsEmailAvailable(response);
+        setDuplicateAvailable(response);
+        setEmailChange(email);
+        Alert.alert("사용 가능한 이메일입니다!");
       }
-      setIsEmailAvailable(response);
-      setDuplicateAvailable(response);
-      setEmailChange(email);
-      Alert.alert("사용 가능한 이메일입니다!");
     } catch (error) {
-      console.error(error);
-      Alert.alert("오류", "이메일 중복 확인에 실패했습니다.");
+      Alert.alert("중복된 이메일입니다. 다시 입력해주세요.");
     }
   };
 
@@ -89,24 +86,23 @@ const SignupScreen = ({ navigation }) => {
 
     try {
       const currentDate = new Date();
-      const response = await axios.post(`${SERVER_URL}/users`, {
-        name: name,
-        password: password,
+      const response = await axios.post(`${SERVER_URL}/user/register/`, {
         email: email,
-        join_date: currentDate,
+        password: password,
+        name: name,
+        join_date: "2023-05-23",
+        is_active: 0,
       });
-      if (response.ok) {
-        Alert.alert('회원가입이 완료되었습니다.');
-        navigation.navigate('Verification', {email:email}); // 회원가입 완료 -> 이메일 인증 페이지로 넘어감
+      if (response.status === 201) {
+        Alert.alert("회원가입이 완료되었습니다.");
+        navigation.navigate("Verification", { email: email }); // 회원가입 완료 -> 이메일 인증 페이지로 넘어감
       } else {
         console.log(response.status);
-        Alert.alert('회원가입 중 오류가 발생했습니다.');
-       
+        Alert.alert("회원가입 중 오류가 발생했습니다.");
       }
     } catch (error) {
       console.error(error);
-      Alert.alert('회원가입 중 오류가 발생했습니다.');
-     
+      Alert.alert("회원가입 중 오류가 발생했습니다.");
     }
   };
 
