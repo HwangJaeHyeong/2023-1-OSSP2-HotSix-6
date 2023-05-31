@@ -263,7 +263,8 @@ def icsTimeTable(request):
                         return Response(status=status.HTTP_201_CREATED) # 생성 완료
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
-            return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST) # 에러 발생
 
@@ -321,7 +322,8 @@ def imgTimeTable(request):
                         return Response(status=status.HTTP_201_CREATED) # 생성 완료
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
-            return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST) # 에러 발생
         
