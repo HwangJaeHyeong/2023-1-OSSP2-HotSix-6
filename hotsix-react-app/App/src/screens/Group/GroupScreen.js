@@ -12,8 +12,43 @@ import Modal from "react-native-modal";
 import axios from "axios";
 
 const GroupScreen = ({ route }) => {
-  const navigation = useNavigation();
+  const schedules = [
+    [0, 0, 0, 1, 0, 1, 0],
+    [0, 0, 0, 1, 0, 1, 0],
+    [0, 1, 0, 1, 0, 1, 0],
+    [0, 1, 0, 1, 0, 1, 0],
+    [0, 1, 0, 1, 0, 1, 0],
+    [0, 1, 0, 0, 0, 1, 0],
+    [1, 1, 0, 0, 0, 1, 0],
+    [1, 1, 0, 0, 0, 1, 0],
+    [1, 1, 0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [1, 0, 0, 1, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+  ];
   const SERVER_URL = "http://192.168.200.164:8000/";
+  const navigation = useNavigation();
   const { userId } = route.params;
   //예시 하나 넣어놨습니다. 원래는 비워놓아야합니다.
   const [groups, setGroups] = useState([
@@ -31,14 +66,11 @@ const GroupScreen = ({ route }) => {
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`${SERVER_URL}/group/get-group/`)
-      .then((response) => response.data)
-      .then((groupMembersData) => {
-        const userGroupCodes = groupMembersData.map(
-          (groupMember) => groupMember.Group_Code
-        );
-      });
+    //사용자가 속한 그룹이름과 그룹코드를 가져온다. 위의 형식대로
+    axios.get(`${SERVER_URL}/group/user/${userId}`).then((response) => {
+      const userGroups = response.data;
+      setGroups(userGroups);
+    });
   }, [userId]);
 
   const toggleModal = (group) => {
