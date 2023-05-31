@@ -4,14 +4,15 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-from accounts.views import restore_table, print_table, loginRemain
-from accounts.models import Group, GroupMember, User
-from accounts.serializers import GroupDataSerializer, GroupMemberSerializer
+from accounts.views import restore_time, add_prefer, compress_table, print_table,  loginRemain, INIT_TIME_TABLE, INIT_PREFERENCE
+from accounts.models import Group, GroupMember, GroupTimetable, Time, User
+from accounts.serializers import GroupDataSerializer, GroupMemberSerializer, GroupTimetableSerializer
 from django.core.exceptions import ValidationError
 
 import uuid
 import base64
 import codecs
+import zlib
 
 # generate 8-character random code mixed with English case and number
 def generateRandomCode(length=8):
@@ -77,33 +78,81 @@ def deleteGroup(self, code):
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# 그룹 멤버들의 시간표 통합 
+# 그룹 멤버들의 시간표 조회
 @api_view(['GET'])
-def groupTable(request):
-    reqData = request.data
-    get_group_code = reqData['group_code']
+def viewGroupTable(request):
+    try:
+        if request.method == 'GET':
+            reqData = request.data
+            get_group_code = reqData['group_code']
 
-    if Group.objects.filter(group_code=get_group_code).exists():
-        get_group_members = GroupMember.objects.filter(group_code=get_group_code).values()
-
-        # 그룹 멤버 각각의 시간표 읽어 오기
-        members_time_table = []
-        for member in get_group_members:
-            group_user = User.objects.get(email=member['email_id']) # 해당 그룹 멤버
-            user_table = restore_table(group_user.email) # 해당 그룹 멤버의 시간표
-            members_time_table.append(user_table) 
-
-        # 그룹 멤버들의 시간표가 존재하면 그룹 시간표 통합
-        if members_time_table:
-            group_table = integrate_table(members_time_table)
-
-        return Response({"integrated table":group_table})
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+            if Group.objects.filter(group_code=get_group_code).exists():
+                if GroupTimetable.objects.filter(group_code=get_group_code).exists():
+                    group = GroupTimetable.objects.get(group_code=get_group_code)
+                    group_table = group.time_table
+                    res_group_table = restore_group_time(group_table)
+                    print_table(res_group_table)
+                    return Response({"integrated table":res_group_table}, status=status.HTTP_200_OK)
+                else:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     
 
+# 그룹 멤버들의 시간표를 통합
+@api_view(['POST'])
+def integrate_table(request):
+    if request.method == 'POST':
+        try:
+            reqData = request.data
+            post_group_code = reqData['group_code']
+            
+            if Group.objects.filter(group_code=post_group_code).exists():
+                if GroupMember.objects.filter(group_code=post_group_code).exists():
+                    # 그룹 멤버들의 시간표 통합
+                    group_members = GroupMember.objects.filter(group_code=post_group_code).values() # 그룹 멤버들 받아 오기
+                    group_table = integrated_members_table(group_members) # 그룹 멤버들의 시간표 통합
+                    z_table = compress_table(group_table)
+
+                    # 데이터 형성
+                    input_data = {
+                        'group_code':post_group_code,
+                        'time_table':z_table
+                    }
+                    serializer = GroupTimetableSerializer(data=input_data)
+                    print(serializer)
+
+                    # 데이터베이스에 저장
+                    if serializer.is_valid():
+                        if GroupTimetable.objects.filter(group_code=post_group_code).exists(): 
+                            update_table = GroupTimetable.objects.get(group_code=post_group_code)
+                            update_table.time_table = z_table
+                            update_table.save()
+                        else:
+                            serializer.save()
+                        return Response(status=status.HTTP_201_CREATED) # 생성 완료
+                    else:
+                        return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
+                else:
+                    return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
+                
+
 # 그룹 멤버들의 시간표를 통합하는 함수
-def integrate_table(members_time_table):
+def integrated_members_table(group_members):
+    # 그룹의 멤버들의 시간표 받아 오기
+    members_time_table = []
+    for member in group_members:
+        user_time = Time.objects.get(email=member['email_id']) # 해당 그룹 멤버
+        user_table, user_prefer = restore_time(user_time.email) # 해당 그룹 멤버의 시간표
+        integrated_table = add_prefer(user_table, user_prefer) # 해당 그룹 멤버의 시간표와 우선 순위 통합
+        members_time_table.append(integrated_table) # 그룹 멤버들의 시간표 리스트에 추가
+
     group_table = members_time_table[0] # 첫 시간표 미리 추가
 
     # 시간표 통합
@@ -117,3 +166,24 @@ def integrate_table(members_time_table):
                         group_table[time][day] += members_time_table[idx][time][day]
 
     return group_table
+
+# 압축한 그룹 시간표 리스트로 복원하는 함수
+def restore_group_time(group_time_table):
+    if group_time_table != None:
+        str_table = zlib.decompress(group_time_table).decode('utf-8')
+    else: 
+        str_table = INIT_TIME_TABLE
+
+    lst_table = []
+    table_element = []
+    i = 0
+    for ch in str_table:
+        i += 1
+        table_element.append(ch)
+
+        if i % 7 == 0 and i != 0: 
+            table_element_int = [int(i) for i in table_element]
+            lst_table.append(table_element_int)
+            table_element = []
+
+    return lst_table
