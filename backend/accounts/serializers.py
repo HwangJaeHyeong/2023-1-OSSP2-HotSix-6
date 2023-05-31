@@ -1,15 +1,25 @@
 from rest_framework.serializers import ModelSerializer
-from .models import User, Group, GroupMember
+from rest_framework import serializers
+from .models import User, Time, Group, GroupMember, Image
 
 class UserDataSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
 
-    def update_user_time_table(update_user, zdata):
-        user = User.objects.get(email=update_user)
-        user.time_table = zdata
-        user.save()
+class TimeDataSerializer(ModelSerializer):
+    class Meta:
+        model = Time
+        fields = '__all__'
+        extra_kwargs = {
+            'time_table': {'read_only': False},
+            'preference': {'read_only': False}
+        }
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = ('image', 'time')
 
 class GroupDataSerializer(ModelSerializer):
     class Meta:
