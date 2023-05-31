@@ -87,8 +87,8 @@ class GroupTimetable(models.Model):
 class Time(models.Model):
     time_id = models.AutoField(db_column='Time_ID', primary_key=True)  # Field name made lowercase.
     email = models.ForeignKey('User', models.DO_NOTHING, db_column='Email')  # Field name made lowercase.
-    time_table = models.BinaryField(db_column='Time_Table', max_length=255)  # Field name made lowercase.
-    preference = models.BinaryField(db_column='Preference', max_length=255)  # Field name made lowercase.
+    time_table = models.BinaryField(db_column='Time_Table', max_length=255, null=True)  # Field name made lowercase.
+    preference = models.BinaryField(db_column='Preference', max_length=255, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -105,3 +105,8 @@ class User(models.Model):
     class Meta:
         managed = False
         db_table = 'user'
+
+# 이미지 처리
+class Image(models.Model):
+    image = models.ImageField(upload_to='images/') # 이미지가 저장될 위치
+    time = models.CharField(max_length=5) # 시간

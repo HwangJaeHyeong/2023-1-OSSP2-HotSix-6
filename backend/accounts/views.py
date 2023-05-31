@@ -11,7 +11,7 @@ from .ics2binaryArr import ics_to_binary_array
 from .TimeTableController.ImageFile import file_to_image
 from .TimeTableController.Service import calculate_common_time
 
-from .models import User, Time, AccountsImage
+from .models import User, Time, Image
 from .serializers import UserDataSerializer, TimeDataSerializer, ImageSerializer
 from .tokens import account_activation_token
 from .text import message
@@ -36,6 +36,10 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 
 KOREAN_DAYS = ['월', '화', '수', '목', '금', '토', '일']
+
+# 시간표 및 우선 순위 초기화
+INIT_TIME_TABLE = [[0 for _ in range(7)] for _ in range(48)] # 초기화 시간표 (7일 / 24시간 + 30분 단위 = 48)
+INIT_PREFERENCE = {} # 초기화 우선 순위 딕셔너리
 
 # 이메일 중복 확인
 def duplicateCheck(request):
@@ -218,65 +222,61 @@ def logout(request):
 
 # 이미지 처리를 위한 클래스
 class ImageViewSet(viewsets.ModelViewSet):
-    queryset = AccountsImage.objects.all()
+    queryset = Image.objects.all()
     serializer_class = ImageSerializer
-
-# 시간표 및 우선 순위 초기화
-init_table = [[0 for _ in range(7)] for _ in range(48)] # 초기화 시간표 (7일 / 24시간 + 30분 단위 = 48)
-init_prefer = {} # 초기화 우선 순위 딕셔너리
 
 # .ics 파일을 입력 받아 시간표 등록
 @api_view(['POST'])
 def icsTimeTable(request):
     if request.method == 'POST':
-        try:
-            # 데이터 받기
-            reqData = request.data
-            post_email = reqData['email']
-            post_file = reqData['file']
+        # try:
+        # 데이터 받기
+        reqData = request.data
+        post_email = reqData['email']
+        post_file = reqData['file']
 
-            decode_file = post_file.read().decode() # 파일 읽기
-            file_lst = decode_file.split('\n') # 읽은 파일 분리
+        decode_file = post_file.read().decode() # 파일 읽기
+        file_lst = decode_file.split('\n') # 읽은 파일 분리
 
-            time_table, not_weekly_schedule = ics_to_binary_array(file_lst, init_table) # 시간표 설정 및 (1개월 or 1년 or 하루) 주기 분리
-            z_table = compress_table(time_table) # 시간표 및 우선 순위 데이터 압축
+        time_table, not_weekly_schedule = ics_to_binary_array(file_lst, INIT_TIME_TABLE) # 시간표 설정 및 (1개월 or 1년 or 하루) 주기 분리
+        z_table = compress_table(time_table) # 시간표 및 우선 순위 데이터 압축
 
-            # 사용자의 시간표 생성 후 데이터베이스에 저장
-            if User.objects.filter(email=post_email).exists():
-                # 데이터 형성
-                input_data = {
-                    'email':post_email,
-                    'time_table':z_table
-                }
-                serializer = TimeDataSerializer(data=input_data)
+        # 사용자의 시간표 생성 후 데이터베이스에 저장
+        if User.objects.filter(email=post_email).exists():
+            # 데이터 형성
+            input_data = {
+                'email':post_email,
+                'time_table':z_table,
+                'preference':None
+            }
+            serializer = TimeDataSerializer(data=input_data)
 
-                # 데이터베이스에 저장
-                if serializer.is_valid():
-                    if Time.objects.filter(email=post_email).exists(): 
-                        # 기존 시간표 -> 새로운 시간표 (업데이트)
-                        update_table = Time.objects.get(email=post_email)
-                        update_table.time_table = z_table
-                        update_table.save()
-                        return Response(status=status.HTTP_200_OK) # 중복된 이메일 업데이트 완료
-                    else:
-                        serializer.save()
-                        return Response(status=status.HTTP_201_CREATED) # 생성 완료
+            # 데이터베이스에 저장
+            if serializer.is_valid():
+                if Time.objects.filter(email=post_email).exists(): 
+                    # 기존 시간표 -> 새로운 시간표 (업데이트)
+                    update_table = Time.objects.get(email=post_email)
+                    update_table.time_table = z_table
+                    update_table.save()
                 else:
-                    return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
+                    serializer.save()
+                return Response(status=status.HTTP_201_CREATED) # 생성 완료
             else:
-                return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST) # 에러 발생
+                return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
+        # except:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST) # 에러 발생
 
 # 이미지 파일을 입력 받아 시간표 등록
 @api_view(['POST'])
 def imgTimeTable(request):
     if request.method == 'POST':
-        # 데이터 받기
-        reqData = request.data
-        post_email = reqData['email']
-
         try:
+            # 데이터 받기
+            reqData = request.data
+            post_email = reqData['email']
+
             # viewset을 통해 저장한 이미지 파일 읽어 오기
             files = os.listdir('./images/') # images 폴더의 파일들 이름
             path = './images/' + files[0] # 첫번째 파일 경로
@@ -285,7 +285,7 @@ def imgTimeTable(request):
             with open(path, "rb") as file:
             
                 # 시작 시간 구하기
-                img_obj = AccountsImage.objects.all()[0] # viewset에서 읽어 온 시작 시간
+                img_obj = Image.objects.all()[0] # viewset에서 읽어 온 시작 시간
                 time = img_obj.time.split(':') # 10:30 -> 10 / 30
                 start_time = int(int(time[0]) * 2 + int(time[1]) / 30) # 10 / 30 -> 20 + 1
                 if start_time > 18: start_time = 18 # 9시 이후 시작 -> 시작 시간 = 9시
@@ -297,7 +297,7 @@ def imgTimeTable(request):
                 
             # 사용한 이미지 데이터 지우기 (in folder and DB)
             [os.remove('./images/' + file) for file in files] # 읽은 이미지 지우기
-            img_datas = AccountsImage.objects.all() # DB accounts_image의 모든 값 받아 오기
+            img_datas = Image.objects.all() # DB accounts_image의 모든 값 받아 오기
             [data.delete() for data in img_datas] # DB accounts_image의 모든 값 지우기
 
             # 사용자의 시간표 생성 후 데이터베이스에 저장
@@ -305,7 +305,8 @@ def imgTimeTable(request):
                 # 데이터 형성
                 input_data = {
                     'email':post_email,
-                    'time_table':z_table
+                    'time_table':z_table,
+                    'preference':None
                 }
                 serializer = TimeDataSerializer(data=input_data)
 
@@ -316,10 +317,9 @@ def imgTimeTable(request):
                         update_table = Time.objects.get(email=post_email)
                         update_table.time_table = z_table
                         update_table.save()
-                        return Response(status=status.HTTP_200_OK) 
                     else: 
                         serializer.save()
-                        return Response(status=status.HTTP_201_CREATED) # 생성 완료
+                    return Response(status=status.HTTP_201_CREATED) # 생성 완료
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
             else:
@@ -334,7 +334,7 @@ def preference(request):
         if request.method == 'POST':
             reqData = request.data
             post_email = reqData['email']
-            post_prefer = reqData['prefer']
+            post_prefer = reqData['preference']
 
             z_prefer = compress_prefer(post_prefer)
 
@@ -342,6 +342,7 @@ def preference(request):
                 # 데이터 형성
                 input_data = {
                     'email':post_email,
+                    'time_table':None,
                     'preference':z_prefer
                 }
                 serializer = TimeDataSerializer(data=input_data)
@@ -349,13 +350,15 @@ def preference(request):
                 # 데이터베이스에 저장
                 if serializer.is_valid():
                     if Time.objects.filter(email=post_email).exists(): 
-                        update_prefer = Time.objects.get('email')
+                        update_prefer = Time.objects.get(email=post_email)
                         update_prefer.preference = z_prefer
                         update_prefer.save()
                     else:
                         serializer.save()
+                    return Response(status=status.HTTP_201_CREATED) 
                 else:
-                        return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
+                    return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
+            else:
                 return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
     except:
         return Response(status=status.HTTP_400_BAD_REQUEST) # 에러 발생
@@ -370,7 +373,7 @@ def viewTimeTable(request):
             get_email = reqData['email']
             if User.objects.filter(email=get_email).exists():
                 if not Time.objects.filter(email=get_email).exists():
-                    return Response({"time_table":init_table}, status=status.HTTP_204_NO_CONTENT)
+                    return Response({"time_table":INIT_TIME_TABLE}, status=status.HTTP_204_NO_CONTENT)
                 else:
                     res_table, res_prefer = restore_time(get_email) # 시간표 및 우선순위 받아오기
                     res_table = add_prefer(res_table, res_prefer)
@@ -409,13 +412,12 @@ def img2arr(file):
 # 우선순위 배열에 추가하는 함수
 def add_prefer(time_table, prefer):
     for prefer_key in prefer: 
-         for element in prefer[prefer_key]: # 우선순위 요일별로 분리
-              start_idx = element[0]
-              end_idx = element[1] + start_idx
-              for time in range(start_idx, end_idx): # 우선순위 추가
-                day = KOREAN_DAYS.index(prefer_key)
-                if time_table[time][day] != 1: # 공강인 시간만 처리
-                    time_table[time][day] = 2
+        start_idx = prefer[prefer_key][0]
+        end_idx = prefer[prefer_key][1] + start_idx
+        for time in range(start_idx, end_idx): # 우선순위 추가
+            day = KOREAN_DAYS.index(prefer_key)
+            if time_table[time][day] != 1: # 공강인 시간만 처리
+                time_table[time][day] = 2
     return time_table
 
 # 시간표 배열  압축하는 함수
@@ -433,10 +435,18 @@ def compress_prefer(prefer):
     return z_prefer
 
 # 압축한 시간표 리스트로 복원하는 함수
-def restore_time(req_email):
+def restore_time(req_email=ModuleNotFoundError):
     time = Time.objects.get(email=req_email)
-    str_table = zlib.decompress(time.time_table).decode('utf-8')
-    dict_prefer = eval(zlib.decompress(time.preference).decode('utf-8'))
+    
+    if time.time_table != None:
+        str_table = zlib.decompress(time.time_table).decode('utf-8')
+    else: 
+        str_table = INIT_TIME_TABLE
+
+    if time.preference != None:
+        dict_prefer = eval(zlib.decompress(time.preference).decode('utf-8'))
+    else: 
+        dict_prefer = INIT_PREFERENCE
 
     lst_table = []
     table_element = []
