@@ -11,7 +11,7 @@ from .ics2binaryArr import ics_to_binary_array
 from .TimeTableController.ImageFile import file_to_image
 from .TimeTableController.Service import calculate_common_time
 
-from .models import User, Time, Image
+from .models import User, Time, AccountsImage
 from .serializers import UserDataSerializer, TimeDataSerializer, ImageSerializer
 from .tokens import account_activation_token
 from .text import message
@@ -218,7 +218,7 @@ def logout(request):
 
 # 이미지 처리를 위한 클래스
 class ImageViewSet(viewsets.ModelViewSet):
-    queryset = Image.objects.all()
+    queryset = AccountsImage.objects.all()
     serializer_class = ImageSerializer
 
 # 시간표 및 우선 순위 초기화
@@ -285,7 +285,7 @@ def imgTimeTable(request):
             with open(path, "rb") as file:
             
                 # 시작 시간 구하기
-                img_obj = Image.objects.all()[0] # viewset에서 읽어 온 시작 시간
+                img_obj = AccountsImage.objects.all()[0] # viewset에서 읽어 온 시작 시간
                 time = img_obj.time.split(':') # 10:30 -> 10 / 30
                 start_time = int(int(time[0]) * 2 + int(time[1]) / 30) # 10 / 30 -> 20 + 1
                 if start_time > 18: start_time = 18 # 9시 이후 시작 -> 시작 시간 = 9시
@@ -297,7 +297,7 @@ def imgTimeTable(request):
                 
             # 사용한 이미지 데이터 지우기 (in folder and DB)
             [os.remove('./images/' + file) for file in files] # 읽은 이미지 지우기
-            img_datas = Image.objects.all() # DB accounts_image의 모든 값 받아 오기
+            img_datas = AccountsImage.objects.all() # DB accounts_image의 모든 값 받아 오기
             [data.delete() for data in img_datas] # DB accounts_image의 모든 값 지우기
 
             # 사용자의 시간표 생성 후 데이터베이스에 저장
