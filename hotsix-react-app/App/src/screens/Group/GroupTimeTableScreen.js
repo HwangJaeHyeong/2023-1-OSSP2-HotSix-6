@@ -77,6 +77,7 @@ const GroupTimeTableScreen = () => {
   useEffect(() => {
     const handleTimetable = (schedules) => {
       const generatedEvents = [];
+      let startVal = 0;
       for (let i = 0; i < schedules[0].length; i++) {
         let start = null;
         let end = null;
@@ -84,12 +85,13 @@ const GroupTimeTableScreen = () => {
         for (let j = 0; j < schedules.length; j++) {
           const row = schedules[j];
           const val = row[i];
-          if (val === 0 && start === null) {
+          if ((val === 0 || val >= 2) && start === null) {
+            startVal = val;
             start = j * 30;
             flag = true;
           } else if (val === 1 && flag) {
             end = (j - 1) * 30;
-            generatedEvents.push(createEvent(start, end, i));
+            generatedEvents.push(createEvent(start, end, i, startVal));
             start = null;
             end = null;
             flag = null;
@@ -97,14 +99,16 @@ const GroupTimeTableScreen = () => {
         }
         if (start !== null) {
           end = (schedules.length - 1) * 30;
-          generatedEvents.push(createEvent(start, end, i));
+          generatedEvents.push(
+            createEvent(start, end, i, schedules[schedules.length - 1][i])
+          );
         }
       }
       setEvents(generatedEvents);
     };
 
     // 데이터 값 뽑아서 각각 startTime, endTime, Date1 에 저장
-    const createEvent = (start, end, i) => {
+    const createEvent = (start, end, i, val) => {
       const date = new Date("2023-05-01T00:00:00.000Z");
       const startTime = addMinutes(date, start + 480);
       const endTime = addMinutes(date, end + 480);
@@ -113,6 +117,7 @@ const GroupTimeTableScreen = () => {
         startTime: startTime,
         endTime: endTime,
         Date1: Date1,
+        value: val, // 추가: 스케줄 값도 이벤트 객체에 포함
       };
     };
 
@@ -130,6 +135,8 @@ const GroupTimeTableScreen = () => {
 
   // 화면에 값 띄우기
   const renderGridItem = ({ item, index }) => {
+    console.log(item);
+    console.log("why");
     const start = moment.utc(item.startTime);
     const starttime = start.format("HH:mm");
 
@@ -157,6 +164,12 @@ const GroupTimeTableScreen = () => {
             height: height,
             width: width,
             left: leftOffset,
+            backgroundColor:
+              item.value === 0
+                ? `rgba(0, 0, 255, 0.2)`
+                : `rgba(0, 0, ${255 - item.value * 10}, ${
+                    item.value / 10 + 0.2
+                  })`,
           },
           isSelected ? styles.selectedEventButton : null,
         ]}
@@ -320,5 +333,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#ffffff",
     fontSize: 16,
+  },
+  highValueEvent: {
+    backgroundColor: "blue",
+    // 추가: opacity를 item.value에 따라 조절하여 점점 진한 파란색 표시
+    opacity: (item) => (item.value - 1) / 10,
   },
 });
