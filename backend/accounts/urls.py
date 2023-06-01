@@ -8,8 +8,6 @@ router = DefaultRouter()
 router.register(r'images', ImageViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)), # 이미지 처리를 위한 url
-
     path('duplicate/', views.duplicateCheck, name="duplicateCheck"),
     path('register/', views.register, name="register"),
     path('login/', views.login, name="login"),
@@ -18,9 +16,11 @@ urlpatterns = [
     path('login-remain/', views.loginRemain, name="loginRemain"),
     path('logout/', views.logout, name="logout"),
 
+    path('', include(router.urls)), # 이미지 처리를 위한 url
+    path('view-time-table/', views.viewTimeTable, name="viewTimeTable"),
+    path('create-time-table/', views.create_time_table, name='create_time_table'),
     path('img-time-table/', views.imgTimeTable, name="imgTimeTable"),
     path('ics-time-table/', views.icsTimeTable, name="icsTimeTable"),
     path('preference/', views.preference, name="preference"),
-    path('view-time-table/', views.viewTimeTable, name="viewTimeTable"),
     path('del-time-table/', views.delTimeTable, name="delTimeTable"),
 ]

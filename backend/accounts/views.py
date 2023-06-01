@@ -225,53 +225,70 @@ class ImageViewSet(viewsets.ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
 
-# .ics 파일을 입력 받아 시간표 등록
+# 사용자 시간표 초기화 (일정 없는 시간표 및 값이 없는 우선순위 딕셔너리 생성)
 @api_view(['POST'])
+def create_time_table(request):
+    try:
+        if request.method == 'POST':
+            reqData = request.data
+            post_email = reqData['email']
+
+            if User.objects.filter(email=post_email).exists():
+                z_table = compress_table(INIT_TIME_TABLE)
+                z_prefer = compress_prefer(INIT_PREFERENCE)
+
+                input_data = {
+                    'email':post_email,
+                    'time_table':z_table,
+                    'preference':z_prefer
+                }
+                serializer = TimeDataSerializer(data=input_data)
+
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(status=status.HTTP_201_CREATED)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND) 
+    except:
+        return Response(status=status.HTTP_409_CONFLICT)
+
+# .ics 파일을 입력 받아 시간표 등록
+@api_view(['PUT'])
 def icsTimeTable(request):
-    if request.method == 'POST':
-        # try:
-        # 데이터 받기
-        reqData = request.data
-        post_email = reqData['email']
-        post_file = reqData['file']
+    if request.method == 'PUT':
+        try:
+            # 데이터 받기
+            reqData = request.data
+            post_email = reqData['email']
+            post_file = reqData['file']
 
-        decode_file = post_file.read().decode() # 파일 읽기
-        file_lst = decode_file.split('\n') # 읽은 파일 분리
+            decode_file = post_file.read().decode() # 파일 읽기
+            file_lst = decode_file.split('\n') # 읽은 파일 분리
 
-        time_table, not_weekly_schedule = ics_to_binary_array(file_lst, INIT_TIME_TABLE) # 시간표 설정 및 (1개월 or 1년 or 하루) 주기 분리
-        z_table = compress_table(time_table) # 시간표 및 우선 순위 데이터 압축
+            time_table, not_weekly_schedule = ics_to_binary_array(file_lst, INIT_TIME_TABLE) # 시간표 설정 및 (1개월 or 1년 or 하루) 주기 분리
+            z_table = compress_table(time_table) # 시간표 및 우선 순위 데이터 압축
 
-        # 사용자의 시간표 생성 후 데이터베이스에 저장
-        if User.objects.filter(email=post_email).exists():
-            # 데이터 형성
-            input_data = {
-                'email':post_email,
-                'time_table':z_table,
-                'preference':None
-            }
-            serializer = TimeDataSerializer(data=input_data)
-
-            # 데이터베이스에 저장
-            if serializer.is_valid():
+            # 사용자의 시간표 생성 후 데이터베이스에 저장
+            if User.objects.filter(email=post_email).exists():
                 if Time.objects.filter(email=post_email).exists(): 
                     # 기존 시간표 -> 새로운 시간표 (업데이트)
                     update_table = Time.objects.get(email=post_email)
                     update_table.time_table = z_table
                     update_table.save()
+                    return Response(status=status.HTTP_202_ACCEPTED)
                 else:
-                    serializer.save()
-                return Response(status=status.HTTP_201_CREATED) # 생성 완료
+                    return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
             else:
-                return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
-        # except:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST) # 에러 발생
+                return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
+        except:
+            return Response(status=status.HTTP_409_CONFLICT)  # 에러 발생
 
 # 이미지 파일을 입력 받아 시간표 등록
-@api_view(['POST'])
+@api_view(['PUT'])
 def imgTimeTable(request):
-    if request.method == 'POST':
+    if request.method == 'PUT':
         try:
             # 데이터 받기
             reqData = request.data
@@ -283,7 +300,6 @@ def imgTimeTable(request):
             
             # 이미지 파일 바이너리로 읽기
             with open(path, "rb") as file:
-            
                 # 시작 시간 구하기
                 img_obj = Image.objects.all()[0] # viewset에서 읽어 온 시작 시간
                 time = img_obj.time.split(':') # 10:30 -> 10 / 30
@@ -302,36 +318,23 @@ def imgTimeTable(request):
 
             # 사용자의 시간표 생성 후 데이터베이스에 저장
             if User.objects.filter(email=post_email).exists():
-                # 데이터 형성
-                input_data = {
-                    'email':post_email,
-                    'time_table':z_table,
-                    'preference':None
-                }
-                serializer = TimeDataSerializer(data=input_data)
-
-                # 데이터베이스에 저장
-                if serializer.is_valid():
-                    # 기존 시간표 -> 새로운 시간표 (업데이트)
-                    if Time.objects.filter(email=post_email).exists(): 
-                        update_table = Time.objects.get(email=post_email)
-                        update_table.time_table = z_table
-                        update_table.save()
-                    else: 
-                        serializer.save()
-                    return Response(status=status.HTTP_201_CREATED) # 생성 완료
+                if Time.objects.filter(email=post_email).exists(): 
+                    update_table = Time.objects.get(email=post_email)
+                    update_table.time_table = z_table
+                    update_table.save()
+                    return Response(status=status.HTTP_202_ACCEPTED)
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST) # 에러 발생
+            return Response(status=status.HTTP_409_CONFLICT)  # 에러 발생
         
 # 우선 순위 등록
-@api_view(['POST'])
+@api_view(['PUT'])
 def preference(request):
     try:
-        if request.method == 'POST':
+        if request.method == 'PUT':
             reqData = request.data
             post_email = reqData['email']
             post_prefer = reqData['preference']
@@ -339,29 +342,17 @@ def preference(request):
             z_prefer = compress_prefer(post_prefer)
 
             if User.objects.filter(email=post_email).exists():
-                # 데이터 형성
-                input_data = {
-                    'email':post_email,
-                    'time_table':None,
-                    'preference':z_prefer
-                }
-                serializer = TimeDataSerializer(data=input_data)
-
-                # 데이터베이스에 저장
-                if serializer.is_valid():
-                    if Time.objects.filter(email=post_email).exists(): 
-                        update_prefer = Time.objects.get(email=post_email)
-                        update_prefer.preference = z_prefer
-                        update_prefer.save()
-                    else:
-                        serializer.save()
-                    return Response(status=status.HTTP_201_CREATED) 
+                if Time.objects.filter(email=post_email).exists(): 
+                    update_prefer = Time.objects.get(email=post_email)
+                    update_prefer.preference = z_prefer
+                    update_prefer.save()
+                    return Response(status=status.HTTP_202_ACCEPTED)
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
     except:
-        return Response(status=status.HTTP_400_BAD_REQUEST) # 에러 발생
+        return Response(status=status.HTTP_409_CONFLICT)  # 에러 발생
     
 
 # 시간표 조회 
@@ -381,7 +372,7 @@ def viewTimeTable(request):
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_409_CONFLICT) 
 
 @api_view(['DELETE'])
 def delTimeTable(request):
@@ -400,7 +391,7 @@ def delTimeTable(request):
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND)
     except:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_409_CONFLICT) 
 
 # 이미지 파일 배열로 변환하는 함수
 def img2arr(file):
