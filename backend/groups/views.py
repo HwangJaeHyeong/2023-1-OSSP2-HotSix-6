@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from accounts.views import restore_table, print_table, loginRemain
-from accounts.models import Group, GroupMember, User
-from accounts.serializers import GroupDataSerializer, GroupMemberSerializer, UserDataSerializer
+from accounts.models import Group, GroupMember, User, GroupProject
+from accounts.serializers import GroupDataSerializer, GroupMemberSerializer, UserDataSerializer, GroupProjectSerializer
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
@@ -38,6 +38,7 @@ def generateRandomCode(length=8):
     ).decode()[:length]
 
 
+# Group
 # generate group
 @api_view(['POST'])
 def groupGenerate(request):
@@ -93,6 +94,57 @@ def deleteGroup(self, code):
     
     group.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# GroupProject
+# 할 일 생성 - progress를 default로 지정하기 위해 serializer가 아니라 수동으로 save
+@api_view(['POST'])
+def generateGroupProject(request):
+    reqData = request.data
+    
+    if request.method == 'POST':
+        # 할 일 생성
+        project_name = reqData['project_name']
+        project_id = generateRandomCode()
+        group_code = reqData['group_code'] # 현재 사용자가 어떤 그룹에 있는지 request가 아니라 다른 식으로 받아와얄 것 같은데
+        responsibility = reqData['responsibility']
+        project_progress = 0 # 0 = not started, 1 = ~ing, 2 = done
+
+        group_project = GroupProject(project_id=project_id, project_name=project_name, 
+                                     project_progress=project_progress, group_code=group_code, responsibility=responsibility)
+        group_project.save()
+
+        return Response(status=status.HTTP_201_CREATED)
+
+
+# task name, progress, responsibility 수정 시 - project_id는 pk로 쓰기 때문에 변경 X
+@api_view(['GET', 'PUT', 'DELETE'])
+def updateGroupProject(request):
+    reqData = request.data
+    group_code = reqData['group_code']
+    project_id = reqData['project_id']
+
+    try:
+        project = GroupProject.objects.get(project_id=project_id)
+    except GroupProject.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        group_project = GroupProject.objects.filter(group_code=group_code)
+        serializer = GroupProjectSerializer(group_project, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'PUT':
+        update_serializer = GroupProjectSerializer(project, data=reqData)
+        if update_serializer.is_valid():
+            update_serializer.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE':
+        project.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 # 그룹 멤버들의 시간표 통합 

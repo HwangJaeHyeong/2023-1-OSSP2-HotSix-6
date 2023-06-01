@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import User, Group, GroupMember
+from .models import User, Group, GroupMember, GroupProject
 
 class UserDataSerializer(ModelSerializer):
     class Meta:
@@ -20,3 +20,8 @@ class GroupMemberSerializer(ModelSerializer):
     class Meta:
         model = GroupMember
         fields = ['group_code']
+
+class GroupProjectSerializer(ModelSerializer):
+    class Meta:
+        model = GroupProject
+        fields = '__all__'
