@@ -11,4 +11,5 @@ urlpatterns = [
     path('login-remain/', views.loginRemain, name="loginRemain"),
     path('logout/', views.logout, name="logout"),
     path('time-table/', views.TimeTable, name="TimeTable"),
+    path('check-active/', views.is_active, name="is_active"),
 ]
