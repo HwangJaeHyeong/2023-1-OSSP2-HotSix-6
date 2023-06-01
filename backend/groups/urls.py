@@ -8,5 +8,7 @@ urlpatterns = [
     path('get-group/', views.getGroupList, name="getGroupList"),
 
     path('view-group-table/', views.viewGroupTable, name="viewGroupTable"),
+    path('create-group-table/', views.create_group_table, name="create_group_table"),
     path('integrated-table/', views.integrate_table, name="integrate_table"),
+    path('del-group-table/', views.del_group_table, name="del_group_table"),
 ]

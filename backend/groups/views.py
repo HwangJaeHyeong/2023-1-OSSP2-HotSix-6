@@ -84,27 +84,53 @@ def viewGroupTable(request):
     try:
         if request.method == 'GET':
             reqData = request.data
-            get_group_code = reqData['group_code']
+            get_group_code = "a0laQXJY"#reqData['group_code']
 
             if Group.objects.filter(group_code=get_group_code).exists():
                 if GroupTimetable.objects.filter(group_code=get_group_code).exists():
                     group = GroupTimetable.objects.get(group_code=get_group_code)
                     group_table = group.time_table
                     res_group_table = restore_group_time(group_table)
-                    print_table(res_group_table)
                     return Response({"integrated table":res_group_table}, status=status.HTTP_200_OK)
                 else:
                     return Response(status=status.HTTP_404_NOT_FOUND)
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND)
     except:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    
+        return Response(status=status.HTTP_409_CONFLICT) 
+
+# 그룹 시간표 초기화 (일정 없는 시간표 생성)
+@api_view(['POST'])
+def create_group_table(request):
+    if request.method == 'POST':
+        try:
+            reqData = request.data
+            post_group_code = reqData['group_code']
+
+            z_table = compress_table(INIT_TIME_TABLE)
+
+            if Group.objects.filter(group_code=post_group_code).exists():
+                input_data = {
+                    'group_code':post_group_code,
+                    'time_table':z_table
+                }
+                serializer = GroupTimetableSerializer(data=input_data)
+
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(status=status.HTTP_201_CREATED)
+                else: 
+                    return Response(status=status.HTTP_400_BAD_REQUEST) 
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        except:
+            return Response(status=status.HTTP_409_CONFLICT) 
+        
 
 # 그룹 멤버들의 시간표를 통합
-@api_view(['POST'])
+@api_view(['PUT'])
 def integrate_table(request):
-    if request.method == 'POST':
+    if request.method == 'PUT':
         try:
             reqData = request.data
             post_group_code = reqData['group_code']
@@ -114,25 +140,13 @@ def integrate_table(request):
                     # 그룹 멤버들의 시간표 통합
                     group_members = GroupMember.objects.filter(group_code=post_group_code).values() # 그룹 멤버들 받아 오기
                     group_table = integrated_members_table(group_members) # 그룹 멤버들의 시간표 통합
+                    print_table(group_table)
                     z_table = compress_table(group_table)
-
-                    # 데이터 형성
-                    input_data = {
-                        'group_code':post_group_code,
-                        'time_table':z_table
-                    }
-                    serializer = GroupTimetableSerializer(data=input_data)
-                    print(serializer)
-
-                    # 데이터베이스에 저장
-                    if serializer.is_valid():
-                        if GroupTimetable.objects.filter(group_code=post_group_code).exists(): 
-                            update_table = GroupTimetable.objects.get(group_code=post_group_code)
-                            update_table.time_table = z_table
-                            update_table.save()
-                        else:
-                            serializer.save()
-                        return Response(status=status.HTTP_201_CREATED) # 생성 완료
+                    if GroupTimetable.objects.filter(group_code=post_group_code).exists(): 
+                        update_table = GroupTimetable.objects.get(group_code=post_group_code)
+                        update_table.time_table = z_table
+                        update_table.save()
+                        return Response(status=status.HTTP_202_ACCEPTED)
                     else:
                         return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
                 else:
@@ -140,8 +154,26 @@ def integrate_table(request):
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
-                
+            return Response(status=status.HTTP_409_CONFLICT) 
+       
+@api_view(['DELETE'])
+def del_group_table(request):
+    if request.method == 'DELETE':
+        try:
+            reqData = request.data
+            del_group_code = "a0laQXJY"#reqData['group_code']
+
+            if Group.objects.filter(group_code=del_group_code).exists():
+                if GroupTimetable.objects.filter(group_code=del_group_code).exists():
+                    del_group_table =  GroupTimetable.objects.get(group_code=del_group_code)
+                    del_group_table.delete()
+                    return Response(status=status.HTTP_200_OK)
+                else:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        except:
+            return Response(status=status.HTTP_409_CONFLICT) 
 
 # 그룹 멤버들의 시간표를 통합하는 함수
 def integrated_members_table(group_members):
