@@ -44,6 +44,7 @@ class GroupProject(models.Model):
     group_code = models.ForeignKey('Group', models.CASCADE, db_column='Group_Code')  # Field name made lowercase.
     project_name = models.CharField(db_column='Project_Name', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.       
     project_progress = models.IntegerField(db_column='Project_Progress')  # Field name made lowercase.
+    responsibility = models.ForeignKey('User', models.CASCADE, db_column='Responsiblity', max_length=100) # Field name made lowercase.
 
     class Meta:
         managed = True
