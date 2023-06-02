@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
+from django.views import View
+from rest_framework import renderers
+from rest_framework import viewsets
 
 
 from accounts.views import restore_time, add_prefer, compress_table, print_table,  loginRemain, INIT_TIME_TABLE, INIT_PREFERENCE
@@ -77,27 +81,22 @@ def deleteGroup(self, code):
     group.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 # 그룹 멤버들의 시간표 조회
-@api_view(['GET'])
-def viewGroupTable(request):
-    try:
-        if request.method == 'GET':
-            reqData = request.data
-            get_group_code = "a0laQXJY"#reqData['group_code']
+class ViewGroupTable(GenericAPIView):
+    def get(self, request, group_code):
+        if Group.objects.filter(group_code=group_code).exists():
+            if GroupTimetable.objects.filter(group_code=group_code).exists():
+                group = GroupTimetable.objects.get(group_code=group_code)
+                group_table = group.time_table
+                res_group_table = restore_group_time(group_table)
 
-            if Group.objects.filter(group_code=get_group_code).exists():
-                if GroupTimetable.objects.filter(group_code=get_group_code).exists():
-                    group = GroupTimetable.objects.get(group_code=get_group_code)
-                    group_table = group.time_table
-                    res_group_table = restore_group_time(group_table)
-                    return Response({"integrated table":res_group_table}, status=status.HTTP_200_OK)
-                else:
-                    return Response(status=status.HTTP_404_NOT_FOUND)
+                response = Response({"integrated_table": res_group_table}, status=status.HTTP_200_OK)
+                response.accepted_renderer = renderers.JSONRenderer()
+                return response
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND)
-    except:
-        return Response(status=status.HTTP_409_CONFLICT) 
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 # 그룹 시간표 초기화 (일정 없는 시간표 생성)
 @api_view(['POST'])
@@ -140,7 +139,6 @@ def integrate_table(request):
                     # 그룹 멤버들의 시간표 통합
                     group_members = GroupMember.objects.filter(group_code=post_group_code).values() # 그룹 멤버들 받아 오기
                     group_table = integrated_members_table(group_members) # 그룹 멤버들의 시간표 통합
-                    print_table(group_table)
                     z_table = compress_table(group_table)
                     if GroupTimetable.objects.filter(group_code=post_group_code).exists(): 
                         update_table = GroupTimetable.objects.get(group_code=post_group_code)
@@ -161,7 +159,7 @@ def del_group_table(request):
     if request.method == 'DELETE':
         try:
             reqData = request.data
-            del_group_code = "a0laQXJY"#reqData['group_code']
+            del_group_code = reqData['group_code']
 
             if Group.objects.filter(group_code=del_group_code).exists():
                 if GroupTimetable.objects.filter(group_code=del_group_code).exists():

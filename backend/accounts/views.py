@@ -2,8 +2,6 @@ import jwt
 import json
 import bcrypt
 import datetime
-
-from sys import getsizeof
 import zlib
 import os
 
@@ -18,7 +16,7 @@ from .text import message
 from my_settings import SECRET_KEY, EMAIL
 from rest_framework import viewsets
 
-
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -329,6 +327,43 @@ def imgTimeTable(request):
                 return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
         except:
             return Response(status=status.HTTP_409_CONFLICT)  # 에러 발생
+
+# 텍스트를 입력 받아 시간표 등록
+@api_view(['PUT'])
+def text_time_table(request):
+    if request.method == 'PUT':
+        try:
+            # 데이터 받기
+            reqData = request.data
+            post_email = reqData['email']
+            post_text = reqData['text']
+
+            # string -> list
+            str_to_lst = []
+            time = []
+            for ch in post_text:
+                if ch.isdigit():
+                    time.append(int(ch))
+                if ch == ']':
+                    str_to_lst.append(time)
+                    time = []
+
+            z_table = compress_table(str_to_lst) # 시간표 및 우선 순위 데이터 압축
+
+            # 사용자의 시간표 생성 후 데이터베이스에 저장
+            if User.objects.filter(email=post_email).exists():
+                if Time.objects.filter(email=post_email).exists(): 
+                    # 기존 시간표 -> 새로운 시간표 (업데이트)
+                    update_table = Time.objects.get(email=post_email)
+                    update_table.time_table = z_table
+                    update_table.save()
+                    return Response(status=status.HTTP_202_ACCEPTED)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
+        except:
+            return Response(status=status.HTTP_409_CONFLICT)  # 에러 발생
         
 # 우선 순위 등록
 @api_view(['PUT'])
@@ -356,23 +391,17 @@ def preference(request):
     
 
 # 시간표 조회 
-@api_view(['GET'])
-def viewTimeTable(request):
-    if request.method == 'GET':
-        try:
-            reqData = request.data
-            get_email = reqData['email']
-            if User.objects.filter(email=get_email).exists():
-                if not Time.objects.filter(email=get_email).exists():
-                    return Response({"time_table":INIT_TIME_TABLE}, status=status.HTTP_204_NO_CONTENT)
-                else:
-                    res_table, res_prefer = restore_time(get_email) # 시간표 및 우선순위 받아오기
-                    res_table = add_prefer(res_table, res_prefer)
-                    return Response({"time_table":res_table}, status=status.HTTP_200_OK) 
+class ViewTimeTable(GenericAPIView):
+    def get(self, request, email):
+        if User.objects.filter(email=email).exists():
+            if not Time.objects.filter(email=email).exists():
+                return Response({"time_table":INIT_TIME_TABLE}, status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-        except:
-            return Response(status=status.HTTP_409_CONFLICT) 
+                res_table, res_prefer = restore_time(email) # 시간표 및 우선순위 받아오기
+                res_table = add_prefer(res_table, res_prefer)
+                return Response({"time_table":res_table}, status=status.HTTP_200_OK) 
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['DELETE'])
 def delTimeTable(request):
@@ -447,7 +476,7 @@ def restore_time(req_email=ModuleNotFoundError):
         table_element.append(ch)
 
         if i % 7 == 0 and i != 0: 
-            table_element_int = [int(i) for i in table_element]
+            table_element_int = [i for i in table_element]
             lst_table.append(table_element_int)
             table_element = []
 
