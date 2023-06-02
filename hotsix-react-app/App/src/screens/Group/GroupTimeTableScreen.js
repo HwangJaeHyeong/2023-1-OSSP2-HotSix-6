@@ -6,7 +6,7 @@ const GroupTimeTable = ({ route, navigation }) => {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      title: group.Group_Name, // Set the header title using group.Group_Name value
+      title: group.Group_Name, 
       headerStyle: {
         backgroundColor: '#3679A4', // 헤더 배경색 변경
       },

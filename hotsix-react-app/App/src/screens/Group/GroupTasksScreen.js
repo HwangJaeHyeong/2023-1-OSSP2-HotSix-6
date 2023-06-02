@@ -4,10 +4,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import axios from 'axios';
 
 const GroupTasksScreen = ({ route, navigation }) => {
-  const SERVER_URL = 'http://192.168.0.12:3001';
+  const SERVER_URL = 'http://192.168.0.120:3001';
   // 그룹별 헤더
   const { group } = route.params;
   const groupname = group.Group_Name;
+  const groupcode = group.Group_Code;
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -22,78 +23,113 @@ const GroupTasksScreen = ({ route, navigation }) => {
     });
   }, [navigation, group]);
 
-  const [todoText, setTodoText] = useState('');
-  const [todos, setTodos] = useState([]);
-  const [sortBy, setSortBy] = useState(null);
-  const [groupMembers, setGroupMembers] = useState([]);
-
+  const [taskText, setTaskText] = useState('');
+  const [tasks, setTasks] = useState([]);
+  const [groupTasks, setGroupTasks] = useState([]);
+  
+  //api 요청 : 그룹 업무 목록 가져오기
   useEffect(() => {
-    // API 요청: 그룹별 내 할 일 목록 가져오기
     axios
-      .get(`${SERVER_URL}/groups/${groupname}/todos`)
+      .get(`${SERVER_URL}/group-tasks`, {
+        params: {
+          groupId: groupcode
+        }
+      })
       .then((response) => {
-        const fetchedTodos = response.data;
-        setTodos(fetchedTodos);
+        const fetchedTasks = response.data;
+        setGroupTasks(fetchedTasks);
+      })
+      .catch((error) => {
+        console.error('그룹 업무 목록 가져오기 중 오류 발생:', error);
+      });
+  }, []);
+  
+  //api 요청 : 내 업무 목록 가져오기
+  useEffect(() => {
+    axios
+      .get(`${SERVER_URL}/my-tasks`, {
+        params: {
+          groupId: groupcode
+        }
+      })
+      .then((response) => {
+        const fetchedTasks = response.data;
+        setTasks(fetchedTasks);
       })
       .catch((error) => {
         console.error('할 일 목록 가져오기 중 오류 발생:', error);
       });
+  }, []);
+ 
+  
+// 새로운 항목 추가
+const addTask = () => {
+  if (taskText.trim() !== '') {
+    const newTask = {
+      id: Date.now().toString(),
+      text: taskText,
+      status: '진행 안됨',
+    };
+    setTaskText('');
 
-    // API 요청: 그룹원 목록 가져오기
+    // API 요청: 새로운 항목 추가
     axios
-      .get(`${SERVER_URL}/groupMembers`)
+    .post(`${SERVER_URL}/my-tasks`, newTask, {
+      params: {
+        groupId: groupcode
+      }
+    })
       .then((response) => {
-        const fetchedMembers = response.data;
-        setGroupMembers(fetchedMembers);
+        console.log('새로운 할 일이 성공적으로 추가되었습니다.');
+        const createdTask = response.data;
+        const color = getStatusColor(createdTask.status);
+        const updatedTask = { ...createdTask, color };
+
+        setTasks((prevTasks) => [...prevTasks, updatedTask]);
       })
       .catch((error) => {
-        console.error('그룹원 목록 가져오기 중 오류 발생:', error);
+        console.error('할 일 추가 중 오류 발생:', error);
       });
-  }, []);
+  }
+};
 
-  // 새로운 항목 추가
-  const addTodo = () => {
-    if (todoText.trim() !== '') {
-      const newTodo = {
-        id: Date.now().toString(),
-        text: todoText,
-        status: '진행 안됨',
-        color: '#888888',
-      };
-      setTodos([...todos, newTodo]);
-      setTodoText('');
 
-      // API 요청: 새로운 항목 추가
-      axios
-        .post(`${SERVER_URL}/groups/${groupname}/todos`, newTodo)
-        .then((response) => {
-          console.log('새로운 할 일이 성공적으로 추가되었습니다.');
-          setTodos([...todos, newTodo]);
-          setTodoText('');
-        })
-        .catch((error) => {
-          console.error('할 일 추가 중 오류 발생:', error);
-        });
-    }
+// 상태에 따른 색상을 반환
+const getStatusColor = (status) => {
+  switch (status) {
+    case '진행 안됨':
+      return '#888888';
+    case '진행 중':
+      return '#FF4646';
+    case '진행 완료':
+      return '#3679A4';
+    default:
+      return '#888888';
+  }
+};
+
+
+  // 진행 상태별 정렬 
+  const sortTasks = () => {
+    let sortedTasks = [...tasks];
+    sortedTasks.sort((a, b) => {
+      const statusOrder = ['진행 안됨', '진행 중', '진행 완료'];
+      return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+    });
+    setTasks(sortedTasks);
   };
-
-  // 진행 상태별 정렬 기능
-  const sortTodos = () => {
-    let sortedTodos = [...todos];
-    sortedTodos.sort((a, b) => a.status.localeCompare(b.status));
-    setTodos(sortedTodos);
-  };
+  
 
   // 진행 상태 표시 버튼
-  const toggleTodoStatus = (id) => {
-    const updatedTodos = todos.map((todo) => {
-      if (todo.id === id) {
+  const toggleTaskStatus = (id) => {
+    const updatedTasks = tasks.map((task) => {
+      if (task.id === id) {
         let updatedStatus;
         let updatedColor;
-        if (todo.status === '진행 안됨') {
+        if (task.status === '진행 안됨') {
           updatedStatus = '진행 중';
           updatedColor = '#FF4646';
-        } else if (todo.status === '진행 중') {
+        } else if (task.status === '진행 중') {
           updatedStatus = '진행 완료';
           updatedColor = '#3679A4';
         } else {
@@ -102,60 +138,78 @@ const GroupTasksScreen = ({ route, navigation }) => {
         }
         // API 요청: 할 일 수정
         axios
-          .patch(`${SERVER_URL}/todos/${id}`, { status: updatedStatus, color: updatedColor })
-          .then((response) => {
-            console.log('할 일이 성공적으로 수정되었습니다.');
-            const updatedTodo = { ...todo, status: updatedStatus, color: updatedColor };
-            const updatedTodos = todos.map((item) => (item.id === id ? updatedTodo : item));
-            setTodos(updatedTodos);
-          })
-          .catch((error) => {
-            console.error('할 일 수정 중 오류 발생:', error);
-          });
-
+        .patch(`${SERVER_URL}/my-tasks/${id}`, { status: updatedStatus })
+        .then((response) => {
+          console.log('할 일이 성공적으로 수정되었습니다.');
+          const updatedTask = { ...task, status: updatedStatus };
+          const updatedColor = getStatusColor(updatedStatus);
+          updatedTask.color = updatedColor;
+          const updatedTasks = tasks.map((item) => (item.id === id ? updatedTask : item));
+          setTasks(updatedTasks);
+        })
+        .catch((error) => {
+          console.error('할 일 수정 중 오류 발생:', error);
+        });
         return {
-          ...todo,
+          ...task,
           status: updatedStatus,
           color: updatedColor,
         };
       }
-      return todo;
+      return task;
     });
-    setTodos(updatedTodos);
+    setTasks(updatedTasks);
   };
 
   // 리스트 삭제
-  const deleteTodo = (id) => {
+  const deleteTask = (id) => {
     // API 요청: 할 일 삭제
     axios
-      .delete(`${SERVER_URL}/todos/${id}`)
+      .delete(`${SERVER_URL}/my-tasks/${id}`)
       .then((response) => {
         console.log('할 일이 성공적으로 삭제되었습니다.');
-        const updatedTodos = todos.filter((todo) => todo.id !== id);
-        setTodos(updatedTodos);
+        const updatedTasks = tasks.filter((task) => task.id !== id);
+        setTasks(updatedTasks);
       })
       .catch((error) => {
         console.error('할 일 삭제 중 오류 발생:', error);
       });
   };
 
-  // 할 일 추가 목록
+  // 내 업무 추가 목록
   const renderItem = ({ item }) => {
+    const taskColor = getStatusColor(item.status);
+  
     return (
-      <View style={styles.todoItem}>
-        <View style={[styles.statusIndicator, { backgroundColor: item.color }]} />
-        <Text style={[styles.todoText, { color: 'black' }]}>{item.text}</Text>
+      <View style={styles.taskItem}>
+        <View style={[styles.statusIndicator, { backgroundColor: taskColor }]} />
+        <Text style={[styles.taskText, { color: 'black' }]}>{item.text}</Text>
         <TouchableOpacity
-          onPress={() => toggleTodoStatus(item.id)}
-          style={[styles.statusButton, { backgroundColor: item.color }]}
+          onPress={() => toggleTaskStatus(item.id)}
+          style={[styles.statusButton, { backgroundColor: taskColor }]}
         >
           <View>
             <Text style={[styles.statusButtonText, { color: '#fff' }]}>{item.status}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => deleteTodo(item.id)} style={styles.deleteButton}>
+        <TouchableOpacity onPress={() => deleteTask(item.id)} style={styles.deleteButton}>
           <MaterialCommunityIcons name="delete" size={25} color="black" />
         </TouchableOpacity>
+      </View>
+    );
+  };
+  
+  //그룹원 업무 
+  const renderGroupTaskItem = ({ item }) => {
+    return (
+      <View style={styles.groupTaskItem}>
+          
+        <View style={styles.groupTaskTitleContainer}>
+        <View style={[styles.statusIndicator, { backgroundColor: item.color }]} />
+        <Text style={[styles.taskText, { color: 'black' }]}>{item.text}</Text>
+          <Text style={styles.authorText}>담당: {item.author}</Text>
+        </View>
+        
       </View>
     );
   };
@@ -166,34 +220,37 @@ const GroupTasksScreen = ({ route, navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="할 일을 입력하세요"
-          value={todoText}
-          onChangeText={setTodoText}
+          value={taskText}
+          onChangeText={setTaskText}
         />
-        <TouchableOpacity onPress={addTodo} style={styles.addButton}>
+        <TouchableOpacity onPress={addTask} style={styles.addButton}>
           <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>나의 업무 :</Text>
-        <TouchableOpacity onPress={sortTodos} style={styles.sortButton}>
+        <TouchableOpacity onPress={sortTasks} style={styles.sortButton}>
           <MaterialCommunityIcons name="sort" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
       <View style={styles.listContainer}>
         <FlatList
           style={styles.list}
-          data={todos}
+          data={tasks}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
       </View>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>그룹원 :</Text>
+        <Text style={styles.title}>그룹원 업무 :</Text>
       </View>
-      <View style={styles.memberContainer}>
-        {groupMembers.map((member) => (
-          <Text key={member.id} style={styles.memberText}>{member.name}</Text>
-        ))}
+      <View style={styles.listContainer}>
+        <FlatList
+          style={styles.list}
+          data={groupTasks}
+          renderItem={renderGroupTaskItem}
+          keyExtractor={(item) => item.id}
+        />
       </View>
     </View>
   );
@@ -232,7 +289,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     backgroundColor: '#3679A4',
-    height:50
+    height: 50,
   },
   sortButton: {
     padding: 5,
@@ -244,16 +301,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   listContainer: {
-  
     paddingHorizontal: 10,
-    height:250,
+    height: 250,
   },
   list: {
     flex: 1,
     marginTop: 10,
-    
   },
-  todoItem: {
+  taskItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
@@ -269,7 +324,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 10,
   },
-  todoText: {
+  taskText: {
     flex: 1,
     fontSize: 16,
   },
@@ -279,24 +334,38 @@ const styles = StyleSheet.create({
   },
   statusButtonText: {
     fontSize: 12,
+    fontWeight: 'bold',
   },
   deleteButton: {
     marginLeft: 10,
   },
-  titleContainer2: {
+  authorText: {
+    marginTop: 5,
+    fontSize: 12,
+    fontStyle: 'italic',
+  },
+  groupTaskItem: {
+    borderWidth: 1,
+    borderColor: '#888',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  groupTaskTitleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#3679A4',
-  },
-  memberContainer: {
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-  memberText: {
-    fontSize: 16,
     marginBottom: 5,
+  },
+  groupTaskTitle: {
+    fontWeight: 'bold',
+  },
+  groupTaskDescription: {
+    fontStyle: 'italic',
+  },
+  memberTasks: {
+    marginTop: 5,
+    paddingLeft: 10,
   },
 });
 

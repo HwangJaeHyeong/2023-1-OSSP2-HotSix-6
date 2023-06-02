@@ -88,7 +88,7 @@ const SignupScreen = ({ navigation }) => {
     }
 
     try {
-      const currentDate = new Date();
+      const currentDate = new Date().toISOString().substring(0,10);
       const response = await axios.post(`${SERVER_URL}/users`, {
         name: name,
         password: password,

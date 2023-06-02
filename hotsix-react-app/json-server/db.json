@@ -1,5 +1,5 @@
 {
-  "groups": [
+  "group": [
     {
       "id": 1,
       "Group_Name": "Example Group"
@@ -9,76 +9,106 @@
       "Group_Name": "Example Group2"
     }
   ],
-  "todos": [
+  "my-tasks": [
     {
-      "id": "1685187991246",
-      "text": "ㅡㅜ",
-      "status": "진행 안됨",
-      "color": "#888888",
-      "groupId": "Example Group2"
-    },
-    {
-      "id": "1685188060634",
-      "text": "ㅡ",
-      "status": "진행 안됨",
-      "color": "#888888",
-      "groupId": "Example Group2"
-    },
-    {
-      "id": "1685188061171",
-      "text": "ㆍ",
+      "id": "1685596411550",
+      "text": "ewewewewwewwe",
       "status": "진행 완료",
-      "color": "#3679A4",
-      "groupId": "Example Group2"
+      "groupId": "12345"
     },
     {
-      "id": "1685188061585",
-      "text": "ㄴ",
-      "status": "진행 안됨",
-      "color": "#888888",
-      "groupId": "Example Group2"
+      "id": "1685596416428",
+      "text": "wewew",
+      "status": "진행 중",
+      "groupId": "12345"
     },
     {
-      "id": "1685188061903",
-      "text": "ㄴ",
-      "status": "진행 안됨",
-      "color": "#888888",
-      "groupId": "Example Group2"
+      "id": "1685596590018",
+      "text": "1212",
+      "status": "진행 중",
+      "groupId": "1234235"
     },
     {
-      "id": "1685188062203",
-      "text": "ㄴ",
+      "id": "1685604588687",
+      "text": "11222",
+      "status": "진행 중",
+      "groupId": "12345"
+    },
+    {
+      "id": "1685604591355",
+      "text": "112222",
       "status": "진행 안됨",
-      "color": "#888888",
-      "groupId": "Example Group2"
+      "groupId": "12345"
+    },
+    {
+      "id": "1685605076386",
+      "text": "12222222",
+      "status": "진행 중",
+      "groupId": "1234235"
+    },
+    {
+      "id": "1685605654467",
+      "text": "89",
+      "status": "진행 안됨"
+    },
+    {
+      "id": "1685684227370",
+      "text": "gkdkdkdkdkdkkdkdkdk",
+      "status": "진행 완료"
     }
   ],
-  "groupMembers": [
+  "group-tasks": [
     {
-      "groupId": 1,
-      "members": [
-        {
-          "id": 1,
-          "name": "John"
-        },
-        {
-          "id": 2,
-          "name": "Jane"
-        }
-      ]
+      "id": 1,
+      "text": "Task 1",
+      "groupId": "12345",
+      "author": "A",
+      "color": "#FF4646"
     },
     {
-      "groupId": 2,
-      "members": [
-        {
-          "id": 3,
-          "name": "Mike"
-        },
-        {
-          "id": 4,
-          "name": "Emily"
-        }
-      ]
+      "id": 2,
+      "text": "Task 2",
+      "groupId": "12345",
+      "author": "A",
+      "color": "#FF4646"
+    },
+    {
+      "id": 3,
+      "text": "Task 3",
+      "groupId": "12345",
+      "author": "송하연",
+      "color": "#FF4646"
+    },
+    {
+      "id": 4,
+      "text": "Task 4",
+      "groupId": "1234235",
+      "author": "D",
+      "color": "#FF4646"
+    },
+    {
+      "id": 5,
+      "text": "Task 5",
+      "groupId": "1234235",
+      "author": "D",
+      "color": "#3679A4"
+    }
+  ],
+  "notices": [
+    {
+      "id": 1,
+      "title": "첫 번째 공지사항",
+      "content": "안녕하세요! 첫 번째 공지사항입니다."
+    },
+    {
+      "id": 2,
+      "title": "두 번째 공지사항",
+      "content": "안녕하세요! 두 번째 공지사항입니다."
+    },
+    {
+      "id": 3,
+      "title": "두 번째 공지사항",
+      "content": "안녕하세요! 두 번째 공지사항입니다."
     }
   ]
 }

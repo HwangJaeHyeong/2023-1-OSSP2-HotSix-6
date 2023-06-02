@@ -21,7 +21,7 @@ const InsertIcsScreen = () => {
       if (res.type === 'success') {
         setSelectedFile(res);
       } else {
-        console.log('Invalid file format. Please select an ICS file.');
+        console.log('파일 형식이 맞지 않습니다. .ics파일을 등록해주세요');
       }
     } catch (error) {
       console.log(error);

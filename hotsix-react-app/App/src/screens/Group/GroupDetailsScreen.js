@@ -31,7 +31,7 @@ const GroupDetailsScreen = ({route , navigation}) => {
             </View>
             <View style={styles.boxcontainer}>
                 <View style={styles.box}>
-                    <MaterialCommunityIcons name="bullhorn-outline" style={styles.icon}/>
+                    <MaterialCommunityIcons name="bullhorn-outline" style={styles.icon} onPress={() => navigation.navigate('GroupNoticeDetails',{group})}/>
                     <Text style={styles.text}>공지사항</Text>
                 </View>
             </View>

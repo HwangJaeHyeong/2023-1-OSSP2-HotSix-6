@@ -13,24 +13,30 @@ function EmailVerificationScreen({ }) {
   const SERVER_URL = 'http://localhost:3001'; //백엔드 서버 주소로 변경해야함
 
   
-  //이메일 인증 완료 버튼 눌렀을 때 인증 상태 백에서 받아옴
-  
+  // 이메일 인증 완료 버튼 눌렀을 때 인증 상태 백에서 받아옴
+  //api요청: is_active 체크 
   const verifyEmail = async () => { 
-    try{
-      const response = await axios.get(`${SERVER_URL}/user/activate/${uidb64}/${token}`);
-      console.lod(response.data);
-      setIsVerified(Boolean(response.data.is_active)); //is_verified(반환된 값) 가져와 setIsVerified 상태 업데이트
-    } catch (error) {
-      console.error(error);
-    };
+    const response = await axios.get(`${SERVER_URL}/user/check-active`,{email : email});
+    console.log(response.data);
+      try{
+        if(response.status == 200){
+          is_active = true;
+          setIsVerified(true); //setIsVerified 상태 업데이트
+        }
+        else if(response.status == 400){
+          Alert.alert("이메일 인증에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error(error);
+      };
+    
   };
-
 
 
  const handleVerification = () => {
     const response = axios.post(`${SERVER_URL}/send-email`, { email })
     try{
-        if (response.status === 202){
+        if (response.status == 202){
         Alert.alert('인증 메일 발송', '이메일로 인증 메일이 발송되었습니다.');
         }
       }catch(error){
