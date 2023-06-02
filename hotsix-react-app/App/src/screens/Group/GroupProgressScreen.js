@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { CheckBox, Button } from 'react-native-elements';
 import axios from 'axios';
@@ -24,6 +24,27 @@ const GroupProgressScreen = ({ route, navigation }) => {
       ),
     });
   }, [navigation, group, boxes]);
+
+  // 박스 데이터를 가져오는 함수
+  const fetchBoxesFromDB = () => {
+    axios.get('http://192.168.0.9:3000/users', {
+    })
+      .then(response => {
+        const findbox = response.data.find((item) => item.Group_Code === group.Group_Code);
+        // GET 요청 성공 시 박스 데이터를 상태값으로 설정
+        const fetchedBoxes = findbox.boxes.map(box => ({
+          text: box.text,
+          checked: box.checked,
+        }));
+        setBoxes(fetchedBoxes);
+      })
+      .catch(error => {
+        console.error('박스 데이터 가져오기 실패:', error);
+      });
+  };
+  useEffect(() => {
+    fetchBoxesFromDB(); // 화면 진입 시 박스 데이터를 가져오도록 설정
+  }, []);
 
   const addBox = () => {
     setBoxes([...boxes, { text: '', checked: false }]);
@@ -54,15 +75,15 @@ const GroupProgressScreen = ({ route, navigation }) => {
   };
 
   const postBoxesToDB = () => {
-    axios.post('/api/group-schedules', {
-      email: `test1@test.com`, 
+    axios.post('http://192.168.0.9:3000/users', {
+      email: "test1@test.com", 
       Group_Code: group.Group_Code,
       boxes: boxes.map(box => ({ text: box.text, checked: box.checked })),
     })
       .then(response => {
         // POST 요청 성공 시 처리할 로직 작성
         console.log('박스 데이터가 DB로 전송되었습니다.');
-        navigation.navigate('GroupDetails');
+        // navigation.navigate('GroupDetails');
       })
       .catch(error => {
         console.error('박스 데이터 전송에 실패하였습니다.', error);
