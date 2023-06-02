@@ -7,7 +7,7 @@ import axios from "axios";
 import { Menu } from "react-native-paper"; // 변경
 
 const InsertPhotoScreen = ({ navigation }) => {
-  const SERVER_URL = "http://172.30.1.38:8000"; // 백엔드 서버 주소로 변경해야함
+  const SERVER_URL = "http://192.168.200.24:8000"; // 백엔드 서버 주소로 변경해야함
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedHour, setSelectedHour] = useState(null); // 변경
@@ -43,26 +43,40 @@ const InsertPhotoScreen = ({ navigation }) => {
           type: "image/jpeg",
         });
 
-        formData.append("time", `${selectedHour}`); // 변경
+        formData.append("time", `${selectedHour}:${selectedMinute}`); // 변경
 
-        // const config = {
-        //   headers: {
-        //     "Content-Type": "multipart/form-data",
-        //   },
-        // };
+        const config = {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        };
 
+        // 첫 이미지 보내기
         const response = await axios.post(
           `${SERVER_URL}/user/images/`,
           formData,
-          config
+          config,
         );
+
+        // DB에 이미지 올리기 요청
+        const Response = await axios.post(
+          `${SERVER_URL}/user/img-time-table/`, 
+          {'email' : 'test1@test.com'}
+        )
+
+        // /user/view-time-table/ 이거로 이메일이랑 같이 보내기 -> 배열 데이터 받기
+
         const imageData = response.data.image;
         setschedules(imageData);
 
-        Alert.alert(
-          "이미지와 시간 전송 성공",
-          "이미지와 시간이 서버로 전송되었습니다."
-        );
+        // 전송이 완료됐다면 다시 Timetable로 이동.
+        if(Response.status === 200){
+          Alert.alert(
+            "이미지와 시간 전송 성공",
+            "이미지와 시간이 서버로 전송되었습니다."
+          );
+          navigation.navigate("Timetable");
+        }
       } catch (error) {
         Alert.alert(
           "이미지와 시간 전송 실패",

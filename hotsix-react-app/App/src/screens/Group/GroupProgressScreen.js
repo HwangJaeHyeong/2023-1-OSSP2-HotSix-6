@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const GroupProgressScreen = ({ route, navigation }) => {
   const { group } = route.params;
-  const [boxes, setBoxes] = useState([]);
+  const [ boxes, setBoxes ] = useState([]);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -65,7 +65,6 @@ const GroupProgressScreen = ({ route, navigation }) => {
         navigation.navigate('GroupDetails');
       })
       .catch(error => {
-        // POST 요청 실패 시 처리할 로직 작성
         console.error('박스 데이터 전송에 실패하였습니다.', error);
       });
   };

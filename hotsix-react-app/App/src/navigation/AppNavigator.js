@@ -20,8 +20,8 @@ import TimetableScreen from '../screens/TimeTable/TimetableScreen';
 import InsertPhotoScreen from '../screens/TimeTable/InsertPhotoScreen';
 import InsertTextScreen from '../screens/TimeTable/InsertTextScreen';
 import RegisterScreen from '../screens/TimeTable/RegisterScreen';
-import RankingScreen from '../screens/TimeTable/RankingScreen';
-import InsertIcsScreen from '../screens/InsertIcsScreen';
+import ChangeScreen from '../screens/TimeTable/ChangeScreen';
+import InsertIcsScreen from '../screens/TimeTable/InsertIcsScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -75,7 +75,7 @@ const AppNavigator = () => {
         <Stack.Screen name="InsertText" component={InsertTextScreen} />
         <Stack.Screen name="InsertIcs" component={InsertIcsScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Ranking" component={RankingScreen} />
+        <Stack.Screen name="Change" component={ChangeScreen} />
        
     </Stack.Navigator>
   );

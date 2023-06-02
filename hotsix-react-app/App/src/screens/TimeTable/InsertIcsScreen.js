@@ -4,7 +4,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const SERVER_URL = 'http://localhost:3001'; //백엔드 서버 주소로 변경해야함
+const SERVER_URL = 'http://192.168.200.24:8000'; //백엔드 서버 주소로 변경해야함
 
 const InsertIcsScreen = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -41,7 +41,7 @@ const InsertIcsScreen = () => {
         });
   
         const response = await axios.post(
-          `${SERVER_URL}/receive_image`,
+          `${SERVER_URL}/user/ics-time-table/`,
           formData,
           {
             headers: {

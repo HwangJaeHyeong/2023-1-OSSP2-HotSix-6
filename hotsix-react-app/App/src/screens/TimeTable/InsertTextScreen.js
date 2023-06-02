@@ -75,7 +75,7 @@ const InsertTextScreen = ({ navigation }) => {
       <Text style={styles.title}>시간표삽입</Text>
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => navigation.navigate("Ranking", { schedules: schedules })}
+        onPress={() => navigation.navigate("Timetable")}
       >
         <Text style={styles.loginButtonText}>삽입 완료</Text>
       </TouchableOpacity>
