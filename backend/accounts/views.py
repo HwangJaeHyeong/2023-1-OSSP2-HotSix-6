@@ -476,7 +476,7 @@ def restore_time(req_email=ModuleNotFoundError):
         table_element.append(ch)
 
         if i % 7 == 0 and i != 0: 
-            table_element_int = [i for i in table_element]
+            table_element_int = [int(i) for i in table_element]
             lst_table.append(table_element_int)
             table_element = []
 
