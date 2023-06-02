@@ -7,7 +7,7 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity>
+      <TouchableOpacity >
         <View tyle={styles.logoContainer}>
           <Image
             source={require("hotsix-react-app/assets/MainLogo.png")}

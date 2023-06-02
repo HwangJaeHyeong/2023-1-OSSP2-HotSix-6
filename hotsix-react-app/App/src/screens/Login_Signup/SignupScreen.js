@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 
-const SERVER_URL = "http://192.168.200.164:8000/"; // 백엔드 서버 주소로 변경해야함
+const SERVER_URL = "http://192.168.0.240:8000/"; // 백엔드 서버 주소로 변경해야함
 
 const SignupScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");

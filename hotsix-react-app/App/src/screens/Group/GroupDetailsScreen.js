@@ -62,7 +62,7 @@ const GroupDetailsScreen = ({ route, navigation }) => {
               name="calendar-month"
               style={styles.icon}
               onPress={() =>
-                navigation.navigate("GroupTimeTable", { schedules: schedules })
+                navigation.navigate("GroupTimeTable", { schedules: schedules , group})
               }
             />
             <Text style={styles.text}>그룹 시간표</Text>

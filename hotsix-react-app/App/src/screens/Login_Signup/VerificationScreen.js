@@ -16,7 +16,7 @@ function EmailVerificationScreen({}) {
   const [title, setTitle] = useState("이메일 인증");
   const [isVerified, setIsVerified] = useState(false);
   const navigation = useNavigation();
-  const SERVER_URL = "http://192.168.200.164:8000/"; //백엔드 서버 주소로 변경해야함
+  const SERVER_URL = "http://192.168.0.240:8000"; //백엔드 서버 주소로 변경해야함
 
   // 이메일 인증 완료 버튼 눌렀을 때 인증 상태 백에서 받아옴
   //api요청: is_active 체크
@@ -27,7 +27,6 @@ function EmailVerificationScreen({}) {
     console.log(response.data);
     try {
       if (response.status == 200) {
-        //is_active = true;
         setIsVerified(true); //setIsVerified 상태 업데이트
       } else if (response.status == 400) {
         Alert.alert("이메일 인증에 실패했습니다.");
@@ -37,16 +36,21 @@ function EmailVerificationScreen({}) {
     }
   };
 
-  const handleVerification = () => {
-    const response = axios.post(`${SERVER_URL}/send-email`, { email });
+  const handleVerification = async () => {
     try {
-      if (response.status == 202) {
+      const response = await axios.post(`${SERVER_URL}/user/send-email/`, {
+        email: email,
+      });
+  
+      if (response.status === 202) {
         Alert.alert("인증 메일 발송", "이메일로 인증 메일이 발송되었습니다.");
       }
     } catch (error) {
+      console.error(error);
       Alert.alert("오류", "이메일 전송에 실패하였습니다.");
     }
   };
+  
 
   useEffect(() => {
     // isVerified == true이면 "이메일 인증 성공" 출력 & 1초 후 login으로 창 전환
