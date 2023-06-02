@@ -15,10 +15,14 @@ import axios from "axios";
 //시간표를 누르면 그것들을 배열에 추가하거나 제거한다.
 
 const GroupTimeTableScreen = () => {
+  const SERVER_URL = "http://192.168.203.24:8000";
   const route = useRoute();
-  const { schedules } = route.params;
+  //const { schedules } = route.params;
   const [events, setEvents] = useState([]);
   const [selectedEvents, setSelectedEvents] = useState([]);
+  const [schedules, setSchedules] = useState([]);
+  const groupCode = "a0laQXJY";
+  console.log(groupCode);
 
   const getTimeIndex = (time) => {
     const [hours, minutes] = time.split(":");
@@ -70,11 +74,32 @@ const GroupTimeTableScreen = () => {
 
       schedule[day].push([str_idx, time_len]);
     });
-    console.log(schedule);
   };
+
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const response = await axios.get(
+          `${SERVER_URL}/group/view-group-table/?group_code=${groupCode}`
+        );
+        if (response.status === 200) {
+          console.log("뭐야");
+          setSchedules(response.data);
+        } else {
+          console.error("Failed to fetch schedules:", response);
+        }
+      } catch (error) {
+        console.error("Failed to fetch schedules:", error);
+      }
+    };
+    if (groupCode) {
+      fetchSchedules();
+    }
+  }, [groupCode]);
 
   // 전 화면에서 schedules 받아서 시간표에서 "1" 공강으로 인식 시키기
   useEffect(() => {
+    console.log(schedules);
     const handleTimetable = (schedules) => {
       const generatedEvents = [];
       let startVal = 0;

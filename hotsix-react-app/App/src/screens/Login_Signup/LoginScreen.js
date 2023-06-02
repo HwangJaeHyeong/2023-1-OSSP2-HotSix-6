@@ -12,7 +12,7 @@ import { handleVerification } from "./VerificationScreen";
 
 // json-server --watch db.json --port 3000 --cors --host 본인 아이피
 // 백엔드 서버 주소로 변경해야함
-const SERVER_URL = "http://192.168.200.164:8000/";
+const SERVER_URL = "http://192.168.0.240:8000/";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");

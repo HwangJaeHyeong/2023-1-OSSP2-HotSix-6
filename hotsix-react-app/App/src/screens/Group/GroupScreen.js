@@ -12,9 +12,10 @@ import Modal from "react-native-modal";
 import axios from "axios";
 
 const GroupScreen = ({ route }) => {
-  const SERVER_URL = "http://192.168.200.164:8000/";
+  const SERVER_URL = "http://192.168.0.240:8000/";
   const navigation = useNavigation();
-  const { userId } = route.params;
+  const email = "osh94230315@gmail.com";
+  //const { e } = route.params;
   //예시 하나 넣어놨습니다. 원래는 비워놓아야합니다.
   const [groups, setGroups] = useState([
     {
@@ -32,11 +33,14 @@ const GroupScreen = ({ route }) => {
 
   useEffect(() => {
     //사용자가 속한 그룹이름과 그룹코드를 가져온다. 위의 형식대로
-    axios.get(`${SERVER_URL}/group/user/${userId}`).then((response) => {
-      const userGroups = response.data;
-      setGroups(userGroups);
-    });
-  }, [userId]);
+    axios
+      .get(`${SERVER_URL}/group/get-group/?email=${email}`)
+      .then((response) => {
+        const userGroups = response.data;
+        console.log(response.data);
+        setGroups(userGroups);
+      });
+  }, []);
 
   const toggleModal = (group) => {
     setSelectedGroup(group);
@@ -87,7 +91,7 @@ const GroupScreen = ({ route }) => {
       />
       <TouchableOpacity
         style={styles.JoinGroupButton}
-        onPress={() => navigation.navigate("JoinGroup", { userId: "user1" })}
+        onPress={() => navigation.navigate("JoinGroup", { email })}
       >
         <Text style={styles.JoinGroupButtonText}>
           그룹 코드로 그룹 입장하기
