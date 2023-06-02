@@ -90,9 +90,7 @@ class ViewGroupTable(GenericAPIView):
                 group_table = group.time_table
                 res_group_table = restore_group_time(group_table)
 
-                response = Response({"integrated_table": res_group_table}, status=status.HTTP_200_OK)
-                response.accepted_renderer = renderers.JSONRenderer()
-                return response
+                return Response({"integrated_table": res_group_table}, status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND)
         else:
