@@ -23,7 +23,6 @@ import RankingScreen from '../screens/TimeTable/RankingScreen';
 import InsertIcsScreen from '../screens/TimeTable/InsertIcsScreen';
 import GroupTasksScreen from '../screens/Group/GroupTasksScreen';
 import GroupNoticeScreen from '../screens/Group/GroupNoticeScreen';
-import GroupNoticeDetailsScreen from '../screens/Group/GroupNoticeDetailsScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -76,7 +75,6 @@ const AppNavigator = () => {
         <Stack.Screen name="GroupTimeTable" component={GroupTimeTableScreen} /> 
         <Stack.Screen name="GroupTasks" component={GroupTasksScreen} />
         <Stack.Screen name="GroupNotice" component={GroupNoticeScreen} />
-        <Stack.Screen name="GroupNoticeDetails" component={GroupNoticeDetailsScreen} />
         <Stack.Screen name="Timetable" component={TimetableScreen} />
         <Stack.Screen name="InsertPhoto" component={InsertPhotoScreen} />
         <Stack.Screen name="InsertText" component={InsertTextScreen} />

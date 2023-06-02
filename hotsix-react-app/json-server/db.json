@@ -11,104 +11,105 @@
   ],
   "my-tasks": [
     {
-      "id": "1685596411550",
-      "text": "ewewewewwewwe",
-      "status": "진행 완료",
-      "groupId": "12345"
-    },
-    {
-      "id": "1685596416428",
-      "text": "wewew",
-      "status": "진행 중",
-      "groupId": "12345"
-    },
-    {
-      "id": "1685596590018",
-      "text": "1212",
-      "status": "진행 중",
-      "groupId": "1234235"
-    },
-    {
-      "id": "1685604588687",
-      "text": "11222",
-      "status": "진행 중",
-      "groupId": "12345"
-    },
-    {
-      "id": "1685604591355",
-      "text": "112222",
+      "id": "1685707733082",
+      "text": "12313",
       "status": "진행 안됨",
-      "groupId": "12345"
+      "groupcode": "1234235"
     },
     {
-      "id": "1685605076386",
-      "text": "12222222",
+      "id": "1685716853082",
+      "text": "1323131",
+      "status": "진행 안됨",
+      "groupcode": "12345"
+    },
+    {
+      "id": "1685716857993",
+      "text": "qeqweqweqw",
       "status": "진행 중",
-      "groupId": "1234235"
+      "groupcode": "12345"
     },
     {
-      "id": "1685605654467",
-      "text": "89",
-      "status": "진행 안됨"
+      "id": "1685716860374",
+      "text": "1323123123131",
+      "status": "진행 중",
+      "groupcode": "12345"
     },
     {
-      "id": "1685684227370",
-      "text": "gkdkdkdkdkdkkdkdkdk",
-      "status": "진행 완료"
+      "id": "1685716862428",
+      "text": "qwdwsadasdas",
+      "status": "진행 완료",
+      "groupcode": "12345"
+    },
+    {
+      "id": "1685716864155",
+      "text": "12312312",
+      "status": "진행 안됨",
+      "groupcode": "12345"
     }
   ],
   "group-tasks": [
     {
       "id": 1,
       "text": "Task 1",
-      "groupId": "12345",
+      "groupcode": "12345",
       "author": "A",
-      "color": "#FF4646"
+      "status": "진행 안됨"
     },
+    
     {
       "id": 2,
       "text": "Task 2",
-      "groupId": "12345",
+      "groupcode": "12345",
       "author": "A",
-      "color": "#FF4646"
+      "status": "진행 안됨"
     },
     {
       "id": 3,
       "text": "Task 3",
-      "groupId": "12345",
+      "groupcode": "1234235",
       "author": "송하연",
-      "color": "#FF4646"
+      "status": "진행 안됨"
     },
     {
       "id": 4,
       "text": "Task 4",
-      "groupId": "1234235",
+      "groupcode": "1234235",
       "author": "D",
-      "color": "#FF4646"
+      "status": "진행 완료"
     },
     {
       "id": 5,
       "text": "Task 5",
-      "groupId": "1234235",
+      "groupcode": "1234235",
       "author": "D",
-      "color": "#3679A4"
+      "status": "진행 완료"
+    },
+    {
+      "id": 6,
+      "text": "Task 3",
+      "groupcode": "12345",
+      "author": "B",
+      "status": "진행 완료"
     }
   ],
-  "notices": [
+  "group-notices": [
     {
-      "id": 1,
-      "title": "첫 번째 공지사항",
-      "content": "안녕하세요! 첫 번째 공지사항입니다."
+      "title": "asda",
+      "content": "asdasdasdas",
+      "groupcode": "12345",
+      "id": 1
     },
     {
-      "id": 2,
-      "title": "두 번째 공지사항",
-      "content": "안녕하세요! 두 번째 공지사항입니다."
+      "title": "notice 1",
+      "content": "notice 1 content",
+      "groupcode": "12345",
+      "id": 2
     },
     {
-      "id": 3,
-      "title": "두 번째 공지사항",
-      "content": "안녕하세요! 두 번째 공지사항입니다."
+      "title": "notice2",
+      "content": "notice2 content",
+      "groupcode": "12345",
+      "id": 3
     }
   ]
 }

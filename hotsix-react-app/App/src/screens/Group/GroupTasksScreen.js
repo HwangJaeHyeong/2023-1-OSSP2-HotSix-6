@@ -7,12 +7,11 @@ const GroupTasksScreen = ({ route, navigation }) => {
   const SERVER_URL = 'http://192.168.0.120:3001';
   // 그룹별 헤더
   const { group } = route.params;
-  const groupname = group.Group_Name;
-  const groupcode = group.Group_Code;
+  const groupcode = String(group.Group_Code);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      title: group.Group_Name,
+      title: group.Group_Name + ' 업무 진행 상황',
       headerStyle: {
         backgroundColor: '#3679A4',
       },
@@ -27,14 +26,11 @@ const GroupTasksScreen = ({ route, navigation }) => {
   const [tasks, setTasks] = useState([]);
   const [groupTasks, setGroupTasks] = useState([]);
   
+
   //api 요청 : 그룹 업무 목록 가져오기
   useEffect(() => {
     axios
-      .get(`${SERVER_URL}/group-tasks`, {
-        params: {
-          groupId: groupcode
-        }
-      })
+      .get(`${SERVER_URL}/group-tasks?groupcode=${groupcode}`)
       .then((response) => {
         const fetchedTasks = response.data;
         setGroupTasks(fetchedTasks);
@@ -46,12 +42,8 @@ const GroupTasksScreen = ({ route, navigation }) => {
   
   //api 요청 : 내 업무 목록 가져오기
   useEffect(() => {
-    axios
-      .get(`${SERVER_URL}/my-tasks`, {
-        params: {
-          groupId: groupcode
-        }
-      })
+    axios.get(`${SERVER_URL}/my-tasks?groupcode=${groupcode}`)
+
       .then((response) => {
         const fetchedTasks = response.data;
         setTasks(fetchedTasks);
@@ -74,11 +66,7 @@ const addTask = () => {
 
     // API 요청: 새로운 항목 추가
     axios
-    .post(`${SERVER_URL}/my-tasks`, newTask, {
-      params: {
-        groupId: groupcode
-      }
-    })
+    .post(`${SERVER_URL}/my-tasks`, { ...newTask, groupcode } )
       .then((response) => {
         console.log('새로운 할 일이 성공적으로 추가되었습니다.');
         const createdTask = response.data;
@@ -201,11 +189,12 @@ const getStatusColor = (status) => {
   
   //그룹원 업무 
   const renderGroupTaskItem = ({ item }) => {
+    const taskColor = getStatusColor(item.status);
     return (
       <View style={styles.groupTaskItem}>
           
         <View style={styles.groupTaskTitleContainer}>
-        <View style={[styles.statusIndicator, { backgroundColor: item.color }]} />
+        <View style={[styles.statusIndicator, { backgroundColor: taskColor}]} />
         <Text style={[styles.taskText, { color: 'black' }]}>{item.text}</Text>
           <Text style={styles.authorText}>담당: {item.author}</Text>
         </View>
