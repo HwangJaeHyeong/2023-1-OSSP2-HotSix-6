@@ -39,6 +39,7 @@ from django.core.mail import EmailMessage
 KOREAN_DAYS = ['월', '화', '수', '목', '금', '토', '일']
 ENGLISH_DAYS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
 
+
 # 이메일 중복 확인
 @api_view(['POST'])
 def duplicateCheck(request):
@@ -66,21 +67,6 @@ def register(request):
     if serializer.is_valid():
         user  = serializer.save()
 
-        # payload = {
-        #      "id" : reqData['email'],
-        #      "exp" : datetime.datetime.now() + datetime.timedelta(minutes=60),
-        #      "iat" : datetime.datetime.now()
-        # }
-
-        # token = jwt.encode(payload, "secretJWTKey", algorithm="HS256")
-
-        # res = Response()
-        # res.set_cookie(key='jwt', value=True, httponly=True)
-        # res.data = {
-        #      'jwt' : token
-        # }
-
-        # return res
         serializer.save()
         
         user = reqData['email']
@@ -88,7 +74,7 @@ def register(request):
         current_site = get_current_site(request)
         domain = current_site.domain
 
-        uidb64 = urlsafe_base64_encode(force_bytes(user)) # user.pk
+        uidb64 = urlsafe_base64_encode(force_bytes(user))
         token = account_activation_token.make_token(user)
         message_data = message(domain, uidb64, token)
 
@@ -100,6 +86,7 @@ def register(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class Activate(View):
      def get(self, request, uidb64, token):
           try:
@@ -107,13 +94,14 @@ class Activate(View):
                user = User.objects.get(pk=uid)
                if user is not None:
                     if account_activation_token.check_token(uid, token):
-                        User.objects.filter(pk=uid).update(is_active=True) # membership_id=2
+                        User.objects.filter(pk=uid).update(is_active=True)
                         return redirect(EMAIL['REDIRECT_PAGE'])
                return Response({"error" : "AUTH_FAIL"}, status=status.HTTP_400_BAD_REQUEST)
           except ValidationError:
                return Response({"error" : "TYPE_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
           except KeyError:
                return Response({"error" : "KEY_ERROR"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def is_active(request):
@@ -124,6 +112,7 @@ def is_active(request):
         return Response(status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 # 이메일 인증 안 됐을 경우 다시 보내기기
 @api_view(['POST'])
@@ -145,17 +134,6 @@ def resendEmail(request):
      
      return Response(status=status.HTTP_202_ACCEPTED)
 
-# # token
-# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-#      @classmethod
-#      def get_token(cls, user):
-#           token = super().get_token(user)
-#           token['username'] = user.username
-#           return token
-     
-# class MyTokenObtainPairView(TokenObtainPairView):
-#      serializer_class = MyTokenObtainPairSerializer
-
 
 # 로그인
 @api_view(['POST'])
@@ -164,8 +142,6 @@ def login(request):
         
         inputEmail = reqData['email']
         inputPW = reqData['password']
-
-        # serializer = UserDataSerializer(data=reqData)
 
         # DB에 ID가 있는 여부에 따라 response
         if User.objects.filter(email=inputEmail).exists():
@@ -177,7 +153,7 @@ def login(request):
                 if bcrypt.checkpw(inputPW.encode("utf-8"), getUser.password.encode("utf-8")):
                       payload = {
                            "email" : inputEmail,
-                           "exp" : datetime.datetime.now() + datetime.timedelta(minutes=60), # 토큰 만료
+                           "exp" : datetime.datetime.now() + datetime.timedelta(minutes=60), # 토큰 만료 시간 60분
                            "iat" : datetime.datetime.now() # 토큰 생성
                       }
 
@@ -198,24 +174,48 @@ def login(request):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-# 로그인 유지
-@api_view(['GET'])
-def loginRemain(request):
-     token = request.COOKIE.get('jwt')
+# # 로그인 유지
+# @api_view(['POST'])
+# def loginRemain(request):
+#      token = request.COOKIE.get('jwt')
      
-     if not token:
-          return Response(status=status.HTTP_401_UNAUTHORIZED)
+#      if not token:
+#           return Response(status=status.HTTP_401_UNAUTHORIZED) 
      
-     try:
-          payload = jwt.decode(token, "SecretJWTKey", algorithms=['HS256'])
+#      # token 유효성 검사
+#      try:
+#           payload = jwt.decode(token, "SecretJWTKey", algorithms=['HS256'])
 
-     except jwt.ExpiredSignatureError:
-          return Response(status=status.HTTP_401_UNAUTHORIZED)
+#      except jwt.ExpiredSignatureError:
+#           return Response(status=status.HTTP_401_UNAUTHORIZED)
      
-     user = User.objects.filter(email=payload['email']).first()
-     serializer = UserDataSerializer(user)
+#      # 사용자 인증
+#      user = User.objects.filter(email=payload['email']).first()
+#      serializer = UserDataSerializer(user)
 
-     return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+#      return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+def login_check(func):
+    def wrapper(self, request, *args, **kwargs):
+        try:
+            access_token = request.COOKIE.get('jwt')
+
+            if not access_token:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+            
+            payload = jwt.decode(access_token, "SecretJWTKey", algorithms=['HS256'])
+
+            user = User.objects.filter(email=payload['email']).first()
+            serializer = UserDataSerializer(user)
+
+        except jwt.ExpiredSignatureError:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        return func(self, request, *args, **kwargs)
+    return wrapper
 
 
 #로그아웃

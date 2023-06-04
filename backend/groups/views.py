@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from accounts.views import restore_table, print_table, loginRemain
+from accounts.views import restore_table, print_table, login_check
 from accounts.models import Group, GroupMember, User, GroupProject
 from accounts.serializers import GroupDataSerializer, GroupMemberSerializer, UserDataSerializer, GroupProjectSerializer
 from django.core.exceptions import ValidationError
@@ -14,24 +14,27 @@ import base64
 import codecs
 import jwt
 
-# check cookie validation
-def cookieCheck(token):
-    if not token:
-        return status.HTTP_401_UNAUTHORIZED
+# def login_check(func):
+#     def wrapper(self, request, *args, **kwargs):
+#         try:
+#             access_token = request.COOKIE.get('jwt')
 
-    try:
-        payload = jwt.decode(token, "SecretJWTKey", algorithms=['HS256']) 
+#             if not access_token:
+#                 return Response(status=status.HTTP_401_UNAUTHORIZED)
+            
+#             payload = jwt.decode(access_token, "SecretJWTKey", algorithms=['HS256'])
 
-    except jwt.ExpiredSignatureError:
-        return status.HTTP_401_UNAUTHORIZED
+#             user = User.objects.filter(email=payload['email']).first()
+#             serializer = UserDataSerializer(user)
 
-    try:
-        user = User.objects.filter(email=payload['email']).first()
-        serializer = UserDataSerializer(user)
-    except User.DoesNotExist:
-        return status.HTTP_404_NOT_FOUND
+#         except jwt.ExpiredSignatureError:
+#             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    return status.HTTP_202_ACCEPTED
+#         except User.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+#         return func(self, request, *args, **kwargs)
+#     return wrapper
 
 
 # generate 8-character random code mixed with English case and number
@@ -44,6 +47,7 @@ def generateRandomCode(length=8):
 # Group
 # generate group
 @api_view(['POST'])
+@login_check
 def groupGenerate(request):
     reqData = request.data # user email, group_name by request
     Creator_ID = reqData['email']
@@ -61,6 +65,7 @@ def groupGenerate(request):
 
 # join group with group code
 @api_view(['POST'])
+@login_check
 def joinGroup(request):
     reqData = request.data # user email, group_code
     Group_Code = reqData['group_code']
@@ -75,6 +80,7 @@ def joinGroup(request):
 
 # get user group list
 @api_view(['GET'])
+@login_check
 def getGroupList(request):
     try:
         user = request.GET['email']
@@ -92,6 +98,7 @@ def getGroupList(request):
 
 # group delete
 @api_view(['DELETE'])
+# @login_check
 def deleteGroup(self, code):
     try:
         group = Group.objects.get(group_code=code)
@@ -105,6 +112,7 @@ def deleteGroup(self, code):
 # GroupProject
 # 할 일 생성 - progress를 default로 지정하기 위해 serializer가 아니라 수동으로 save
 @api_view(['POST'])
+@login_check
 def generateGroupProject(request):
     reqData = request.data
     
@@ -125,6 +133,7 @@ def generateGroupProject(request):
 
 # task name, progress, responsibility 수정 시 - project_id는 pk로 쓰기 때문에 변경 X
 @api_view(['GET', 'PUT', 'DELETE'])
+@login_check
 def updateGroupProject(request):
     reqData = request.data
     group_code = reqData['group_code']
@@ -155,6 +164,7 @@ def updateGroupProject(request):
 
 # 그룹 멤버들의 시간표 통합 
 @api_view(['GET'])
+@login_check
 def groupTable(request):
     reqData = request.data
     get_group_code = reqData['group_code']
