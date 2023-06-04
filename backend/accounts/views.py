@@ -202,7 +202,7 @@ def login(request):
 @api_view(['GET'])
 def loginRemain(request):
      token = request.COOKIE.get('jwt')
-
+     
      if not token:
           return Response(status=status.HTTP_401_UNAUTHORIZED)
      
@@ -216,6 +216,7 @@ def loginRemain(request):
      serializer = UserDataSerializer(user)
 
      return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
 
 #로그아웃
 @api_view(['POST'])

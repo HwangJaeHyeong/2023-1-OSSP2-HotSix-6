@@ -25,8 +25,11 @@ def cookieCheck(token):
     except jwt.ExpiredSignatureError:
         return status.HTTP_401_UNAUTHORIZED
 
-    user = User.objects.filter(email=payload['email']).first()
-    serializer = UserDataSerializer(user)
+    try:
+        user = User.objects.filter(email=payload['email']).first()
+        serializer = UserDataSerializer(user)
+    except User.DoesNotExist:
+        return status.HTTP_404_NOT_FOUND
 
     return status.HTTP_202_ACCEPTED
 
@@ -49,8 +52,11 @@ def groupGenerate(request):
 
     group = Group(group_code=Group_Code, group_name=Group_Name, creator_id=Creator_ID)
     group.save()
+
+    res = Response(status=status.HTTP_201_CREATED)
+    res.data = Group_Code
        
-    return Response(Group_Code)
+    return res
 
 
 # join group with group code
@@ -63,7 +69,7 @@ def joinGroup(request):
     if Group.objects.filter(group_code=Group_Code).exists():
         groupMember = GroupMember(group_code=Group.objects.get(pk=Group_Code), member_id=Member_ID)
         groupMember.save()
-        return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_202_ACCEPTED)
     return Response(status=status.HTTP_404_NOT_FOUND)
 
 
