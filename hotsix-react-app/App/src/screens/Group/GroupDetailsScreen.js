@@ -61,8 +61,11 @@ const GroupDetailsScreen = ({ route, navigation }) => {
             <MaterialCommunityIcons
               name="calendar-month"
               style={styles.icon}
-              onPress={() =>
-                navigation.navigate("GroupTimeTable", { schedules: schedules })
+              onPress={
+                () =>
+                  navigation.navigate("GroupTimeTable", {
+                    groupCode: "a0laQXJY",
+                  }) //수정
               }
             />
             <Text style={styles.text}>그룹 시간표</Text>

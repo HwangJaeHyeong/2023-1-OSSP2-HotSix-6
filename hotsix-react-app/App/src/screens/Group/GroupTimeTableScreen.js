@@ -20,10 +20,44 @@ const GroupTimeTableScreen = () => {
   //const { schedules } = route.params;
   const [events, setEvents] = useState([]);
   const [selectedEvents, setSelectedEvents] = useState([]);
-  const [schedules, setSchedules] = useState([]);
-  const groupCode = "a0laQXJY";
+  const [schedules, setSchedules] = useState([[]]);
+  const { groupCode } = route.params;
+  const test = [
+    [2, 0, 0, 1, 0, 1, 0],
+    [2, 0, 0, 1, 0, 1, 0],
+    [2, 1, 0, 1, 0, 1, 0],
+    [2, 1, 0, 1, 0, 1, 0],
+    [2, 1, 0, 1, 0, 1, 0],
+    [2, 1, 0, 6, 0, 1, 0],
+    [1, 1, 0, 6, 0, 1, 0],
+    [1, 1, 0, 6, 0, 1, 0],
+    [1, 1, 0, 6, 0, 0, 0],
+    [1, 1, 0, 6, 0, 0, 0],
+    [0, 1, 0, 6, 0, 0, 0],
+    [0, 0, 0, 6, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [1, 0, 0, 1, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0],
+    [4, 0, 0, 0, 0, 0, 1],
+    [4, 0, 0, 0, 0, 0, 1],
+    [4, 0, 0, 0, 0, 0, 1],
+    [4, 0, 0, 0, 0, 0, 1],
+    [4, 0, 0, 0, 0, 0, 12],
+    [4, 0, 0, 0, 0, 0, 12],
+    [4, 0, 0, 0, 0, 0, 12],
+    [4, 0, 0, 0, 1, 0, 12],
+    [4, 0, 0, 0, 1, 0, 12],
+    [4, 0, 0, 0, 1, 0, 12],
+    [4, 0, 0, 0, 1, 0, 12],
+    [4, 0, 0, 0, 1, 0, 12],
+  ];
   console.log(groupCode);
-
   const getTimeIndex = (time) => {
     const [hours, minutes] = time.split(":");
     const totalMinutes = parseInt(hours, 10) * 60 + parseInt(minutes, 10);
@@ -75,16 +109,18 @@ const GroupTimeTableScreen = () => {
       schedule[day].push([str_idx, time_len]);
     });
   };
+  //tests
 
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
+        console.log("왜안돼");
+        setSchedules(test);
         const response = await axios.get(
-          `${SERVER_URL}/group/view-group-table/?group_code=${groupCode}`
+          `${SERVER_URL}/group/view-group-table/${groupCode}`
         );
         if (response.status === 200) {
-          console.log("뭐야");
-          setSchedules(response.data);
+          //setSchedules(response.data.integrated_table);
         } else {
           console.error("Failed to fetch schedules:", response);
         }
@@ -96,10 +132,12 @@ const GroupTimeTableScreen = () => {
       fetchSchedules();
     }
   }, [groupCode]);
-
   // 전 화면에서 schedules 받아서 시간표에서 "1" 공강으로 인식 시키기
   useEffect(() => {
     console.log(schedules);
+  }, [schedules]);
+
+  useEffect(() => {
     const handleTimetable = (schedules) => {
       const generatedEvents = [];
       let startVal = 0;
@@ -235,9 +273,6 @@ const GroupTimeTableScreen = () => {
           ))}
         </View>
       </View>
-      <TouchableOpacity style={styles.checkButton}>
-        <Text style={styles.checkButtonText}>확인</Text>
-      </TouchableOpacity>
     </View>
   );
 };
