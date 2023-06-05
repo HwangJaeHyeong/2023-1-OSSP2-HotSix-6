@@ -9,7 +9,7 @@ urlpatterns = [
     
     path('group-table/', views.groupTable, name="groupTable"),
 
-    path('create-group-project/', views.generateGroupProject, name="generateGroupProject"),
+    path('create-group-project/', views.createGroupProject, name="generateGroupProject"),
     path('get-group-project/', views.getGroupProject, name="getGroupProject"),
     path('group-project/', views.updateGroupProject, name="updateGroupProject"),
 
