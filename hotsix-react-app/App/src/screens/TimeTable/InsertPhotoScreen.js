@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Button, Image, Alert, StyleSheet, Text } from "react-native";
+import { View, Button, Image, Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
@@ -7,15 +7,16 @@ import axios from "axios";
 import { Menu } from "react-native-paper"; // 변경
 
 const InsertPhotoScreen = ({ navigation }) => {
-  const SERVER_URL = "http://172.30.1.38:8000"; // 백엔드 서버 주소로 변경해야함
+  const SERVER_URL = "http://192.168.200.24:8000"; // 백엔드 서버 주소로 변경해야함
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedHour, setSelectedHour] = useState(null); // 변경
   const [selectedMinute, setSelectedMinute] = useState(null); // 변경
-
+  const [schedules, setschedules] = useState(null);
+  
   const selectImage = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
-
+    
     if (status !== "granted") {
       alert("카메라 권한이 필요합니다.");
       return;
@@ -41,6 +42,7 @@ const InsertPhotoScreen = ({ navigation }) => {
           name: "image.jpg",
           type: "image/jpeg",
         });
+
         formData.append("time", `${selectedHour}:${selectedMinute}`); // 변경
 
         const config = {
@@ -49,17 +51,32 @@ const InsertPhotoScreen = ({ navigation }) => {
           },
         };
 
+        // 첫 이미지 보내기
         const response = await axios.post(
           `${SERVER_URL}/user/images/`,
           formData,
-          config
+          config,
         );
-        const imageData = response.data.image;
 
-        Alert.alert(
-          "이미지와 시간 전송 성공",
-          "이미지와 시간이 서버로 전송되었습니다."
-        );
+        // DB에 이미지 올리기 요청
+        const Response = await axios.post(
+          `${SERVER_URL}/user/img-time-table/`, 
+          {'email' : 'test1@test.com'}
+        )
+
+        // /user/view-time-table/ 이거로 이메일이랑 같이 보내기 -> 배열 데이터 받기
+
+        const imageData = response.data.image;
+        setschedules(imageData);
+
+        // 전송이 완료됐다면 다시 Timetable로 이동.
+        if(Response.status === 200){
+          Alert.alert(
+            "이미지와 시간 전송 성공",
+            "이미지와 시간이 서버로 전송되었습니다."
+          );
+          navigation.navigate("Timetable");
+        }
       } catch (error) {
         Alert.alert(
           "이미지와 시간 전송 실패",
@@ -78,7 +95,6 @@ const InsertPhotoScreen = ({ navigation }) => {
   for (let i = 8; i <= 12; i++) {
     hours.push(i);
   }
-
   const minutes = [];
   for (let j = 0; j < 60; j += 10) {
     minutes.push(j);
@@ -127,6 +143,16 @@ const InsertPhotoScreen = ({ navigation }) => {
           </View>
         </View>
       )}
+      {/* {sendImageToServer && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() => navigation.navigate("Ranking", { schedules: schedules })}
+          >
+          <Text style={styles.questionText}>삽입 완료</Text>
+        </TouchableOpacity>
+        </View>
+      )} */}
     </View>
   );
 };
