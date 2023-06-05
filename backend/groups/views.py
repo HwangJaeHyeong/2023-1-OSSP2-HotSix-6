@@ -331,31 +331,95 @@ def totalProgress(request):
     return prog
 
 
-# 그룹 멤버들의 시간표 통합 
-@api_view(['GET'])
-@login_check
-def groupTable(request):
-    reqData = request.data
-    get_group_code = reqData['group_code']
+# 그룹 멤버들의 시간표 조회
+class ViewGroupTable(GenericAPIView):
+    def get(self, request, group_code):
+        if Group.objects.filter(group_code=group_code).exists():
+            if GroupTimetable.objects.filter(group_code=group_code).exists():
+                group = GroupTimetable.objects.get(group_code=group_code)
+                group_table = group.time_table
+                res_group_table = restore_group_time(group_table)
 
-    if Group.objects.filter(group_code=get_group_code).exists():
-        get_group_members = GroupMember.objects.filter(group_code=get_group_code).values()
+                return Response({"integrated_table": res_group_table}, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-        # 그룹 멤버 각각의 시간표 읽어 오기
-        members_time_table = []
-        for member in get_group_members:
-            group_user = User.objects.get(email=member['email_id']) # 해당 그룹 멤버
-            user_table = restore_group_time(group_user.email) # 해당 그룹 멤버의 시간표
-            members_time_table.append(user_table) 
+# 그룹 시간표 초기화 (일정 없는 시간표 생성)
+@api_view(['POST'])
+def create_group_table(request):
+    if request.method == 'POST':
+        try:
+            reqData = request.data
+            post_group_code = reqData['group_code']
 
-        # 그룹 멤버들의 시간표가 존재하면 그룹 시간표 통합
-        if members_time_table:
-            group_table = integrate_table(members_time_table)
+            z_table = compress_table(INIT_TIME_TABLE)
 
-        return Response({"integrated table":group_table})
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+            if Group.objects.filter(group_code=post_group_code).exists():
+                input_data = {
+                    'group_code':post_group_code,
+                    'time_table':z_table
+                }
+                serializer = GroupTimetableSerializer(data=input_data)
 
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(status=status.HTTP_201_CREATED)
+                else: 
+                    return Response(status=status.HTTP_400_BAD_REQUEST) 
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        except:
+            return Response(status=status.HTTP_409_CONFLICT) 
+        
+
+# 그룹 멤버들의 시간표를 통합
+@api_view(['PUT'])
+def integrate_table(request):
+    if request.method == 'PUT':
+        try:
+            reqData = request.data
+            post_group_code = reqData['group_code']
+            
+            if Group.objects.filter(group_code=post_group_code).exists():
+                if GroupMember.objects.filter(group_code=post_group_code).exists():
+                    # 그룹 멤버들의 시간표 통합
+                    group_members = GroupMember.objects.filter(group_code=post_group_code).values() # 그룹 멤버들 받아 오기
+                    group_table = integrated_members_table(group_members) # 그룹 멤버들의 시간표 통합
+                    z_table = compress_table(group_table)
+                    if GroupTimetable.objects.filter(group_code=post_group_code).exists(): 
+                        update_table = GroupTimetable.objects.get(group_code=post_group_code)
+                        update_table.time_table = z_table
+                        update_table.save()
+                        return Response(status=status.HTTP_202_ACCEPTED)
+                    else:
+                        return Response(status=status.HTTP_400_BAD_REQUEST) # 잘못된 데이터 입력 받음
+                else:
+                    return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND) # 해당 사용자를 찾을 수 없음
+        except:
+            return Response(status=status.HTTP_409_CONFLICT) 
+       
+@api_view(['DELETE'])
+def del_group_table(request):
+    if request.method == 'DELETE':
+        try:
+            reqData = request.data
+            del_group_code = reqData['group_code']
+
+            if Group.objects.filter(group_code=del_group_code).exists():
+                if GroupTimetable.objects.filter(group_code=del_group_code).exists():
+                    del_group_table =  GroupTimetable.objects.get(group_code=del_group_code)
+                    del_group_table.delete()
+                    return Response(status=status.HTTP_200_OK)
+                else:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        except:
+            return Response(status=status.HTTP_409_CONFLICT) 
 
 # 그룹 멤버들의 시간표를 통합하는 함수
 def integrated_members_table(group_members):
@@ -380,7 +444,6 @@ def integrated_members_table(group_members):
                         group_table[time][day] += members_time_table[idx][time][day]
 
     return group_table
-
 
 # 압축한 그룹 시간표 리스트로 복원하는 함수
 def restore_group_time(group_time_table):
