@@ -290,8 +290,13 @@ def getNotice(request):
 def updateNotice(request):
     reqData = request.data
     notice_id = reqData['notice_id']
-    notice = GroupNotice.objects.filter(notice_id=notice_id)
+    group_code = reqData['group_code']
     
+    try:
+        notice = GroupNotice.objects.filter(notice_id=notice_id, group_code=group_code)
+    except GroupNotice.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
     if request.method == 'PUT':
         notice.notice_title = reqData['notice_title']
         notice.notice_content = reqData['notice_content']
