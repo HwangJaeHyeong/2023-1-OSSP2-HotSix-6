@@ -15,14 +15,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Group',
             fields=[
-                ('group_code', models.CharField(db_column='Group_Code', max_length=20, primary_key=True, serialize=False)),
-                ('group_name', models.CharField(db_collation='utf8mb4_0900_ai_ci', db_column='Group_Name', max_length=10)),
-                ('creator_id', models.CharField(db_collation='utf8mb4_0900_ai_ci', db_column='Creator_ID', max_length=100)),
+                ('group_code', models.CharField(db_collation='latin1_swedish_ci', db_column='Group_Code', max_length=20, primary_key=True, serialize=False)),
+                ('group_name', models.CharField(db_column='Group_Name', max_length=10)),
+                ('creator_id', models.CharField(db_column='Creator_ID', max_length=100)),
             ],
             options={
                 'db_table': 'group',
                 'managed': True,
             },
+        ),
+        migrations.CreateModel(
+            name='Image',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('image', models.ImageField(upload_to='images/')),
+                ('time', models.CharField(max_length=5)),
+            ],
         ),
         migrations.CreateModel(
             name='User',
@@ -32,7 +40,6 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(db_column='Name', max_length=10)),
                 ('join_date', models.DateField(db_column='Join_Date')),
                 ('is_active', models.IntegerField(db_column='is_Active')),
-                ('time_table', models.BinaryField(blank=True, db_column='Time_Table', max_length=255, null=True)),
             ],
             options={
                 'db_table': 'user',
@@ -42,12 +49,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Time',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('time_id', models.CharField(db_collation='utf8mb4_0900_ai_ci', db_column='Time_ID', max_length=15, null=True)),
-                ('day', models.IntegerField(db_column='Day', null=True)),
-                ('time', models.IntegerField(db_column='Time', null=True)),
-                ('preference', models.IntegerField(blank=True, db_column='Preference', null=True)),
-                ('email', models.OneToOneField(db_column='Email', on_delete=django.db.models.deletion.CASCADE, to='accounts.user')),
+                ('time_id', models.AutoField(db_column='Time_ID', primary_key=True, serialize=False)),
+                ('time_table', models.BinaryField(db_column='Time_Table', max_length=255)),
+                ('preference', models.BinaryField(db_column='Preference', max_length=255)),
+                ('email', models.ForeignKey(db_column='Email', on_delete=django.db.models.deletion.DO_NOTHING, to='accounts.user')),
             ],
             options={
                 'db_table': 'time',
@@ -60,7 +65,7 @@ class Migration(migrations.Migration):
                 ('timetable_id', models.IntegerField(db_column='Timetable_ID', primary_key=True, serialize=False)),
                 ('start_time', models.DateField(db_column='Start_Time')),
                 ('end_time', models.DateField(db_column='End_Time')),
-                ('group_code', models.ForeignKey(db_column='Group_Code', on_delete=django.db.models.deletion.CASCADE, to='accounts.group')),
+                ('group_code', models.ForeignKey(db_column='Group_Code', on_delete=django.db.models.deletion.DO_NOTHING, to='accounts.group')),
             ],
             options={
                 'db_table': 'group_timetable',
@@ -75,7 +80,7 @@ class Migration(migrations.Migration):
                 ('schedule_content', models.CharField(blank=True, db_collation='utf8mb4_0900_ai_ci', db_column='Schedule_Content', max_length=100, null=True)),
                 ('start_time', models.DateField(db_column='Start_Time')),
                 ('end_time', models.DateField(db_column='End_Time')),
-                ('group_code', models.ForeignKey(db_column='Group_Code', on_delete=django.db.models.deletion.CASCADE, to='accounts.group')),
+                ('group_code', models.ForeignKey(db_column='Group_Code', on_delete=django.db.models.deletion.DO_NOTHING, to='accounts.group')),
             ],
             options={
                 'db_table': 'group_schedule',
@@ -88,7 +93,7 @@ class Migration(migrations.Migration):
                 ('project_id', models.IntegerField(db_column='Project_ID', primary_key=True, serialize=False)),
                 ('project_name', models.CharField(db_collation='utf8mb4_0900_ai_ci', db_column='Project_Name', max_length=15)),
                 ('project_progress', models.IntegerField(db_column='Project_Progress')),
-                ('group_code', models.ForeignKey(db_column='Group_Code', on_delete=django.db.models.deletion.CASCADE, to='accounts.group')),
+                ('group_code', models.ForeignKey(db_column='Group_Code', on_delete=django.db.models.deletion.DO_NOTHING, to='accounts.group')),
             ],
             options={
                 'db_table': 'group_project',
@@ -102,7 +107,7 @@ class Migration(migrations.Migration):
                 ('notice_title', models.CharField(db_collation='utf8mb4_0900_ai_ci', db_column='Notice_Title', max_length=15)),
                 ('notice_content', models.CharField(blank=True, db_collation='utf8mb4_0900_ai_ci', db_column='Notice_Content', max_length=100, null=True)),
                 ('notice_date', models.DateField(db_column='Notice_Date')),
-                ('group_code', models.ForeignKey(db_column='Group_Code', on_delete=django.db.models.deletion.CASCADE, to='accounts.group')),
+                ('group_code', models.ForeignKey(db_column='Group_Code', on_delete=django.db.models.deletion.DO_NOTHING, to='accounts.group')),
             ],
             options={
                 'db_table': 'group_notice',
@@ -112,9 +117,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GroupMember',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('group_code', models.ForeignKey(db_column='group_code', on_delete=django.db.models.deletion.CASCADE, to='accounts.group')),
-                ('member', models.ForeignKey(db_column='Member', max_length=100, on_delete=django.db.models.deletion.CASCADE, to='accounts.user')),
+                ('member_id', models.AutoField(db_column='Member_ID', primary_key=True, serialize=False)),
+                ('email', models.ForeignKey(db_column='Email', on_delete=django.db.models.deletion.DO_NOTHING, to='accounts.user')),
+                ('group_code', models.ForeignKey(db_column='Group_Code', on_delete=django.db.models.deletion.DO_NOTHING, to='accounts.group')),
             ],
             options={
                 'db_table': 'group_member',

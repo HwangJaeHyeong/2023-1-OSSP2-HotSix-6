@@ -1,6 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.routers import DefaultRouter
+from .views import ImageViewSet
+    
+router = DefaultRouter()
+router.register(r'images', ImageViewSet)
 
 urlpatterns = [
     path('duplicate/', views.duplicateCheck, name="duplicateCheck"),
@@ -10,6 +15,13 @@ urlpatterns = [
     path('send-email/', views.resendEmail, name="resendEmail"),
     path('login-remain/', views.loginRemain, name="loginRemain"),
     path('logout/', views.logout, name="logout"),
-    path('time-table/', views.TimeTable, name="TimeTable"),
-    path('check-active/', views.is_active, name="is_active"),
+
+    path('', include(router.urls)), # 이미지 처리를 위한 url
+    path('view-time-table/<str:email>', views.ViewTimeTable.as_view(), name="ViewTimeTable"),
+    path('create-time-table/', views.create_time_table, name='create_time_table'),
+    path('img-time-table/', views.imgTimeTable, name="imgTimeTable"),
+    path('text-time-table/', views.text_time_table, name="textTimeTable"),
+    path('ics-time-table/', views.icsTimeTable, name="icsTimeTable"),
+    path('preference/', views.preference, name="preference"),
+    path('del-time-table/', views.delTimeTable, name="delTimeTable"),
 ]
