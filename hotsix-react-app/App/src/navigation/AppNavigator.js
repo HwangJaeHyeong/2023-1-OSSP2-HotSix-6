@@ -9,19 +9,20 @@ import AgreementScreen from '../screens/Login_Signup/AgreementScreen';
 import SignupScreen from '../screens/Login_Signup/SignupScreen';
 import EmailVerificationScreen from '../screens/Login_Signup/VerificationScreen';
 import MainScreen from '../screens/Main/MainScreen';
+import ManageGroupScreen from '../screens/Group/ManageGroupScreen';
 import GroupScreen from '../screens/Group/GroupScreen';
 import CreateNewgroupScreen from '../screens/Group/CreateNewgroupScreen';
 import JoinGroupScreen from '../screens/Group/JoinGroupScreen';
 import GroupDetailsScreen from '../screens/Group/GroupDetailsScreen';
-import GroupProgressScreen from '../screens/Group/GroupProgressScreen';
 import GroupTimeTableScreen from '../screens/Group/GroupTimeTableScreen';
 import GroupTasksScreen from '../screens/Group/GroupTasksScreen';
 import GroupNoticeScreen from '../screens/Group/GroupNoticeScreen';
 import TimetableScreen from '../screens/TimeTable/TimetableScreen';
 import InsertPhotoScreen from '../screens/TimeTable/InsertPhotoScreen';
+import InsertTextScreen from '../screens/TimeTable/InsertTextScreen';
 import RegisterScreen from '../screens/TimeTable/RegisterScreen';
-import ChangeScreen from '../screens/TimeTable/ChangeScreen';
-import InsertIcsScreen from '../screens/TimeTable/TimeTable/InsertIcsScreen';
+import RankingScreen from '../screens/TimeTable/RankingScreen';
+import InsertIcsScreen from '../screens/TimeTable/InsertIcsScreen';
 import MyPageScreen from '../screens/Login_Signup/MyPageScreen';
 
 
@@ -68,19 +69,20 @@ const AppNavigator = () => {
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="Verification" component={EmailVerificationScreen} />
         <Stack.Screen name="Main" component={MainScreen} />
+        <Stack.Screen name="ManageGroup" component={ManageGroupScreen} />
         <Stack.Screen name="Group" component={GroupScreen} />
         <Stack.Screen name="Makegroup" component={CreateNewgroupScreen} />
         <Stack.Screen name="JoinGroup" component={JoinGroupScreen} />
         <Stack.Screen name="GroupDetails" component={GroupDetailsScreen} />
-        <Stack.Screen name="GroupProgress" component={GroupProgressScreen} />
         <Stack.Screen name="GroupTimeTable" component={GroupTimeTableScreen} /> 
         <Stack.Screen name="GroupTasks" component={GroupTasksScreen} />
         <Stack.Screen name="GroupNotice" component={GroupNoticeScreen} />
         <Stack.Screen name="Timetable" component={TimetableScreen} />
         <Stack.Screen name="InsertPhoto" component={InsertPhotoScreen} />
+        <Stack.Screen name="InsertText" component={InsertTextScreen} />
         <Stack.Screen name="InsertIcs" component={InsertIcsScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Change" component={ChangeScreen} />
+        <Stack.Screen name="Ranking" component={RankingScreen} />
         <Stack.Screen name="MyPage" component={MyPageScreen} />
        
     </Stack.Navigator>

@@ -15,7 +15,7 @@ const SERVER_URL = 'http://192.168.0.240:8000'; //백엔드 서버 주소로 변
 const CreateNewgroupScreen = ({route}) => {
   
   const navigation = useNavigation();
-  const { email } = route.params;
+  const { userId } = route.params;
   const [Group_Name, setGroup_Name] = useState('');
   const [isGroup_NameAvailable, setIsGroup_NameAvailable] = useState(false);  
 
@@ -32,22 +32,15 @@ const CreateNewgroupScreen = ({route}) => {
     
     try {
       // 그룹 만들기를 위한 백엔드 API 호출
-<<<<<<< HEAD
       const response = await axios.post(`${SERVER_URL}/group/generate-group/`, {
         // Creator_Id: userId,
         group_name: Group_Name,
         email : "elena0315@naver.com",
-=======
-      const response = await axios.post(`${SERVER_URL}/group`, {
-        Creator_Id: email,
-        Group_Name: Group_Name,
->>>>>>> main
       });
       // 랜덤으로 생성된 그룹 코드 
-      if(response.ok) {
-        Alert.alert("그룹 생성이 완료됐습니다!");
-        navigation.navigate('ManageGroup'); 
-      } else {Alert.alert('그룹 생성 중 오류가 발생했습니다.');}
+      const groupcode = response.data;
+      Alert.alert("그룹 생성이 완료됐습니다! 주어진 그룹 코드 : ", groupcode);
+      navigation.navigate('ManageGroup');   
     } catch (error) {
       console.error(error);
       Alert.alert('그룹 생성 중 오류가 발생했습니다.');

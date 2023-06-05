@@ -14,13 +14,13 @@ import axios from "axios";
 const GroupScreen = ({ route }) => {
   const SERVER_URL = "http://192.168.0.240:8000/";
   const navigation = useNavigation();
-  const email = "osh94230315@gmail.com"; //수정
-  //const { email } = route.params;
+  const email = "osh94230315@gmail.com";
+  //const { e } = route.params;
   //예시 하나 넣어놨습니다. 원래는 비워놓아야합니다.
   const [groups, setGroups] = useState([
     {
       Group_Code: 12345,
-      Group_Name: "Example Group1",
+      Group_Name: "Example Group",
     },
     {
       Group_Code: 1234235,
@@ -84,9 +84,6 @@ const GroupScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>User Groups</Text>
-      <TouchableOpacity style={styles.CreateNewgroupButton} onPress={() => navigation.navigate("Makegroup", { email: "example@naver.com" })}>
-        <Text style={styles.CreateNewgroupLabel}>새 그룹 만들기</Text>
-      </TouchableOpacity>
       <FlatList
         data={groups}
         keyExtractor={(item) => item.Group_Code.toString()}
@@ -220,22 +217,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#ffffff",
     fontSize: 18,
-  },
-  CreateNewgroupButton: {
-    position: 'absolute',
-    top: 15,
-    right: 30,
-    backgroundColor: '#007AFF',
-    width: 100,
-    height: 40,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  CreateNewgroupLabel: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
   },
 });
 
