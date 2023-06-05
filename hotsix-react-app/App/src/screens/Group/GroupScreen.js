@@ -20,7 +20,7 @@ const GroupScreen = ({ route }) => {
   const [groups, setGroups] = useState([
     {
       Group_Code: 12345,
-      Group_Name: "Example Group",
+      Group_Name: "Example Group1",
     },
     {
       Group_Code: 1234235,
@@ -84,18 +84,16 @@ const GroupScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>User Groups</Text>
+      <TouchableOpacity style={styles.CreateNewgroupButton} onPress={() => navigation.navigate("Makegroup", { email: "example@naver.com" })}>
+        <Text style={styles.CreateNewgroupLabel}>새 그룹 만들기</Text>
+      </TouchableOpacity>
       <FlatList
         data={groups}
         keyExtractor={(item) => item.Group_Code.toString()}
         renderItem={renderGroupItem}
       />
-      <TouchableOpacity
-        style={styles.JoinGroupButton}
-        onPress={() => navigation.navigate("JoinGroup", { email })}
-      >
-        <Text style={styles.JoinGroupButtonText}>
-          그룹 코드로 그룹 입장하기
-        </Text>
+      <TouchableOpacity style={styles.JoinGroupButton} onPress={() => navigation.navigate('JoinGroup', {email: 'example@naver.com'})}>
+        <Text style={styles.JoinGroupButtonText}>그룹 코드로 그룹 입장하기</Text>
       </TouchableOpacity>
 
       <Modal isVisible={isModalVisible}>
@@ -217,6 +215,22 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#ffffff",
     fontSize: 18,
+  },
+  CreateNewgroupButton: {
+    position: 'absolute',
+    top: 15,
+    right: 30,
+    backgroundColor: '#007AFF',
+    width: 100,
+    height: 40,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  CreateNewgroupLabel: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
 

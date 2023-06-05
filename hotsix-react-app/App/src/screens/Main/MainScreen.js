@@ -7,7 +7,7 @@ const MainScreen = ({ navigation }) => {
       <Text style={styles.title}>메인화면</Text>
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => navigation.navigate("ManageGroup")}
+        onPress={() => navigation.navigate("Group", { userId: "user1" })}
       >
         <Text style={styles.loginButtonText}>내 그룹 보기</Text>
       </TouchableOpacity>
@@ -19,9 +19,6 @@ const MainScreen = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity style={styles.loginButton}>
         <Text style={styles.loginButtonText}>회원정보 수정</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('InsertIcs')}>
-        <Text style={styles.loginButtonText}>ics파일업로드</Text>
       </TouchableOpacity>
     </View>
   );
