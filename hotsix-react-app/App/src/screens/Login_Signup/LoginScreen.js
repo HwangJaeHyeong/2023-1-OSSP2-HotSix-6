@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import { handleVerification } from "./VerificationScreen";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // json-server --watch db.json --port 3000 --cors --host 본인 아이피
 // 백엔드 서버 주소로 변경해야함
@@ -37,6 +38,14 @@ const LoginScreen = ({ navigation }) => {
       });
 
       if (response.status === 200) {
+
+        // 쿠키 설정
+        //const token = response.data.token;
+        //await AsyncStorage.setItem('authToken', token);
+        // headers: {'Cookie': `authToken=${token}`, // 쿠키 값 포함해서 이런식으로 사용?
+      
+
+
         Alert.alert("로그인 성공!");
         console.log("JWT:", response.data.jwt);
         navigation.navigate("Main");

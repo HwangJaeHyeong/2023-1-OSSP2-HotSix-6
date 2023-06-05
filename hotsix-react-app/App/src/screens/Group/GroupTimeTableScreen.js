@@ -15,6 +15,22 @@ import axios from "axios";
 //시간표를 누르면 그것들을 배열에 추가하거나 제거한다.
 
 const GroupTimeTableScreen = () => {
+
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: group.Group_Name,
+      headerStyle: {
+        backgroundColor: '#3679A4',
+      },
+      headerTintColor: '#ffffff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    });
+ }, [navigation, group]);
+
+
   const SERVER_URL = "http://192.168.203.24:8000";
   const route = useRoute();
   //const { schedules } = route.params;

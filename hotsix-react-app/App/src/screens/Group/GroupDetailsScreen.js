@@ -61,11 +61,8 @@ const GroupDetailsScreen = ({ route, navigation }) => {
             <MaterialCommunityIcons
               name="calendar-month"
               style={styles.icon}
-              onPress={
-                () =>
-                  navigation.navigate("GroupTimeTable", {
-                    groupCode: "a0laQXJY",
-                  }) //수정
+              onPress={() =>
+                navigation.navigate("GroupTimeTable", { schedules: schedules , group})
               }
             />
             <Text style={styles.text}>그룹 시간표</Text>
@@ -75,7 +72,7 @@ const GroupDetailsScreen = ({ route, navigation }) => {
           <View style={styles.box}>
             <MaterialCommunityIcons
               name="bullhorn-outline"
-              style={styles.icon}
+              style={styles.icon} onPress={() => navigation.navigate('GroupNotice',{group})}
             />
             <Text style={styles.text}>공지사항</Text>
           </View>
@@ -100,7 +97,7 @@ const GroupDetailsScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.boxcontainer}>
           <View style={styles.box}>
-            <MaterialCommunityIcons name="progress-check" style={styles.icon} />
+            <MaterialCommunityIcons name="progress-check" style={styles.icon}  onPress={() => navigation.navigate('GroupTasks',{group}) } />
             <Text style={styles.text}>팀원 업무 진행 상황</Text>
           </View>
         </View>
@@ -145,6 +142,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     marginBottom: 10,
   },
+
 
   text: {
     color: "#ffffff",

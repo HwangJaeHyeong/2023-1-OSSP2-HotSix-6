@@ -10,14 +10,14 @@ import {
   Alert,
 } from 'react-native';
 
-const SERVER_URL = 'http://localhost:3001'; //백엔드 서버 주소로 변경해야함
+const SERVER_URL = 'http://192.168.0.240:8000'; //백엔드 서버 주소로 변경해야함
 
 const JoinGroupScreen = ({route}) => {
  
   const navigation = useNavigation();
   const { userId } = route.params; 
   const [Group_Code, setGroup_Code] = useState('');
-  const [isGroup_CodeAvailable, setIsGroup_CodeAvailable] = useState(false);  
+  const [isGroup_CodeAvailable, setIsGroup_CodeAvailable] = useState(true);  
 
   const hanldegroupcode = (Group_Code) => {
     const groupcodeRegex = /^\d{1,15}$/;
@@ -26,19 +26,22 @@ const JoinGroupScreen = ({route}) => {
   }
 
   const handleJoinGroup = async () => {    
-    if(!isGroup_CodeAvailable) {Alert.alert("형식에 맞지 않는 코드 입니다."); return;};
+    //if(!isGroup_CodeAvailable) {Alert.alert("형식에 맞지 않는 코드 입니다."); return;};
     
     try {
-      const response = await axios.post(`${SERVER_URL}/groups`, {Group_Code: Group_Code,});
-      const groupcode = response.data;
-      if(!groupcode) {
-        Alert.alert("존재하지 않는 코드입니다. 다시 입력해주세요."); return;
-      }
+      const response = await axios.post(`${SERVER_URL}/group/join-group/`, {
+        email : "osh94230315@gmail.com",
+        group_code : Group_Code,
+      });
+      //const groupcode = response.data;
+     // if(!groupcode) {
+     //   Alert.alert("존재하지 않는 코드입니다. 다시 입력해주세요."); return;
+      //}
       // db에 해당 코드가 존재하는 경우 사용자를 해당 그룹에 가입
-      const Response = await JoinGroup(userId, Group_Code);
-      if(Response) {
+     // const Response = await JoinGroup(userId, Group_Code);
+      if(response.status == 202) {
         Alert.alert("그룹 입장에 성공했습니다!");
-        navigation.navigate("GroupScreen");
+        navigation.navigate("Group", { email: email });
       }
     } catch (error) {
       Alert.alert("오류", "코드 전송에 실패했습니다.");
@@ -71,7 +74,7 @@ const JoinGroupScreen = ({route}) => {
             value={Group_Code}
             onChangeText={hanldegroupcode}
             placeholder="그룹 코드를 입력하세요"
-            secureTextEntry={true}
+         
           />
           </View>
             {!Group_Code && (<Text style={{color:'red'}}>그룹코드를 입력해주세요.</Text>)}

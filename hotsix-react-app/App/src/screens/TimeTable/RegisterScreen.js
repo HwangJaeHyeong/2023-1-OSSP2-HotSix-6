@@ -22,6 +22,12 @@ const RegisterScreen = ({ navigation }) => {
       >
         <Text style={styles.loginButtonText}>ics 파일로 등록하기</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={() => navigation.navigate("InsertIcs")}
+      >
+        <Text style={styles.loginButtonText}>ics파일로 등록하기</Text>
+      </TouchableOpacity>
     </View>
   );
 };

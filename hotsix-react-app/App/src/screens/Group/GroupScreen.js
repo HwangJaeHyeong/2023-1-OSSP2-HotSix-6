@@ -14,8 +14,8 @@ import axios from "axios";
 const GroupScreen = ({ route }) => {
   const SERVER_URL = "http://192.168.0.240:8000/";
   const navigation = useNavigation();
-  const email = "osh94230315@gmail.com";
-  //const { e } = route.params;
+  const email = "osh94230315@gmail.com"; //수정
+  //const { email } = route.params;
   //예시 하나 넣어놨습니다. 원래는 비워놓아야합니다.
   const [groups, setGroups] = useState([
     {
@@ -92,8 +92,13 @@ const GroupScreen = ({ route }) => {
         keyExtractor={(item) => item.Group_Code.toString()}
         renderItem={renderGroupItem}
       />
-      <TouchableOpacity style={styles.JoinGroupButton} onPress={() => navigation.navigate('JoinGroup', {email: 'example@naver.com'})}>
-        <Text style={styles.JoinGroupButtonText}>그룹 코드로 그룹 입장하기</Text>
+      <TouchableOpacity
+        style={styles.JoinGroupButton}
+        onPress={() => navigation.navigate("JoinGroup", { email })}
+      >
+        <Text style={styles.JoinGroupButtonText}>
+          그룹 코드로 그룹 입장하기
+        </Text>
       </TouchableOpacity>
 
       <Modal isVisible={isModalVisible}>

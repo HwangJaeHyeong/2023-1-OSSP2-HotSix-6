@@ -20,6 +20,7 @@ const MainScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.loginButton}>
         <Text style={styles.loginButtonText}>회원정보 수정</Text>
       </TouchableOpacity>
+     
     </View>
   );
 };
