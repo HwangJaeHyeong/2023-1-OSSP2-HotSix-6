@@ -31,6 +31,7 @@ class GroupMemberSerializer(ModelSerializer):
         model = GroupMember
         fields = ['group_code']
 
+
 class GroupTimetableSerializer(ModelSerializer):
     class Meta:
         model = GroupTimetable
@@ -38,3 +39,8 @@ class GroupTimetableSerializer(ModelSerializer):
         extra_kwargs = {
             'time_table': {'read_only': False}
         }
+
+class GroupProjectSerializer(ModelSerializer):
+    class Meta:
+        model = GroupProject
+        fields = '__all__'
