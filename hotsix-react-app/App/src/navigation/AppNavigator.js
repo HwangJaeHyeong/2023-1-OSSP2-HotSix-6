@@ -15,14 +15,16 @@ import CreateNewgroupScreen from '../screens/Group/CreateNewgroupScreen';
 import JoinGroupScreen from '../screens/Group/JoinGroupScreen';
 import GroupDetailsScreen from '../screens/Group/GroupDetailsScreen';
 import GroupTimeTableScreen from '../screens/Group/GroupTimeTableScreen';
+import GroupTasksScreen from '../screens/Group/GroupTasksScreen';
+import GroupNoticeScreen from '../screens/Group/GroupNoticeScreen';
 import TimetableScreen from '../screens/TimeTable/TimetableScreen';
 import InsertPhotoScreen from '../screens/TimeTable/InsertPhotoScreen';
 import InsertTextScreen from '../screens/TimeTable/InsertTextScreen';
 import RegisterScreen from '../screens/TimeTable/RegisterScreen';
 import RankingScreen from '../screens/TimeTable/RankingScreen';
 import InsertIcsScreen from '../screens/TimeTable/InsertIcsScreen';
-import GroupTasksScreen from '../screens/Group/GroupTasksScreen';
-import GroupNoticeScreen from '../screens/Group/GroupNoticeScreen';
+import MyPageScreen from '../screens/Login_Signup/MyPageScreen';
+
 
 
 const Tab = createBottomTabNavigator();
@@ -44,7 +46,7 @@ const TabNavigator = () => {
             ),
           }}
         />
-        <Tab.Screen name="my page" component={MainScreen} options={{tabBarIcon: ({ color, size }) => (
+        <Tab.Screen name="my page" component={MyPageScreen} options={{tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="account" color={color} size={size}/>
             ),
           }}
@@ -81,6 +83,7 @@ const AppNavigator = () => {
         <Stack.Screen name="InsertIcs" component={InsertIcsScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Ranking" component={RankingScreen} />
+        <Stack.Screen name="MyPage" component={MyPageScreen} />
        
     </Stack.Navigator>
   );

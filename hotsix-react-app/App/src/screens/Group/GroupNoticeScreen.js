@@ -9,7 +9,7 @@ const GroupNoticeScreen = ({ route, navigation }) => {
   const [selectedNotice, setSelectedNotice] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const SERVER_URL = 'http://192.168.0.120:3001';
+  const SERVER_URL = 'http://192.168.0.12:3001';
 
   const { group } = route.params;
   const groupcode = String(group.Group_Code);
@@ -51,6 +51,7 @@ const GroupNoticeScreen = ({ route, navigation }) => {
         setContent('');
         loadNotices();
         setCreateModalVisible(false);
+        console.log('공지사항이 성공적으로 추가되었습니다.');
       })
       .catch(error => {
         console.error(error);
@@ -63,6 +64,7 @@ const GroupNoticeScreen = ({ route, navigation }) => {
       .then(response => {
         loadNotices();
         setModalVisible(false);
+        console.log('공지사항이 성공적으로 삭제되었습니다.');
       })
       .catch(error => {
         console.error(error);

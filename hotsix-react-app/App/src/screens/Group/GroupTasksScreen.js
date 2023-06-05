@@ -4,7 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import axios from 'axios';
 
 const GroupTasksScreen = ({ route, navigation }) => {
-  const SERVER_URL = 'http://192.168.0.120:3001';
+  const SERVER_URL = 'http://192.168.0.12:3001';
   // 그룹별 헤더
   const { group } = route.params;
   const groupcode = String(group.Group_Code);

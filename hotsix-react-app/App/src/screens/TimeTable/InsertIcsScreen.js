@@ -42,7 +42,7 @@ const InsertIcsScreen = () => {
         });
 
         const response = await axios.post(
-          `${SERVER_URL}/receive_ics`,
+          `${SERVER_URL}/user/img-time-table`,
           formData,
           {
             headers: {

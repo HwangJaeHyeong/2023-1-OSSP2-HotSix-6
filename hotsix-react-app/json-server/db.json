@@ -31,12 +31,6 @@
     {
       "id": "1685716860374",
       "text": "1323123123131",
-      "status": "진행 중",
-      "groupcode": "12345"
-    },
-    {
-      "id": "1685716862428",
-      "text": "qwdwsadasdas",
       "status": "진행 완료",
       "groupcode": "12345"
     },
@@ -55,7 +49,6 @@
       "author": "A",
       "status": "진행 안됨"
     },
-    
     {
       "id": 2,
       "text": "Task 2",
@@ -100,16 +93,16 @@
       "id": 1
     },
     {
-      "title": "notice 1",
-      "content": "notice 1 content",
-      "groupcode": "12345",
-      "id": 2
-    },
-    {
       "title": "notice2",
       "content": "notice2 content",
       "groupcode": "12345",
       "id": 3
+    },
+    {
+      "title": "공지사항1",
+      "content": "공지사항 1의 내용",
+      "groupcode": "1234235",
+      "id": 4
     }
   ]
 }
