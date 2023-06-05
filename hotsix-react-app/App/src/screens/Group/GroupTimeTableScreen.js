@@ -238,6 +238,13 @@ const GroupTimeTableScreen = () => {
         ]}
       >
         <Text style={styles.eventButtonText}>{viewdate}</Text>
+        <Text style={styles.eventButtonTextTwo}>
+          {item.value === 0
+            ? null
+            : item.value >= 2
+            ? `${item.value / 2}명`
+            : `${item.value}명`}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -379,6 +386,12 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  eventButtonTextTwo: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 10,
   },
   selectedEventButton: {
     backgroundColor: "#0000ff",
