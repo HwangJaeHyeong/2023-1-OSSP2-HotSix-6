@@ -139,9 +139,30 @@ def createGroupProject(request):
         return Response(status=status.HTTP_201_CREATED)
     
 
+# @api_view(['GET'])
+# @login_check
+# def getGroupProject(request):
+#     reqData = request.data
+#     group_code = reqData['group_code']
+
+#     try:
+#         group = Group.objects.filter(group_code=group_code)
+#     except Group.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+
+#     if request.method == 'GET':
+#         group_project = GroupProject.objects.filter(group_code=group_code)
+#         serializer = GroupProjectSerializer(group_project, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 @api_view(['GET'])
 @login_check
 def getGroupProject(request):
+    token = request.COOKIE.get('jwt')
+    payload = jwt.decode(token, "SecretJWTKey", algorithms=['HS256'])
+    user = payload['email']
+
     reqData = request.data
     group_code = reqData['group_code']
 
@@ -150,10 +171,16 @@ def getGroupProject(request):
     except Group.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
-        group_project = GroupProject.objects.filter(group_code=group_code)
-        serializer = GroupProjectSerializer(group_project, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    my_project = GroupProject.objects.filter(group_code=group_code, responsibility=user)
+    my_serializer = GroupProjectSerializer(my_project, many=True)
+    others = GroupProject.objects.filter(group_code=group_code & ~Q(responsibility=user))
+    other_serializer = GroupProjectSerializer(others, many=True)
+    data = {
+        "my project" : my_serializer.data,
+        "others" : other_serializer.data,
+    }
+    return Response(data, status=status.HTTP_200_OK) # 잘 가는지 확인해얄 듯..
+
 
 
 # task name, progress, responsibility 수정 시 - project_id는 pk로 쓰기 때문에 변경 X
