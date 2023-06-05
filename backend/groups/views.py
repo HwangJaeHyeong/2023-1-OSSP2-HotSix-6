@@ -345,7 +345,7 @@ def groupTable(request):
         members_time_table = []
         for member in get_group_members:
             group_user = User.objects.get(email=member['email_id']) # 해당 그룹 멤버
-            user_table = restore_table(group_user.email) # 해당 그룹 멤버의 시간표
+            user_table = restore_group_time(group_user.email) # 해당 그룹 멤버의 시간표
             members_time_table.append(user_table) 
 
         # 그룹 멤버들의 시간표가 존재하면 그룹 시간표 통합
