@@ -31,11 +31,15 @@ const GroupTimeTableScreen = () => {
  }, [navigation, group]);
 
 
+  const SERVER_URL = "http://192.168.203.24:8000";
   const route = useRoute();
-  const { schedules } = route.params;
+  //const { schedules } = route.params;
   const [events, setEvents] = useState([]);
   const [selectedEvents, setSelectedEvents] = useState([]);
+  const [schedules, setSchedules] = useState([[]]);
+  const { groupCode } = route.params;
 
+  console.log(groupCode);
   const getTimeIndex = (time) => {
     const [hours, minutes] = time.split(":");
     const totalMinutes = parseInt(hours, 10) * 60 + parseInt(minutes, 10);
@@ -86,10 +90,34 @@ const GroupTimeTableScreen = () => {
 
       schedule[day].push([str_idx, time_len]);
     });
-    console.log(schedule);
   };
+  //tests
 
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        setSchedules(test);
+        const response = await axios.get(
+          `${SERVER_URL}/group/view-group-table/${groupCode}`
+        );
+        if (response.status === 200) {
+          setSchedules(response.data.integrated_table);
+        } else {
+          console.error("Failed to fetch schedules:", response);
+        }
+      } catch (error) {
+        console.error("Failed to fetch schedules:", error);
+      }
+    };
+    if (groupCode) {
+      fetchSchedules();
+    }
+  }, [groupCode]);
   // 전 화면에서 schedules 받아서 시간표에서 "1" 공강으로 인식 시키기
+  useEffect(() => {
+    console.log(schedules);
+  }, [schedules]);
+
   useEffect(() => {
     const handleTimetable = (schedules) => {
       const generatedEvents = [];
@@ -191,6 +219,13 @@ const GroupTimeTableScreen = () => {
         ]}
       >
         <Text style={styles.eventButtonText}>{viewdate}</Text>
+        <Text style={styles.eventButtonTextTwo}>
+          {item.value === 0
+            ? null
+            : item.value >= 2
+            ? `${item.value / 2}명`
+            : `${item.value}명`}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -226,9 +261,6 @@ const GroupTimeTableScreen = () => {
           ))}
         </View>
       </View>
-      <TouchableOpacity style={styles.checkButton}>
-        <Text style={styles.checkButtonText}>확인</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -335,6 +367,12 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  eventButtonTextTwo: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 10,
   },
   selectedEventButton: {
     backgroundColor: "#0000ff",

@@ -85,6 +85,12 @@ const GroupDetailsScreen = ({ route, navigation }) => {
             <MaterialCommunityIcons
               name="file-document-edit-outline"
               style={styles.icon}
+              onPress={
+                () =>
+                  navigation.navigate("GroupProgress", {
+                    group
+                  }) //수정
+              }
             />
             <Text style={styles.text}>프로젝트 진행 항목</Text>
           </View>

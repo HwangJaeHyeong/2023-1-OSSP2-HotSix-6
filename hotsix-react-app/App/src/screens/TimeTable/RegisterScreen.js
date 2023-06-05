@@ -18,9 +18,9 @@ const RegisterScreen = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => navigation.navigate("InsertText")}
+        onPress={() => navigation.navigate("InsertIcs")}
       >
-        <Text style={styles.loginButtonText}>텍스트로 등록하기</Text>
+        <Text style={styles.loginButtonText}>ics 파일로 등록하기</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.loginButton}

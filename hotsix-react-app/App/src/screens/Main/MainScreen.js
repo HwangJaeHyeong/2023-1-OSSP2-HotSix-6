@@ -7,7 +7,7 @@ const MainScreen = ({ navigation }) => {
       <Text style={styles.title}>메인화면</Text>
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => navigation.navigate("ManageGroup")}
+        onPress={() => navigation.navigate("Group", { userId: "user1" })}
       >
         <Text style={styles.loginButtonText}>내 그룹 보기</Text>
       </TouchableOpacity>
