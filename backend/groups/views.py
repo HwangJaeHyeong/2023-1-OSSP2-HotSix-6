@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
+from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
 from accounts.views import restore_table, print_table, login_check
-from accounts.models import Group, GroupMember, User, GroupProject
-from accounts.serializers import GroupDataSerializer, GroupMemberSerializer, UserDataSerializer, GroupProjectSerializer
+from accounts.models import Group, GroupMember, User, GroupProject, GroupNotice
+from accounts.serializers import GroupDataSerializer, GroupMemberSerializer, UserDataSerializer, GroupProjectSerializer, GroupNoticeSerializer
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
@@ -35,6 +36,13 @@ import jwt
         
 #         return func(self, request, *args, **kwargs)
 #     return wrapper
+
+
+# current date 'yyyy-mm-dd' format
+def current_date():
+    now = timezone.now()
+    date = now.strftime("%Y-%m-%d")
+    return date
 
 
 # generate 8-character random code mixed with English case and number
@@ -113,7 +121,7 @@ def deleteGroup(self, code):
 # 할 일 생성 - progress를 default로 지정하기 위해 serializer가 아니라 수동으로 save
 @api_view(['POST'])
 @login_check
-def generateGroupProject(request):
+def createGroupProject(request):
     reqData = request.data
     
     if request.method == 'POST':
@@ -129,14 +137,30 @@ def generateGroupProject(request):
         group_project.save()
 
         return Response(status=status.HTTP_201_CREATED)
+    
+
+@api_view(['GET'])
+@login_check
+def getGroupProject(request):
+    reqData = request.data
+    group_code = reqData['group_code']
+
+    try:
+        group = Group.objects.filter(group_code=group_code)
+    except Group.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        group_project = GroupProject.objects.filter(group_code=group_code)
+        serializer = GroupProjectSerializer(group_project, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # task name, progress, responsibility 수정 시 - project_id는 pk로 쓰기 때문에 변경 X
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['PUT', 'DELETE'])
 @login_check
 def updateGroupProject(request):
     reqData = request.data
-    group_code = reqData['group_code']
     project_id = reqData['project_id']
 
     try:
@@ -144,22 +168,44 @@ def updateGroupProject(request):
     except GroupProject.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
-    if request.method == 'GET':
-        group_project = GroupProject.objects.filter(group_code=group_code)
-        serializer = GroupProjectSerializer(group_project, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    elif request.method == 'PUT':
-        update_serializer = GroupProjectSerializer(project, data=reqData)
-        if update_serializer.is_valid():
-            update_serializer.save()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'PUT':
+        project.project_name = reqData['project_name']
+        project.project_progress = reqData['project_progress']
+        project.responsibility = reqData['responsibility']
+        project.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+        # update_serializer = GroupProjectSerializer(project, data=reqData)
+        # if update_serializer.is_valid():
+        #     update_serializer.save()
+        #     return Response(status=status.HTTP_200_OK)
+        # else:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == 'DELETE':
         project.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+# 그룹 프로젝트 진행 상황 - 어디에 갖다 붙일까요..
+def totalProgress(request):
+    reqData = request.data
+    group_code = reqData['group_code']
+
+    task_list = GroupProject.objects.filter(group_code=group_code)
+    total = len(task_list)
+    prob = 0
+
+    for t in task_list:
+        if t.project_progress == 1:
+            prob += 50
+        elif t.project_progress == 2:
+            prob += 100
+    
+    prog = prob / total
+
+    return prog
 
 
 # 그룹 멤버들의 시간표 통합 
@@ -203,3 +249,58 @@ def integrate_table(members_time_table):
                         group_table[time][day] += members_time_table[idx][time][day]
 
     return group_table
+
+
+# group notice
+@api_view(['POST'])
+@login_check
+def createNotice(request):
+    if request.method == 'POST':
+        reqData = request.data
+
+        notice_id = generateRandomCode()
+        notice_title = reqData['notice_title']
+        notice_content = reqData['notice_content']
+        notice_date = current_date()
+        group_code = reqData['group_code']
+
+        notice = GroupNotice(notice_id=notice_id, notice_title=notice_title, notice_content=notice_content,
+                             notice_date=notice_date, group_code=group_code)
+        notice.save()
+        
+        return Response(status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+@login_check
+def getNotice(request):
+    reqData = request.data
+
+    if request.method == 'GET':
+        group_code = reqData['group_code']
+
+        notice_list = GroupNotice.objects.filter(group_code=group_code)
+        serializer = GroupNoticeSerializer(notice_list, many=True)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT', 'DELETE'])
+@login_check
+def updateNotice(request):
+    reqData = request.data
+    notice_id = reqData['notice_id']
+    notice = GroupNotice.objects.filter(notice_id=notice_id)
+    
+    if request.method == 'PUT':
+        notice.notice_title = reqData['notice_title']
+        notice.notice_content = reqData['notice_content']
+        notice.notice_date = current_date()
+        
+        notice.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+    elif request.method == 'DELETE':
+        notice.delete()
+        return Response(status=status.HTTP_200_OK)
