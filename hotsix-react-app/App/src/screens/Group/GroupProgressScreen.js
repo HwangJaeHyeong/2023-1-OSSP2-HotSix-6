@@ -7,6 +7,7 @@ const GroupProgressScreen = ({ route, navigation }) => {
   const { group } = route.params;
   const [ boxes, setBoxes ] = useState([]);
 
+  // Layout
   React.useLayoutEffect(() => {
     navigation.setOptions({
       title: ` ${group.Group_Name} `,
@@ -25,9 +26,9 @@ const GroupProgressScreen = ({ route, navigation }) => {
     });
   }, [navigation, group, boxes]);
 
-  // 박스 데이터를 가져오는 함수
+  // 처음에 screen 가져올때 박스 데이터를 가져오는 함수
   const fetchBoxesFromDB = () => {
-    axios.get('http://192.168.0.9:3000/users', {
+    axios.get('http://192.168.200.71:3000/users', {
     })
       .then(response => {
         const findbox = response.data.find((item) => item.Group_Code === group.Group_Code);
@@ -46,34 +47,40 @@ const GroupProgressScreen = ({ route, navigation }) => {
     fetchBoxesFromDB(); // 화면 진입 시 박스 데이터를 가져오도록 설정
   }, []);
 
+  // 진행 항목 추가: box는 { checked: true or false, text "" } 형태
   const addBox = () => {
     setBoxes([...boxes, { text: '', checked: false }]);
   };
 
+  // box 삭제 
   const deleteBox = (index) => {
     const updatedBoxes = [...boxes];
     updatedBoxes.splice(index, 1);
     setBoxes(updatedBoxes);
   };
 
+  // 박스 안에 텍스트 handle
   const handleTextChange = (text, index) => {
     const updatedBoxes = [...boxes];
     updatedBoxes[index].text = text;
     setBoxes(updatedBoxes);
   };
 
+  // 박스 check
   const handleCheckBoxChange = (index) => {
     const updatedBoxes = [...boxes];
     updatedBoxes[index].checked = !updatedBoxes[index].checked;
     setBoxes(updatedBoxes);
   };
 
+  // 진행사항 프로그래스 나타내기
   const calculateProgress = () => {
     const totalBoxes = boxes.length;
     const completedBoxes = boxes.filter((box) => box.checked).length;
     return totalBoxes === 0 ? 0 : (completedBoxes / totalBoxes) * 100;
   };
 
+  // 완료 버튼 클릭 시 DB로 보내기 
   const postBoxesToDB = () => {
     axios.post('http://192.168.0.9:3000/users', {
       email: "test1@test.com", 
@@ -81,9 +88,8 @@ const GroupProgressScreen = ({ route, navigation }) => {
       boxes: boxes.map(box => ({ text: box.text, checked: box.checked })),
     })
       .then(response => {
-        // POST 요청 성공 시 처리할 로직 작성
         console.log('박스 데이터가 DB로 전송되었습니다.');
-        // navigation.navigate('GroupDetails');
+        navigation.navigate('GroupDetails');
       })
       .catch(error => {
         console.error('박스 데이터 전송에 실패하였습니다.', error);
