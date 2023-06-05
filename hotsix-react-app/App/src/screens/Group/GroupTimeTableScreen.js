@@ -22,41 +22,7 @@ const GroupTimeTableScreen = () => {
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [schedules, setSchedules] = useState([[]]);
   const { groupCode } = route.params;
-  const test = [
-    [2, 0, 0, 1, 0, 1, 0],
-    [2, 0, 0, 1, 0, 1, 0],
-    [2, 1, 0, 1, 0, 1, 0],
-    [2, 1, 0, 1, 0, 1, 0],
-    [2, 1, 0, 1, 0, 1, 0],
-    [2, 1, 0, 6, 0, 1, 0],
-    [1, 1, 0, 6, 0, 1, 0],
-    [1, 1, 0, 6, 0, 1, 0],
-    [1, 1, 0, 6, 0, 0, 0],
-    [1, 1, 0, 6, 0, 0, 0],
-    [0, 1, 0, 6, 0, 0, 0],
-    [0, 0, 0, 6, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0],
-    [1, 0, 0, 1, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [4, 0, 0, 0, 0, 0, 1],
-    [4, 0, 0, 0, 0, 0, 1],
-    [4, 0, 0, 0, 0, 0, 1],
-    [4, 0, 0, 0, 0, 0, 1],
-    [4, 0, 0, 0, 0, 0, 12],
-    [4, 0, 0, 0, 0, 0, 12],
-    [4, 0, 0, 0, 0, 0, 12],
-    [4, 0, 0, 0, 1, 0, 12],
-    [4, 0, 0, 0, 1, 0, 12],
-    [4, 0, 0, 0, 1, 0, 12],
-    [4, 0, 0, 0, 1, 0, 12],
-    [4, 0, 0, 0, 1, 0, 12],
-  ];
+
   console.log(groupCode);
   const getTimeIndex = (time) => {
     const [hours, minutes] = time.split(":");
@@ -114,13 +80,12 @@ const GroupTimeTableScreen = () => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        console.log("왜안돼");
         setSchedules(test);
         const response = await axios.get(
           `${SERVER_URL}/group/view-group-table/${groupCode}`
         );
         if (response.status === 200) {
-          //setSchedules(response.data.integrated_table);
+          setSchedules(response.data.integrated_table);
         } else {
           console.error("Failed to fetch schedules:", response);
         }
