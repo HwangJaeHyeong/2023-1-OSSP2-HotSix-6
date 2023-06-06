@@ -17,13 +17,7 @@ const RegisterScreen = ({ navigation }) => {
           <Text style={styles.loginButtonText}>사진으로 등록하기</Text>
           <Text style={styles.Text}>이미지 파일로 내 시간표를 등록해보세요!</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => navigation.navigate("InsertText")}
-        >
-          <Text style={styles.loginButtonText}>텍스트로 등록하기</Text>
-          <Text style={styles.Text}>텍스트로 입력하여 원하는 시간을 추가해보세요!</Text>
-        </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.loginButton}
           onPress={() => navigation.navigate("InsertIcs")}
@@ -51,6 +45,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonContainer: {
+    marginTop: 50,
     width: "80%",
   },
   loginButton: {
