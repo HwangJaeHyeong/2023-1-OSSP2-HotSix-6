@@ -14,7 +14,7 @@ import moment from "moment";
 import axios from "axios";
 //시간표를 누르면 그것들을 배열에 추가하거나 제거한다.
 
-const ChangeScreen = () => {
+const RankingScreen = () => {
   const route = useRoute();
   const { schedules } = route.params;
   const [events, setEvents] = useState([]);
@@ -215,7 +215,7 @@ const ChangeScreen = () => {
   );
 };
 
-export default ChangeScreen;
+export default RankingScreen;
 
 const styles = StyleSheet.create({
   titleContainer: {

@@ -14,19 +14,20 @@ import axios from "axios";
 const GroupScreen = ({ route }) => {
   const SERVER_URL = "http://192.168.0.240:8000/";
   const navigation = useNavigation();
-  const email = "osh94230315@gmail.com"; //수정
-  //const { email } = route.params;
+  const email = "osh94230315@gmail.com";
+  //const { e } = route.params;
   //예시 하나 넣어놨습니다. 원래는 비워놓아야합니다.
   const [groups, setGroups] = useState([
     {
       Group_Code: 12345,
-      Group_Name: "Example Group1",
+      Group_Name: "Example Group",
     },
     {
       Group_Code: 1234235,
       Group_Name: "Example Group2",
     },
   ]);
+
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -83,10 +84,7 @@ const GroupScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>User Groups</Text>
-      <TouchableOpacity style={styles.CreateNewgroupButton} onPress={() => navigation.navigate("Makegroup", { email: "example@naver.com" })}>
-        <Text style={styles.CreateNewgroupLabel}>새 그룹 만들기</Text>
-      </TouchableOpacity>
+      <Text style={styles.title}>내 그룹</Text>
       <FlatList
         data={groups}
         keyExtractor={(item) => item.Group_Code.toString()}
@@ -99,6 +97,13 @@ const GroupScreen = ({ route }) => {
         <Text style={styles.JoinGroupButtonText}>
           그룹 코드로 그룹 입장하기
         </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.CreateGroupButton}
+        onPress={() => navigation.navigate("Makegroup", {email })}
+      >
+        <Text style={styles.CreateGroupButtonText}>새 그룹 만들기</Text>
       </TouchableOpacity>
 
       <Modal isVisible={isModalVisible}>
@@ -155,16 +160,19 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
     marginBottom: 20,
   },
   groupItem: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#F9F9F9",
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
-    borderRadius: 10,
+    borderLeftWidth: 10,
+    borderColor: "#F56D6D",
+    elevation: 5,
+  
   },
   groupName: {
     fontSize: 18,
@@ -182,7 +190,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   modalText: {
-    color: "gray",
+    color: "#3679A4",
     fontSize: 16,
     marginBottom: 10,
   },
@@ -212,30 +220,27 @@ const styles = StyleSheet.create({
   },
   JoinGroupButton: {
     marginTop: 16,
-    backgroundColor: "#2196f3",
+    backgroundColor: "#3679A4",
     borderRadius: 4,
     paddingVertical: 12,
+  },
+  CreateGroupButton: {
+    marginTop: 16,
+    backgroundColor: "#ffffff",
+    borderColor: "#3679A4",
+    borderRadius: 4,
+    paddingVertical: 12,
+    borderWidth:1,
   },
   JoinGroupButtonText: {
     textAlign: "center",
     color: "#ffffff",
     fontSize: 18,
   },
-  CreateNewgroupButton: {
-    position: 'absolute',
-    top: 15,
-    right: 30,
-    backgroundColor: '#007AFF',
-    width: 100,
-    height: 40,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  CreateNewgroupLabel: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
+  CreateGroupButtonText: {
+    textAlign: "center",
+    color: "#3679A4",
+    fontSize: 18,
   },
 });
 

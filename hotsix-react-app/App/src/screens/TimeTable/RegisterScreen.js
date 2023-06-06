@@ -1,34 +1,32 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity,ImageBackground,Image} from "react-native";
 
 const RegisterScreen = ({ navigation }) => {
+
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => navigation.navigate("InsertPhoto")}
-      >
-        <Text style={styles.loginButtonText}>사진으로 등록하기</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => navigation.navigate("InsertIcs")}
-      >
-        <Text style={styles.loginButtonText}>ics 파일로 등록하기</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => navigation.navigate("InsertIcs")}
-      >
-        <Text style={styles.loginButtonText}>ics파일로 등록하기</Text>
-      </TouchableOpacity>
-    </View>
+    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg3.png")} style={styles.container}>
+       <Image
+            source={require("hotsix-react-app/assets/MainLogo.png")}
+            style={styles.logoImage}
+          />
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => navigation.navigate("InsertPhoto")}
+        >
+          <Text style={styles.loginButtonText}>사진으로 등록하기</Text>
+          <Text style={styles.Text}>이미지 파일로 내 시간표를 등록해보세요!</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => navigation.navigate("InsertIcs")}
+        >
+          <Text style={styles.loginButtonText}>ics파일로 등록하기</Text>
+          <Text style={styles.Text}>캘린더 파일로 내 시간표를 등록해보세요!</Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 };
 
@@ -41,30 +39,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#ffffff",
   },
-  title: {
-    fontSize: 24,
-    marginBottom: 24,
-  },
-  input: {
+  logoImage: {
     width: "80%",
-    borderColor: "#dddddd",
-    borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 16,
+    height: 200,
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    marginTop: 50,
+    width: "80%",
   },
   loginButton: {
-    width: "80%",
-    marginTop: 5,
-    backgroundColor: "#1c7ed6",
-    borderRadius: 4,
+    backgroundColor: "#ffffff",
     paddingVertical: 12,
+    height: 80,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 16,
   },
   loginButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
+    color: "#3679A4",
+    fontSize: 20,
+  },
+  Text: {
+    color: "#888888",
+    fontSize: 14,
+    marginTop: 8,
   },
 });

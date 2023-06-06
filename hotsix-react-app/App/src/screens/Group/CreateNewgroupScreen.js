@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ImageBackground,
 } from 'react-native';
 
 const SERVER_URL = 'http://192.168.0.240:8000'; //백엔드 서버 주소로 변경해야함
@@ -15,7 +16,7 @@ const SERVER_URL = 'http://192.168.0.240:8000'; //백엔드 서버 주소로 변
 const CreateNewgroupScreen = ({route}) => {
   
   const navigation = useNavigation();
-  const { email } = route.params;
+  const { userId } = route.params;
   const [Group_Name, setGroup_Name] = useState('');
   const [isGroup_NameAvailable, setIsGroup_NameAvailable] = useState(false);  
 
@@ -32,22 +33,15 @@ const CreateNewgroupScreen = ({route}) => {
     
     try {
       // 그룹 만들기를 위한 백엔드 API 호출
-<<<<<<< HEAD
       const response = await axios.post(`${SERVER_URL}/group/generate-group/`, {
         // Creator_Id: userId,
         group_name: Group_Name,
         email : "elena0315@naver.com",
-=======
-      const response = await axios.post(`${SERVER_URL}/group`, {
-        Creator_Id: email,
-        Group_Name: Group_Name,
->>>>>>> main
       });
       // 랜덤으로 생성된 그룹 코드 
-      if(response.ok) {
-        Alert.alert("그룹 생성이 완료됐습니다!");
-        navigation.navigate('ManageGroup'); 
-      } else {Alert.alert('그룹 생성 중 오류가 발생했습니다.');}
+      const groupcode = response.data;
+      Alert.alert("그룹 생성이 완료됐습니다! 주어진 그룹 코드 : ", groupcode);
+      navigation.navigate('ManageGroup');   
     } catch (error) {
       console.error(error);
       Alert.alert('그룹 생성 중 오류가 발생했습니다.');
@@ -55,11 +49,12 @@ const CreateNewgroupScreen = ({route}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg3.png")} style={styles.container}>
+      <View style={styles.contentContainer}>
       <Text style={styles.title}>새 그룹 만들기</Text>
-
+ 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>그룹 이름</Text>
+      <Text style={styles.label}>받은 그룹 코드를 그룹원에게 공유하세요</Text>
         <View style={styles.usernameContainer}>
           <TextInput
             style={styles.input}
@@ -76,27 +71,40 @@ const CreateNewgroupScreen = ({route}) => {
       <TouchableOpacity style={styles.signupButton} onPress={handlemakegroup}>
         <Text style={styles.signupButtonText}>그룹 만들기</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </ImageBackground>
   );
 };
 
+  
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
     paddingHorizontal: 16,
     paddingTop: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contentContainer: {
+    width: '90%',
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+    borderRadius: 15,
+    elevation: 5,
   },
   title: {
     fontSize: 24,
-    marginBottom: 24,
+    marginBottom: 5,
   },
   inputContainer: {
     marginBottom: 16,
   },
   label: {
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 50,
+    color: 'gray',
   },
   usernameContainer: {
     flexDirection: 'row',
@@ -114,7 +122,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#2196f3',
+    backgroundColor: '#F56D6D',
     borderRadius: 4,
   },
   checkButtonText: {
@@ -122,7 +130,7 @@ const styles = StyleSheet.create({
   },
   signupButton: {
     marginTop: 16,
-    backgroundColor: '#2196f3',
+    backgroundColor: '#F56D6D',
     borderRadius: 4,
     paddingVertical: 12,
   },
@@ -134,4 +142,3 @@ const styles = StyleSheet.create({
 });
 
 export default CreateNewgroupScreen;
-

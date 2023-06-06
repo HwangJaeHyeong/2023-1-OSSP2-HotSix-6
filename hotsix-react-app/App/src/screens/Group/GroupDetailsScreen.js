@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet,ImageBackground,Image } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const GroupDetailsScreen = ({ route, navigation }) => {
@@ -54,7 +54,12 @@ const GroupDetailsScreen = ({ route, navigation }) => {
   }, [navigation, group]);
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg2.png")} style={styles.container}>
+ 
+       <Image
+            source={require("hotsix-react-app/assets/MainLogo.png")}
+            style={styles.logoImage}
+          />
       <View style={styles.row}>
         <View style={styles.boxcontainer}>
           <View style={styles.box}>
@@ -85,12 +90,6 @@ const GroupDetailsScreen = ({ route, navigation }) => {
             <MaterialCommunityIcons
               name="file-document-edit-outline"
               style={styles.icon}
-              onPress={
-                () =>
-                  navigation.navigate("GroupProgress", {
-                    group
-                  }) //수정
-              }
             />
             <Text style={styles.text}>프로젝트 진행 항목</Text>
           </View>
@@ -102,7 +101,7 @@ const GroupDetailsScreen = ({ route, navigation }) => {
           </View>
         </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -113,6 +112,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#ffffff",
   },
+
+
+  logoImage: {
+    width: "90%",
+    height: 250,
+    marginBottom: 10,
+  },
+
   title: {
     fontSize: 20,
     marginBottom: 20,
@@ -135,6 +142,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
+    elevation: 10,
   },
 
   icon: {

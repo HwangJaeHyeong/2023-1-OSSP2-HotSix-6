@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, Button, Image, Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, Button, Image, Alert, StyleSheet, Text, TouchableOpacity,ImageBackground } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import axios from "axios";
 import { Menu } from "react-native-paper"; // 변경
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const InsertPhotoScreen = ({ navigation }) => {
   const SERVER_URL = "http://192.168.200.24:8000"; // 백엔드 서버 주소로 변경해야함
@@ -101,12 +102,24 @@ const InsertPhotoScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Button
-        style={styles.selectButton}
-        title="JPG 파일 선택"
-        onPress={selectImage}
-      />
+    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg2.png")} style={styles.container}>
+      {!selectedImage && (
+
+      <View style={styles.container2}>
+      <Text style={styles.Text}>캘린더파일로</Text>
+      <Text style={styles.loginButtonText}> 내 시간표를 등록해보세요! </Text>
+        <View style={styles.iconContainer}>
+
+          <MaterialCommunityIcons name="file-plus-outline" style={styles.icon} />
+          <TouchableOpacity onPress={selectImage} style={styles.button}>
+            <Text style={styles.buttonText}>JPG 파일 선택</Text>
+          </TouchableOpacity>
+      </View>
+
+      </View>
+   
+
+    )}
 
       {selectedImage && (
         <View style={styles.imageContainer}>
@@ -139,10 +152,12 @@ const InsertPhotoScreen = ({ navigation }) => {
             ))}
           </Picker>
           <View style={styles.buttonContainer}>
-            <Button title="확인" onPress={sendImageToServer} />
+            <Button title="확인" onPress={sendImageToServer}  color="#F56D6D" />
           </View>
         </View>
       )}
+
+
       {/* {sendImageToServer && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -153,7 +168,7 @@ const InsertPhotoScreen = ({ navigation }) => {
         </TouchableOpacity>
         </View>
       )} */}
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -161,6 +176,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+
+  },
+  container2: {
+    width:'100%',
+    justifyContent: "center",
+    alignItems: "center",
   },
   imageContainer: {
     flex: 1,
@@ -191,6 +212,47 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignSelf: "center",
   },
+  loginButtonText: {
+    color: "#ffffff",
+    fontSize: 25,
+    marginBottom:20,
+    alignItems: "center"
+  },
+  Text: {
+    color: "#ffffff",
+    fontSize: 25,
+    alignItems: "center"
+
+  },
+  iconContainer: {
+    width: 300,
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderStyle: 'dotted',
+    borderWidth: 3,
+    borderColor: 'gray',
+    backgroundColor: "#ffffff",
+  },
+  icon: {
+    fontSize: 90,
+    color: 'gray',
+    marginBottom: 10,
+  },
+
+  buttonText: {
+    fontSize: 16,
+    color: 'white',
+    textAlign : 'center',
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#3679A4',
+    borderRadius: 5,
+    marginTop: 10,
+  },
+
 });
 
 export default InsertPhotoScreen;

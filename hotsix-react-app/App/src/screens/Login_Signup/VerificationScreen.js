@@ -128,11 +128,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   text: {
-    color: "#007AFF",
+    color: "#3679A4",
     textAlign: "center",
   },
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#3679A4",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,

@@ -13,15 +13,15 @@ import GroupScreen from '../screens/Group/GroupScreen';
 import CreateNewgroupScreen from '../screens/Group/CreateNewgroupScreen';
 import JoinGroupScreen from '../screens/Group/JoinGroupScreen';
 import GroupDetailsScreen from '../screens/Group/GroupDetailsScreen';
-import GroupProgressScreen from '../screens/Group/GroupProgressScreen';
 import GroupTimeTableScreen from '../screens/Group/GroupTimeTableScreen';
 import GroupTasksScreen from '../screens/Group/GroupTasksScreen';
 import GroupNoticeScreen from '../screens/Group/GroupNoticeScreen';
 import TimetableScreen from '../screens/TimeTable/TimetableScreen';
 import InsertPhotoScreen from '../screens/TimeTable/InsertPhotoScreen';
+
 import RegisterScreen from '../screens/TimeTable/RegisterScreen';
-import ChangeScreen from '../screens/TimeTable/ChangeScreen';
-import InsertIcsScreen from '../screens/TimeTable/TimeTable/InsertIcsScreen';
+import RankingScreen from '../screens/TimeTable/RankingScreen';
+import InsertIcsScreen from '../screens/TimeTable/InsertIcsScreen';
 import MyPageScreen from '../screens/Login_Signup/MyPageScreen';
 
 
@@ -62,7 +62,7 @@ const AppNavigator = () => {
       headerStyle: { backgroundColor: '#3679A4' }, 
       headerTintColor: 'white', 
     }}>
-        <Stack.Screen name="Home" component={HomeScreen}  options={{headerShown: false}} />
+        <Stack.Screen name="Home" component={HomeScreen}  options={{ headerShown: false}} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Agreement" component={AgreementScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
@@ -72,7 +72,6 @@ const AppNavigator = () => {
         <Stack.Screen name="Makegroup" component={CreateNewgroupScreen} />
         <Stack.Screen name="JoinGroup" component={JoinGroupScreen} />
         <Stack.Screen name="GroupDetails" component={GroupDetailsScreen} />
-        <Stack.Screen name="GroupProgress" component={GroupProgressScreen} />
         <Stack.Screen name="GroupTimeTable" component={GroupTimeTableScreen} /> 
         <Stack.Screen name="GroupTasks" component={GroupTasksScreen} />
         <Stack.Screen name="GroupNotice" component={GroupNoticeScreen} />
@@ -80,9 +79,9 @@ const AppNavigator = () => {
         <Stack.Screen name="InsertPhoto" component={InsertPhotoScreen} />
         <Stack.Screen name="InsertIcs" component={InsertIcsScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Change" component={ChangeScreen} />
+        <Stack.Screen name="Ranking" component={RankingScreen} />
         <Stack.Screen name="MyPage" component={MyPageScreen} />
-       
+        
     </Stack.Navigator>
   );
 };

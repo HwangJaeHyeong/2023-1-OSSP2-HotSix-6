@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ImageBackground,
 } from "react-native";
 
 const SERVER_URL = "http://192.168.0.240:8000/"; // 백엔드 서버 주소로 변경해야함
@@ -107,7 +108,8 @@ const SignupScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg2.png")} style={styles.container}>
+       <View style={styles.contentContainer}>
       <Text style={styles.title}>회원가입</Text>
 
       <View style={styles.inputContainer}>
@@ -180,7 +182,8 @@ const SignupScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
         <Text style={styles.signupButtonText}>회원가입</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </ImageBackground>
   );
 };
 
@@ -190,6 +193,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     paddingHorizontal: 16,
     paddingTop: 32,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  contentContainer: {
+    width:370,
+    paddingHorizontal:20,
+    paddingVertical:20,
+    borderRadius:15,
+    backgroundColor: "#ffffff",
+    elevation: 5,
   },
   title: {
     fontSize: 24,
@@ -220,7 +233,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: "#2196f3",
+    backgroundColor: "#3679A4",
     borderRadius: 4,
   },
   checkButtonText: {
@@ -228,7 +241,7 @@ const styles = StyleSheet.create({
   },
   signupButton: {
     marginTop: 16,
-    backgroundColor: "#2196f3",
+    backgroundColor: "#3679A4",
     borderRadius: 4,
     paddingVertical: 12,
   },

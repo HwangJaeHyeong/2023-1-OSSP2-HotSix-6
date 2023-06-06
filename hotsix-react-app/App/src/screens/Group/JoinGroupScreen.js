@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ImageBackground,
 } from 'react-native';
 
 const SERVER_URL = 'http://192.168.0.240:8000'; //백엔드 서버 주소로 변경해야함
@@ -63,27 +64,31 @@ const JoinGroupScreen = ({route}) => {
   }
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg3.png")} style={styles.container}>
+      <View  style={styles.contentContainer}> 
       <Text style={styles.title}>그룹 코드로 그룹 입장하기</Text>
+      <Text style={styles.label}>공유 받은 그룹 코드로 그룹에 입장하세요</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>그룹 코드</Text>
-        <View style={styles.usernameContainer}>
-          <TextInput
-            style={styles.input}
-            value={Group_Code}
-            onChangeText={hanldegroupcode}
-            placeholder="그룹 코드를 입력하세요"
-         
-          />
-          </View>
-            {!Group_Code && (<Text style={{color:'red'}}>그룹코드를 입력해주세요.</Text>)}
-      </View>
-
-      <TouchableOpacity style={styles.signupButton} onPress={handleJoinGroup}>
-        <Text style={styles.signupButtonText}>그룹 입장하기</Text>
-      </TouchableOpacity>
+<View style={styles.inputContainer}>
+  <View style={styles.usernameContainer}>
+    <TextInput
+      style={styles.input}
+      value={Group_Code}
+      onChangeText={hanldegroupcode}
+      placeholder="그룹 코드를 입력하세요"
+   
+    />
     </View>
+      {!Group_Code && (<Text style={{color:'red'}}>그룹코드를 입력해주세요.</Text>)}
+</View>
+
+<TouchableOpacity style={styles.signupButton} onPress={handleJoinGroup}>
+  <Text style={styles.signupButtonText}>그룹 입장하기</Text>
+</TouchableOpacity>
+
+      </View>
+      
+    </ImageBackground>
   );
 };
 
@@ -93,17 +98,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     paddingHorizontal: 16,
     paddingTop: 32,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  contentContainer: {
+    width:'90%',
+    backgroundColor: '#ffffff',
+    paddingHorizontal:20,
+    paddingVertical:30,
+    borderRadius:15,
+    elevation: 5,
   },
   title: {
     fontSize: 24,
-    marginBottom: 24,
+    marginBottom: 5,
   },
   inputContainer: {
     marginBottom: 16,
   },
   label: {
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 50,
+    color:'gray',
   },
   usernameContainer: {
     flexDirection: 'row',
@@ -121,7 +137,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#2196f3',
+    backgroundColor: '#F56D6D',
     borderRadius: 4,
   },
   checkButtonText: {
@@ -129,7 +145,7 @@ const styles = StyleSheet.create({
   },
   signupButton: {
     marginTop: 16,
-    backgroundColor: '#2196f3',
+    backgroundColor: '#F56D6D',
     borderRadius: 4,
     paddingVertical: 12,
   },

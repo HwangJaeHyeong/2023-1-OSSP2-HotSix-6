@@ -204,7 +204,7 @@ const getStatusColor = (status) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View >
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
