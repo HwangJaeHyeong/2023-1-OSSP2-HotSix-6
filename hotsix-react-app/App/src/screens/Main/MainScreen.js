@@ -1,31 +1,49 @@
 import React from "react";
-import { Image, StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, View, Text, TouchableOpacity, ImageBackground } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const MainScreen = ({ navigation }) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>메인화면</Text>
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => navigation.navigate("ManageGroup")}
-      >
-        <Text style={styles.loginButtonText}>내 그룹 보기</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => navigation.navigate("Timetable")}
-      >
-        <Text style={styles.loginButtonText}>내 시간표 보기</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.loginButton}>
-        <Text style={styles.loginButtonText}>회원정보 수정</Text>
-      </TouchableOpacity>
-     
-    </View>
+    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg1.png")} style={styles.container}>
+      <View style={styles.contentContainer}>
+        <Text style={styles.title}>메인화면</Text>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => navigation.navigate("Group")}
+        >
+          <View style={styles.buttonContent}>
+            <View>
+              <Text style={styles.loginButtonText}>&gt;  내 그룹 보기</Text>
+              <Text style={styles.smallText}>그룹 생성, 그룹 캘린더, 프로젝트 관리</Text>
+            </View>
+            <MaterialCommunityIcons name="account-group" size={83} color="#ffffff" style={styles.icon} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => navigation.navigate("Register")}
+        >
+          <View style={styles.buttonContent}>
+            <View>
+              <Text style={styles.loginButtonText}>&gt; 내 시간표 보기</Text>
+              <Text style={styles.smallText}>내 시간표 등록</Text>
+            </View>
+            <MaterialCommunityIcons name="timetable" size={83} color="#ffffff" style={styles.icon} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate("MyPage")}>
+          <View style={styles.buttonContent}>
+            <View>
+              <Text style={styles.loginButtonText}>&gt; 마이페이지</Text>
+              <Text style={styles.smallText}>내 정보 수정, 로그아웃</Text> 
+            </View>
+            <MaterialCommunityIcons name="account" size={83} color="#ffffff" style={styles.icon} />
+          </View>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 };
-
-export default MainScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -34,36 +52,46 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#ffffff",
   },
+  contentContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    marginTop: 250,
+    borderRadius: 30,
+    paddingTop: 40,
+    backgroundColor: "#ffffff",
+  },
   title: {
-    fontSize: 24,
+    fontSize: 25,
     marginBottom: 24,
-  },
-  logo: {
-    backgroundColor: "#dddddd",
-    width: 200,
-    height: 200,
-    marginBottom: 16,
-  },
-  input: {
-    width: "80%",
-    borderColor: "#dddddd",
-    borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 16,
   },
   loginButton: {
     width: "80%",
-    backgroundColor: "#1c7ed6",
+    backgroundColor: "#3679A4",
     marginBottom: 16,
     borderRadius: 10,
-    paddingVertical: 12,
+    height: 70,
+    overflow: "hidden",
+  },
+  buttonContent: {
+    flex: 1,
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
   },
   loginButtonText: {
     color: "#ffffff",
-    fontSize: 16,
+    fontSize: 18,
+  },
+  smallText: {
+    marginTop: 3,
+    color: "#ffffff",
+    fontSize: 12,
+  },
+  icon: {
+    alignSelf: "flex-end",
   },
 });
+
+export default MainScreen;

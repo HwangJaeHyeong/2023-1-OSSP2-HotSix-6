@@ -5,6 +5,7 @@ import {
   View,
   TextInput,
   TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
@@ -71,7 +72,8 @@ const InsertTextScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg2.png")} style={styles.container}>
+      <View style={styles.contentContainer}>
       <Text style={styles.title}>시간표삽입</Text>
       <TouchableOpacity
         style={styles.loginButton}
@@ -80,6 +82,7 @@ const InsertTextScreen = ({ navigation }) => {
         <Text style={styles.loginButtonText}>삽입 완료</Text>
       </TouchableOpacity>
     </View>
+    </ImageBackground>
   );
 };
 
@@ -91,6 +94,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#ffffff",
+  },
+  contentContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 300,
+    marginTop: 120,
+    paddingHorizontal:10,
+    paddingVertical:20,
+    borderRadius:15,
+    backgroundColor: "#ffffff",
+    elevation: 5,
   },
   title: {
     fontSize: 24,
@@ -108,7 +122,7 @@ const styles = StyleSheet.create({
   loginButton: {
     width: "80%",
     marginTop: 5,
-    backgroundColor: "#1c7ed6",
+    backgroundColor: "#3679A4",
     borderRadius: 4,
     paddingVertical: 12,
     alignItems: "center",

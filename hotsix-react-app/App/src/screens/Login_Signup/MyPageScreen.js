@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TouchableOpacity, Text, TextInput, Alert, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text, TextInput, Alert, StyleSheet,ImageBackground } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,7 +21,8 @@ const MyPageScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg3.png")} style={styles.container}>
+      <View style={styles.contentContainer}>
       <View style={styles.iconContainer}>
         <MaterialCommunityIcons name="account" style={styles.icon} />
       </View>
@@ -31,7 +32,8 @@ const MyPageScreen = ({ navigation }) => {
       <TouchableOpacity onPress={handleLogout} style={styles.Button}>
         <Text style={styles.buttonText}>로그 아웃</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </ImageBackground>
   );
 };
 
@@ -41,6 +43,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ffffff',
+  },
+  contentContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 300,
+    marginTop: 120,
+    paddingHorizontal:10,
+    paddingVertical:20,
+    borderRadius:15,
+    backgroundColor: "#ffffff",
+    elevation: 5,
   },
   title: {
     fontSize: 24,

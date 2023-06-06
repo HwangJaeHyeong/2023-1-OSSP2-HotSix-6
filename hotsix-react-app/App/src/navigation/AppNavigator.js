@@ -9,7 +9,6 @@ import AgreementScreen from '../screens/Login_Signup/AgreementScreen';
 import SignupScreen from '../screens/Login_Signup/SignupScreen';
 import EmailVerificationScreen from '../screens/Login_Signup/VerificationScreen';
 import MainScreen from '../screens/Main/MainScreen';
-import ManageGroupScreen from '../screens/Group/ManageGroupScreen';
 import GroupScreen from '../screens/Group/GroupScreen';
 import CreateNewgroupScreen from '../screens/Group/CreateNewgroupScreen';
 import JoinGroupScreen from '../screens/Group/JoinGroupScreen';
@@ -63,13 +62,12 @@ const AppNavigator = () => {
       headerStyle: { backgroundColor: '#3679A4' }, 
       headerTintColor: 'white', 
     }}>
-        <Stack.Screen name="Home" component={HomeScreen}  options={{headerShown: false}} />
+        <Stack.Screen name="Home" component={HomeScreen}  options={{ headerShown: false}} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Agreement" component={AgreementScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="Verification" component={EmailVerificationScreen} />
         <Stack.Screen name="Main" component={MainScreen} />
-        <Stack.Screen name="ManageGroup" component={ManageGroupScreen} />
         <Stack.Screen name="Group" component={GroupScreen} />
         <Stack.Screen name="Makegroup" component={CreateNewgroupScreen} />
         <Stack.Screen name="JoinGroup" component={JoinGroupScreen} />
@@ -84,7 +82,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Ranking" component={RankingScreen} />
         <Stack.Screen name="MyPage" component={MyPageScreen} />
-       
+        
     </Stack.Navigator>
   );
 };

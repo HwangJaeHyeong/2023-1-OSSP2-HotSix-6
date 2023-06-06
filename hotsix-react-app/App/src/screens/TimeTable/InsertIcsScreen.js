@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { Alert, StyleSheet, View, TouchableOpacity, Text,ImageBackground } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -64,9 +64,12 @@ const InsertIcsScreen = () => {
   
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg2.png")} style={styles.container}>
+    <Text style={styles.Text}>캘린더파일로</Text>
+    <Text style={styles.loginButtonText}> 내 시간표를 등록해보세요! </Text>
+      <View style={styles.contentContainer}>
+      <View style={styles.iconContainer}>
 
-       <View style={styles.iconContainer}>
           {selectedFile ? (
             <MaterialCommunityIcons name="file-check-outline" style={styles.icon} />
           ) : ( 
@@ -81,16 +84,24 @@ const InsertIcsScreen = () => {
       <TouchableOpacity onPress={handleUpload} style={styles.uploadButton}>
         <Text style={styles.buttonText}>업로드</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor : '#fff',
+    justifyContent:'center',
+  },
+  contentContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 300,
+    paddingHorizontal:10,
+    backgroundColor: "#ffffff",
   },
   imageContainer: {
     flex: 1,
@@ -99,7 +110,6 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 300,
     height: 200,
-    margin: 10,
     justifyContent: 'center',
     alignItems: 'center',
     borderStyle: 'dotted',
@@ -130,6 +140,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#3679A4',
     borderRadius: 5,
     marginTop: 10,
+  },
+  loginButtonText: {
+    color: "#ffffff",
+    fontSize: 25,
+    marginBottom:20,
+  },
+  Text: {
+    color: "#ffffff",
+    fontSize: 25,
+
   },
 
 
