@@ -222,14 +222,14 @@ def createGroupTask(request):
     
     if request.method == 'POST':
         # 할 일 생성
-        project_name = reqData['project_name']
-        project_id = generateRandomCode()
+        task_name = reqData['project_name']
+        task_id = generateRandomCode()
         group_code = reqData['group_code'] # 현재 사용자가 어떤 그룹에 있는지 request가 아니라 다른 식으로 받아와얄 것 같은데
         responsibility = reqData['responsibility']
-        project_progress = 0 # 0 = not started, 1 = ~ing, 2 = done
+        task_progress = 0 # 0 = not started, 1 = ~ing, 2 = done
 
-        group_task = GroupTask(project_id=project_id, project_name=project_name, 
-                                     project_progress=project_progress, group_code=group_code, responsibility=responsibility)
+        group_task = GroupTask(task_id=task_id, task_name=task_name, 
+                                     task_progress=task_progress, group_code=group_code, responsibility=responsibility)
         group_task.save()
 
         return Response(status=status.HTTP_201_CREATED)
@@ -281,13 +281,6 @@ def updateGroupTask(request):
         task.save()
 
         return Response(status=status.HTTP_200_OK)
-
-        # update_serializer = GroupProjectSerializer(project, data=reqData)
-        # if update_serializer.is_valid():
-        #     update_serializer.save()
-        #     return Response(status=status.HTTP_200_OK)
-        # else:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == 'DELETE':
         task.delete()
