@@ -24,7 +24,7 @@ class Group(models.Model):
     creator_id = models.CharField(db_column='Creator_ID', max_length=100)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'group'
 
 
@@ -34,7 +34,7 @@ class GroupMember(models.Model):
     email = models.ForeignKey('User', models.DO_NOTHING, db_column='Email')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'group_member'
 
 
@@ -46,20 +46,20 @@ class GroupNotice(models.Model):
     notice_date = models.DateField(db_column='Notice_Date')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'group_notice'
 
 
-class GroupProject(models.Model):
-    project_id = models.CharField(db_column='Project_ID', primary_key=True, max_length=20)  # Field name made lowercase.
+class GroupTask(models.Model):
+    task_id = models.CharField(db_column='Project_ID', primary_key=True, max_length=20)  # Field name made lowercase.
     group_code = models.ForeignKey('Group', models.CASCADE, db_column='Group_Code')  # Field name made lowercase.
-    project_name = models.CharField(db_column='Project_Name', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.       
-    project_progress = models.IntegerField(db_column='Project_Progress')  # Field name made lowercase.
+    task_name = models.CharField(db_column='Project_Name', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.       
+    task_progress = models.IntegerField(db_column='Project_Progress')  # Field name made lowercase.
     responsibility = models.ForeignKey('User', models.CASCADE, db_column='Responsiblity', max_length=100) # Field name made lowercase.
 
     class Meta:
-        managed = False
-        db_table = 'group_project'
+        managed = True
+        db_table = 'group_task'
 
 
 class GroupSchedule(models.Model):
@@ -71,7 +71,7 @@ class GroupSchedule(models.Model):
     end_time = models.DateField(db_column='End_Time')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'group_schedule'
 
 
@@ -81,7 +81,7 @@ class GroupTimetable(models.Model):
     time_table = models.BinaryField(db_column='Time_Table', max_length=255)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'group_timetable'
 
 
@@ -92,7 +92,7 @@ class Time(models.Model):
     preference = models.BinaryField(db_column='Preference', max_length=255, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'time'
 
 
@@ -104,7 +104,7 @@ class User(models.Model):
     is_active = models.IntegerField(db_column='is_Active')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'user'
 
 # 이미지 처리
