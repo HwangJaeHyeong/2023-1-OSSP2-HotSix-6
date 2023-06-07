@@ -19,4 +19,6 @@ urlpatterns = [
     path('create-group-notice/', views.createNotice, name="createNotice"),
     path('get-group-notice/', views.getNotice, name="getNotice"),
     path('update-notice/', views.updateNotice, name="updateNotice"),
+
+    path('create-group-goal/', views.createGoal, name="createGoal"),
 ]

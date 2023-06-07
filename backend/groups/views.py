@@ -9,7 +9,7 @@ from rest_framework import renderers
 from rest_framework import viewsets
 
 from accounts.views import restore_time, add_prefer, compress_table, print_table, login_check, INIT_TIME_TABLE, INIT_PREFERENCE
-from accounts.models import Group, GroupMember, GroupTimetable, Time, User, GroupTask, GroupNotice
+from accounts.models import Group, GroupMember, GroupTimetable, Time, User, GroupTask, GroupNotice, GroupGoal
 from accounts.serializers import GroupDataSerializer, GroupMemberSerializer, GroupTimetableSerializer, UserDataSerializer, GroupTaskSerializer, GroupNoticeSerializer
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -63,11 +63,11 @@ def generateRandomCode(length=8):
 @login_check
 def groupGenerate(request):
     reqData = request.data # user email, group_name by request
-    Creator_ID = reqData['email']
+    email = reqData['email']
     Group_Name = reqData['group_name']
     Group_Code = generateRandomCode()
 
-    group = Group(group_code=Group_Code, group_name=Group_Name, creator_id=Creator_ID)
+    group = Group(group_code=Group_Code, group_name=Group_Name, creator_id=User.objects.get(pk=email))
     group.save()
 
     res = Response(status=status.HTTP_201_CREATED)
@@ -82,10 +82,10 @@ def groupGenerate(request):
 def joinGroup(request):
     reqData = request.data # user email, group_code
     Group_Code = reqData['group_code']
-    Member_ID = reqData['email']
+    email = reqData['email']
 
     if Group.objects.filter(group_code=Group_Code).exists():
-        groupMember = GroupMember(group_code=Group.objects.get(pk=Group_Code), member_id=Member_ID)
+        groupMember = GroupMember(group_code=Group.objects.get(pk=Group_Code), email=User.objects.get(pk=email))
         groupMember.save()
         return Response(status=status.HTTP_202_ACCEPTED)
     return Response(status=status.HTTP_404_NOT_FOUND)
@@ -287,26 +287,6 @@ def updateGroupTask(request):
         return Response(status=status.HTTP_200_OK)
 
 
-# # 그룹 프로젝트 진행 상황 - 어디에 갖다 붙일까요..
-# def totalProgress(request):
-#     reqData = request.data
-#     group_code = reqData['group_code']
-
-#     task_list = GroupTask.objects.filter(group_code=group_code)
-#     total = len(task_list)
-#     prob = 0
-
-#     for t in task_list:
-#         if t.project_progress == 1:
-#             prob += 50
-#         elif t.project_progress == 2:
-#             prob += 100
-    
-#     prog = prob / total
-
-#     return prog
-
-
 # 그룹 멤버들의 시간표 조회
 class ViewGroupTable(GenericAPIView):
     def get(self, request, group_code):
@@ -501,3 +481,21 @@ def updateNotice(request):
     elif request.method == 'DELETE':
         notice.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@login_check
+def createGoal(request):
+    # 팀장인지 확인하고 권한 부여 함수 만들기
+    reqData = request.data
+
+    #for rd in reqData:
+    goal_id = generateRandomCode()
+    goal_name = reqData['goal_name']
+    goal_progress = 0 # 0 = 진행 안 됨, 1 = 완료
+    group_code = reqData['group_code']
+
+    goal = GroupGoal(goal_id=goal_id, goal_name=goal_name, goal_progress=goal_progress, group_code=Group.objects.get(pk=group_code))
+    goal.save()
+
+    return Response(status=status.HTTP_201_CREATED)

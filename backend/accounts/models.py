@@ -8,6 +8,18 @@
 from django.db import models
 
 
+class User(models.Model):
+    email = models.CharField(db_column='Email', primary_key=True, max_length=100)  # Field name made lowercase.
+    password = models.CharField(db_column='Password', max_length=100)  # Field name made lowercase.
+    name = models.CharField(db_column='Name', max_length=10)  # Field name made lowercase.
+    join_date = models.DateField(db_column='Join_Date')  # Field name made lowercase.
+    is_active = models.IntegerField(db_column='is_Active')  # Field name made lowercase.
+
+    class Meta:
+        managed = True
+        db_table = 'user'
+
+
 class AccountsImage(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     image = models.TextField(db_column='Image', blank=True, null=True)  # Field name made lowercase.
@@ -21,7 +33,7 @@ class AccountsImage(models.Model):
 class Group(models.Model):
     group_code = models.CharField(db_column='Group_Code', primary_key=True, max_length=20, db_collation='latin1_swedish_ci')  # Field name made lowercase.
     group_name = models.CharField(db_column='Group_Name', max_length=10)  # Field name made lowercase.
-    creator_id = models.CharField(db_column='Creator_ID', max_length=100)  # Field name made lowercase.
+    creator_id = models.ForeignKey(User, models.CASCADE, max_length=100, db_column='Creator_ID')  # Field name made lowercase.
 
     class Meta:
         managed = True
@@ -30,8 +42,8 @@ class Group(models.Model):
 
 class GroupMember(models.Model):
     member_id = models.AutoField(db_column='Member_ID', primary_key=True)  # Field name made lowercase.
-    group_code = models.ForeignKey(Group, models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
-    email = models.ForeignKey('User', models.DO_NOTHING, db_column='Email')  # Field name made lowercase.
+    group_code = models.ForeignKey(Group, models.CASCADE, db_column='Group_Code')  # Field name made lowercase.
+    email = models.ForeignKey(User, models.CASCADE, db_column='Email')  # Field name made lowercase.
 
     class Meta:
         managed = True
@@ -40,7 +52,7 @@ class GroupMember(models.Model):
 
 class GroupNotice(models.Model):
     notice_id = models.CharField(db_column='Notice_ID', primary_key=True, max_length=20)  # Field name made lowercase.
-    group_code = models.ForeignKey('Group', models.CASCADE, db_column='Group_Code')  # Field name made lowercase.
+    group_code = models.ForeignKey(Group, models.CASCADE, db_column='Group_Code')  # Field name made lowercase.
     notice_title = models.CharField(db_column='Notice_Title', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.       
     notice_content = models.CharField(db_column='Notice_Content', max_length=100, db_collation='utf8mb4_0900_ai_ci', blank=True, null=True)  # Field name made lowercase.
     notice_date = models.DateField(db_column='Notice_Date')  # Field name made lowercase.
@@ -51,10 +63,10 @@ class GroupNotice(models.Model):
 
 
 class GroupTask(models.Model):
-    task_id = models.CharField(db_column='Project_ID', primary_key=True, max_length=20)  # Field name made lowercase.
-    group_code = models.ForeignKey('Group', models.CASCADE, db_column='Group_Code')  # Field name made lowercase.
-    task_name = models.CharField(db_column='Project_Name', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.       
-    task_progress = models.IntegerField(db_column='Project_Progress')  # Field name made lowercase.
+    task_id = models.CharField(db_column='Task_ID', primary_key=True, max_length=20)  # Field name made lowercase.
+    group_code = models.ForeignKey(Group, models.CASCADE, db_column='Group_Code')  # Field name made lowercase.
+    task_name = models.CharField(db_column='Task_Name', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.       
+    task_progress = models.IntegerField(db_column='Task_Progress')  # Field name made lowercase.
     responsibility = models.ForeignKey('User', models.CASCADE, db_column='Responsiblity', max_length=100) # Field name made lowercase.
 
     class Meta:
@@ -62,9 +74,20 @@ class GroupTask(models.Model):
         db_table = 'group_task'
 
 
+class GroupGoal(models.Model):
+    goal_id = models.CharField(db_column='Goal_ID', primary_key=True, max_length=20)  # Field name made lowercase.
+    group_code = models.ForeignKey(Group, models.CASCADE, db_column='Group_Code')  # Field name made lowercase.
+    goal_name = models.CharField(db_column='Goal_Name', max_length=100, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.       
+    goal_progress = models.IntegerField(db_column='Goal_Progress')  # Field name made lowercase.
+
+    class Meta:
+        managed = True
+        db_table = 'group_goal'
+
+
 class GroupSchedule(models.Model):
     schedule_id = models.AutoField(db_column='Schedule_ID', primary_key=True)  # Field name made lowercase.
-    group_code = models.ForeignKey(Group, models.DO_NOTHING, db_column='Group_Code')  # Field name made lowercase.
+    group_code = models.ForeignKey(Group, models.CASCADE, db_column='Group_Code')  # Field name made lowercase.
     schedule_title = models.CharField(db_column='Schedule_Title', max_length=15, db_collation='utf8mb4_0900_ai_ci')  # Field name made lowercase.
     schedule_content = models.CharField(db_column='Schedule_Content', max_length=100, db_collation='utf8mb4_0900_ai_ci', blank=True, null=True)  # Field name made lowercase.
     start_time = models.DateField(db_column='Start_Time')  # Field name made lowercase.
@@ -77,7 +100,7 @@ class GroupSchedule(models.Model):
 
 class GroupTimetable(models.Model):
     timetable_id = models.AutoField(db_column='Timetable_ID', primary_key=True)  # Field name made lowercase.
-    group_code = models.ForeignKey(Group, models.DO_NOTHING, db_column='Group_Code', blank=True, null=True)  # Field name made lowercase.
+    group_code = models.ForeignKey(Group, models.CASCADE, db_column='Group_Code', blank=True, null=True)  # Field name made lowercase.
     time_table = models.BinaryField(db_column='Time_Table', max_length=255)  # Field name made lowercase.
 
     class Meta:
@@ -87,7 +110,7 @@ class GroupTimetable(models.Model):
 
 class Time(models.Model):
     time_id = models.AutoField(db_column='Time_ID', primary_key=True)  # Field name made lowercase.
-    email = models.ForeignKey('User', models.DO_NOTHING, db_column='Email')  # Field name made lowercase.
+    email = models.ForeignKey('User', models.CASCADE, db_column='Email')  # Field name made lowercase.
     time_table = models.BinaryField(db_column='Time_Table', max_length=255, null=True)  # Field name made lowercase.
     preference = models.BinaryField(db_column='Preference', max_length=255, null=True)  # Field name made lowercase.
 
@@ -95,17 +118,6 @@ class Time(models.Model):
         managed = True
         db_table = 'time'
 
-
-class User(models.Model):
-    email = models.CharField(db_column='Email', primary_key=True, max_length=100)  # Field name made lowercase.
-    password = models.CharField(db_column='Password', max_length=100)  # Field name made lowercase.
-    name = models.CharField(db_column='Name', max_length=10)  # Field name made lowercase.
-    join_date = models.DateField(db_column='Join_Date')  # Field name made lowercase.
-    is_active = models.IntegerField(db_column='is_Active')  # Field name made lowercase.
-
-    class Meta:
-        managed = True
-        db_table = 'user'
 
 # 이미지 처리
 class Image(models.Model):
