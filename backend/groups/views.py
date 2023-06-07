@@ -9,8 +9,8 @@ from rest_framework import renderers
 from rest_framework import viewsets
 
 from accounts.views import restore_time, add_prefer, compress_table, print_table, login_check, INIT_TIME_TABLE, INIT_PREFERENCE
-from accounts.models import Group, GroupMember, GroupTimetable, Time, User, GroupProject, GroupNotice
-from accounts.serializers import GroupDataSerializer, GroupMemberSerializer, GroupTimetableSerializer, UserDataSerializer, GroupProjectSerializer, GroupNoticeSerializer
+from accounts.models import Group, GroupMember, GroupTimetable, Time, User, GroupTask, GroupNotice
+from accounts.serializers import GroupDataSerializer, GroupMemberSerializer, GroupTimetableSerializer, UserDataSerializer, GroupTaskSerializer, GroupNoticeSerializer
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
@@ -217,44 +217,27 @@ def del_group_table(request):
 # 할 일 생성 - progress를 default로 지정하기 위해 serializer가 아니라 수동으로 save
 @api_view(['POST'])
 @login_check
-def createGroupProject(request):
+def createGroupTask(request):
     reqData = request.data
     
     if request.method == 'POST':
         # 할 일 생성
-        project_name = reqData['project_name']
-        project_id = generateRandomCode()
+        task_name = reqData['project_name']
+        task_id = generateRandomCode()
         group_code = reqData['group_code'] # 현재 사용자가 어떤 그룹에 있는지 request가 아니라 다른 식으로 받아와얄 것 같은데
         responsibility = reqData['responsibility']
-        project_progress = 0 # 0 = not started, 1 = ~ing, 2 = done
+        task_progress = 0 # 0 = not started, 1 = ~ing, 2 = done
 
-        group_project = GroupProject(project_id=project_id, project_name=project_name, 
-                                     project_progress=project_progress, group_code=group_code, responsibility=responsibility)
-        group_project.save()
+        group_task = GroupTask(task_id=task_id, task_name=task_name, 
+                                     task_progress=task_progress, group_code=group_code, responsibility=responsibility)
+        group_task.save()
 
         return Response(status=status.HTTP_201_CREATED)
-    
-
-# @api_view(['GET'])
-# @login_check
-# def getGroupProject(request):
-#     reqData = request.data
-#     group_code = reqData['group_code']
-
-#     try:
-#         group = Group.objects.filter(group_code=group_code)
-#     except Group.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'GET':
-#         group_project = GroupProject.objects.filter(group_code=group_code)
-#         serializer = GroupProjectSerializer(group_project, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
 @login_check
-def getGroupProject(request):
+def getGroupTask(request):
     token = request.COOKIE.get('jwt')
     payload = jwt.decode(token, "SecretJWTKey", algorithms=['HS256'])
     user = payload['email']
@@ -267,12 +250,12 @@ def getGroupProject(request):
     except Group.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    my_project = GroupProject.objects.filter(group_code=group_code, responsibility=user)
-    my_serializer = GroupProjectSerializer(my_project, many=True)
-    others = GroupProject.objects.filter(group_code=group_code & ~Q(responsibility=user))
-    other_serializer = GroupProjectSerializer(others, many=True)
+    my_task = GroupTask.objects.filter(group_code=group_code, responsibility=user)
+    my_serializer = GroupTaskSerializer(my_task, many=True)
+    others = GroupTask.objects.filter(group_code=group_code & ~Q(responsibility=user))
+    other_serializer = GroupTaskSerializer(others, many=True)
     data = {
-        "my project" : my_serializer.data,
+        "my task" : my_serializer.data,
         "others" : other_serializer.data,
     }
     return Response(data, status=status.HTTP_200_OK) # 잘 가는지 확인해얄 듯..
@@ -282,53 +265,46 @@ def getGroupProject(request):
 # task name, progress, responsibility 수정 시 - project_id는 pk로 쓰기 때문에 변경 X
 @api_view(['PUT', 'DELETE'])
 @login_check
-def updateGroupProject(request):
+def updateGroupTask(request):
     reqData = request.data
-    project_id = reqData['project_id']
+    task_id = reqData['task_id']
 
     try:
-        project = GroupProject.objects.get(project_id=project_id)
-    except GroupProject.DoesNotExist:
+        task = GroupTask.objects.get(task_id=task_id)
+    except GroupTask.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'PUT':
-        project.project_name = reqData['project_name']
-        project.project_progress = reqData['project_progress']
-        project.responsibility = reqData['responsibility']
-        project.save()
+        task.task_name = reqData['task_name']
+        task.task_progress = reqData['task_progress']
+        task.responsibility = reqData['responsibility']
+        task.save()
 
         return Response(status=status.HTTP_200_OK)
-
-        # update_serializer = GroupProjectSerializer(project, data=reqData)
-        # if update_serializer.is_valid():
-        #     update_serializer.save()
-        #     return Response(status=status.HTTP_200_OK)
-        # else:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == 'DELETE':
-        project.delete()
+        task.delete()
         return Response(status=status.HTTP_200_OK)
 
 
-# 그룹 프로젝트 진행 상황 - 어디에 갖다 붙일까요..
-def totalProgress(request):
-    reqData = request.data
-    group_code = reqData['group_code']
+# # 그룹 프로젝트 진행 상황 - 어디에 갖다 붙일까요..
+# def totalProgress(request):
+#     reqData = request.data
+#     group_code = reqData['group_code']
 
-    task_list = GroupProject.objects.filter(group_code=group_code)
-    total = len(task_list)
-    prob = 0
+#     task_list = GroupTask.objects.filter(group_code=group_code)
+#     total = len(task_list)
+#     prob = 0
 
-    for t in task_list:
-        if t.project_progress == 1:
-            prob += 50
-        elif t.project_progress == 2:
-            prob += 100
+#     for t in task_list:
+#         if t.project_progress == 1:
+#             prob += 50
+#         elif t.project_progress == 2:
+#             prob += 100
     
-    prog = prob / total
+#     prog = prob / total
 
-    return prog
+#     return prog
 
 
 # 그룹 멤버들의 시간표 조회

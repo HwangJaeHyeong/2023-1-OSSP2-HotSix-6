@@ -12,9 +12,9 @@ urlpatterns = [
     path('integrated-table/', views.integrate_table, name="integrate_table"),
     path('del-group-table/', views.del_group_table, name="del_group_table"),
 
-    path('create-group-project/', views.createGroupProject, name="generateGroupProject"),
-    path('get-group-project/', views.getGroupProject, name="getGroupProject"),
-    path('group-project/', views.updateGroupProject, name="updateGroupProject"),
+    path('create-group-task/', views.createGroupTask, name="generateGroupTask"),
+    path('get-group-task/', views.getGroupTask, name="getGroupTask"),
+    path('group-task/', views.updateGroupTask, name="updateGroupTask"),
 
     path('create-group-notice/', views.createNotice, name="createNotice"),
     path('get-group-notice/', views.getNotice, name="getNotice"),

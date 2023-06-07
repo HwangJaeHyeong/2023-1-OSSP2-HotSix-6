@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from .models import User, Time, Group, GroupMember, Image, GroupTimetable, GroupProject, GroupNotice
+from .models import User, Time, Group, GroupMember, Image, GroupTimetable, GroupTask, GroupNotice
 
 class UserDataSerializer(ModelSerializer):
     class Meta:
@@ -40,12 +40,14 @@ class GroupTimetableSerializer(ModelSerializer):
             'time_table': {'read_only': False}
         }
 
+
 class GroupNoticeSerializer(ModelSerializer):
     class Meta:
         model = GroupNotice
         fields = '__all__'
 
-class GroupProjectSerializer(ModelSerializer):
+
+class GroupTaskSerializer(ModelSerializer):
     class Meta:
-        model = GroupProject
+        model = GroupTask
         fields = '__all__'
