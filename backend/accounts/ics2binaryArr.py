@@ -1,4 +1,3 @@
-
 import math
 
 ENGLISH_DAYS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SO']

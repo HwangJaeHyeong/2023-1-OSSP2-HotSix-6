@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from .models import User, Time, Group, GroupMember, Image, GroupTimetable
+from .models import User, Time, Group, GroupMember, Image, GroupTimetable, GroupTask, GroupNotice
 
 class UserDataSerializer(ModelSerializer):
     class Meta:
@@ -31,6 +31,7 @@ class GroupMemberSerializer(ModelSerializer):
         model = GroupMember
         fields = ['group_code']
 
+
 class GroupTimetableSerializer(ModelSerializer):
     class Meta:
         model = GroupTimetable
@@ -38,3 +39,15 @@ class GroupTimetableSerializer(ModelSerializer):
         extra_kwargs = {
             'time_table': {'read_only': False}
         }
+
+
+class GroupNoticeSerializer(ModelSerializer):
+    class Meta:
+        model = GroupNotice
+        fields = '__all__'
+
+
+class GroupTaskSerializer(ModelSerializer):
+    class Meta:
+        model = GroupTask
+        fields = '__all__'

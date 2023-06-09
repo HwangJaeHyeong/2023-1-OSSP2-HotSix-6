@@ -11,4 +11,14 @@ urlpatterns = [
     path('create-group-table/', views.create_group_table, name="create_group_table"),
     path('integrated-table/', views.integrate_table, name="integrate_table"),
     path('del-group-table/', views.del_group_table, name="del_group_table"),
+
+    path('create-group-task/', views.createGroupTask, name="generateGroupTask"),
+    path('get-group-task/', views.getGroupTask, name="getGroupTask"),
+    path('group-task/', views.updateGroupTask, name="updateGroupTask"),
+
+    path('create-group-notice/', views.createNotice, name="createNotice"),
+    path('get-group-notice/', views.getNotice, name="getNotice"),
+    path('update-notice/', views.updateNotice, name="updateNotice"),
+
+    path('create-group-goal/', views.createGoal, name="createGoal"),
 ]
