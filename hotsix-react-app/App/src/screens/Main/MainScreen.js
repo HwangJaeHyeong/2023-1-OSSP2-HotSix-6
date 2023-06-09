@@ -14,7 +14,7 @@ const MainScreen = ({ navigation }) => {
           <View style={styles.buttonContent}>
             <View>
               <Text style={styles.loginButtonText}>&gt;  내 그룹 보기</Text>
-              <Text style={styles.smallText}>그룹 생성, 그룹 캘린더, 프로젝트 관리</Text>
+              <Text style={styles.smallText}>그룹 생성, 그룹 시간표, 프로젝트 관리</Text>
             </View>
             <MaterialCommunityIcons name="account-group" size={83} color="#ffffff" style={styles.icon} />
           </View>

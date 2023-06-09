@@ -55,6 +55,13 @@
       "email": "example2@naver.com",
       "nickname": "Test2",
       "id": 3
+    }, 
+    {
+      "Group_Code": 12345,
+      "Group_Name": "Example Group1",
+      "email": "test1@test.com",
+      "boxes": [{"checked": true, "text": "1"}, {"checked": true, "text": "2"}, {"checked": false, "text": "3"}, {"checked": false, "text": "4"}],
+      "id": 4
     }
   ]
 }

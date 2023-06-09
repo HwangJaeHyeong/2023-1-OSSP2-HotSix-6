@@ -15,6 +15,7 @@ const InsertPhotoScreen = ({ navigation }) => {
   const [selectedMinute, setSelectedMinute] = useState(null); // 변경
   const [schedules, setschedules] = useState(null);
   
+  
   const selectImage = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     
@@ -76,7 +77,7 @@ const InsertPhotoScreen = ({ navigation }) => {
             "이미지와 시간 전송 성공",
             "이미지와 시간이 서버로 전송되었습니다."
           );
-          navigation.navigate("Timetable");
+          navigation.navigate("Ranking");
         }
       } catch (error) {
         Alert.alert(
