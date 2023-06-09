@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   contentContainer: {
-    width:370,
+    width:'95%',
     paddingHorizontal:20,
     paddingVertical:20,
     borderRadius:15,
