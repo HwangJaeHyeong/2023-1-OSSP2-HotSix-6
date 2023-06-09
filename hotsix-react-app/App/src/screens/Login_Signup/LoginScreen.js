@@ -47,8 +47,9 @@ const LoginScreen = ({ navigation }) => {
       if (response.status === 200) {
         Alert.alert("로그인 성공!");
         console.log("JWT:", response.data.jwt);
+        const token = response.data.jwt;
         createAxiosInstance(SERVER_URL); // 로그인 성공 후 axios 인스턴스 생성
-        navigation.navigate("Main");
+        navigation.navigate("Main", { token });
       } else if (response.status === 401) {
         // 이메일 인증 완료 전일 때
         Alert.alert("로그인 실패. 이메일 인증을 완료해주세요");

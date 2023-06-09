@@ -1,22 +1,40 @@
 import React from "react";
-import { Image, StyleSheet, View, Text, TouchableOpacity, ImageBackground } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  ImageBackground,
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-const MainScreen = ({ navigation }) => {
+const MainScreen = ({ navigation, route }) => {
+  const token = route.params.token;
   return (
-    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg1.png")} style={styles.container}>
+    <ImageBackground
+      source={require("hotsix-react-app/assets/backgroundimg1.png")}
+      style={styles.container}
+    >
       <View style={styles.contentContainer}>
         <Text style={styles.title}>메인화면</Text>
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={() => navigation.navigate("Group")}
+          onPress={() => navigation.navigate("Group", { token })}
         >
           <View style={styles.buttonContent}>
             <View>
-              <Text style={styles.loginButtonText}>&gt;  내 그룹 보기</Text>
-              <Text style={styles.smallText}>그룹 생성, 그룹 캘린더, 프로젝트 관리</Text>
+              <Text style={styles.loginButtonText}>&gt; 내 그룹 보기</Text>
+              <Text style={styles.smallText}>
+                그룹 생성, 그룹 캘린더, 프로젝트 관리
+              </Text>
             </View>
-            <MaterialCommunityIcons name="account-group" size={83} color="#ffffff" style={styles.icon} />
+            <MaterialCommunityIcons
+              name="account-group"
+              size={83}
+              color="#ffffff"
+              style={styles.icon}
+            />
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -28,16 +46,29 @@ const MainScreen = ({ navigation }) => {
               <Text style={styles.loginButtonText}>&gt; 내 시간표 보기</Text>
               <Text style={styles.smallText}>내 시간표 등록</Text>
             </View>
-            <MaterialCommunityIcons name="timetable" size={83} color="#ffffff" style={styles.icon} />
+            <MaterialCommunityIcons
+              name="timetable"
+              size={83}
+              color="#ffffff"
+              style={styles.icon}
+            />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate("MyPage")}>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => navigation.navigate("MyPage")}
+        >
           <View style={styles.buttonContent}>
             <View>
               <Text style={styles.loginButtonText}>&gt; 마이페이지</Text>
-              <Text style={styles.smallText}>내 정보 수정, 로그아웃</Text> 
+              <Text style={styles.smallText}>내 정보 수정, 로그아웃</Text>
             </View>
-            <MaterialCommunityIcons name="account" size={83} color="#ffffff" style={styles.icon} />
+            <MaterialCommunityIcons
+              name="account"
+              size={83}
+              color="#ffffff"
+              style={styles.icon}
+            />
           </View>
         </TouchableOpacity>
       </View>

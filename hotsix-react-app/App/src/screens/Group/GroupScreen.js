@@ -17,19 +17,26 @@ const GroupScreen = ({ route }) => {
   const email = "elena0315@naver.com"; // 이메일 수정해야함.
   const [groups, setGroups] = useState([]);
   const axiosInstance = getAxiosInstance(); // Use axios instance instead of general axios
-
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
+  const token = route.params.token;
 
   useEffect(() => {
+    console.log(token); //토큰 확인할게.
     // 사용자가 속한 그룹 이름과 그룹 코드를 가져옵니다.
     console.log("Axios instance baseURL:", axiosInstance.defaults.baseURL);
-    axiosInstance.get(`${SERVER_URL}/group/get-group/`).then((response) => {
-      const userGroups = response.data;
-      console.log(response.data);
-      setGroups(userGroups);
-    });
+
+    axios
+      .get(`${SERVER_URL}/group/get-group`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { email: email },
+      })
+      .then((response) => {
+        const userGroups = response.data;
+        console.log(response.data);
+        setGroups(userGroups);
+      });
   }, []);
 
   const toggleModal = (group) => {
