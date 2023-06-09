@@ -10,37 +10,26 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import Modal from "react-native-modal";
 import axios from "axios";
-
+import { getAxiosInstance } from "../Login_Signup/LoginScreen";
 const GroupScreen = ({ route }) => {
-  const SERVER_URL = "http://192.168.0.240:8000/";
+  const SERVER_URL = "http://172.30.1.76:8000/";
   const navigation = useNavigation();
-  const email = "osh94230315@gmail.com";
-  //const { e } = route.params;
-  //예시 하나 넣어놨습니다. 원래는 비워놓아야합니다.
-  const [groups, setGroups] = useState([
-    {
-      Group_Code: 12345,
-      Group_Name: "Example Group",
-    },
-    {
-      Group_Code: 1234235,
-      Group_Name: "Example Group2",
-    },
-  ]);
+  const email = "elena0315@naver.com"; // 이메일 수정해야함.
+  const [groups, setGroups] = useState([]);
+  const axiosInstance = getAxiosInstance(); // Use axios instance instead of general axios
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
 
   useEffect(() => {
-    //사용자가 속한 그룹이름과 그룹코드를 가져온다. 위의 형식대로
-    axios
-      .get(`${SERVER_URL}/group/get-group/?email=${email}`)
-      .then((response) => {
-        const userGroups = response.data;
-        console.log(response.data);
-        setGroups(userGroups);
-      });
+    // 사용자가 속한 그룹 이름과 그룹 코드를 가져옵니다.
+    console.log("Axios instance baseURL:", axiosInstance.defaults.baseURL);
+    axiosInstance.get(`${SERVER_URL}/group/get-group/`).then((response) => {
+      const userGroups = response.data;
+      console.log(response.data);
+      setGroups(userGroups);
+    });
   }, []);
 
   const toggleModal = (group) => {
@@ -51,12 +40,11 @@ const GroupScreen = ({ route }) => {
   const leaveGroup = async () => {
     if (selectedGroup) {
       try {
-        //백엔드한테 그룹에서 나가는 요청보내는 함수 만들어서 실행하고고
-        //await removeUserFromGroup(selectedGroup.Group_Code, userId);
+        // 백엔드한테 그룹에서 나가는 요청 보내기
+        // await removeUserFromGroup(selectedGroup.Group_Code, userId);
         console.log("그룹에서 나갑니다...");
 
-        //이게 백엔드에서는 느리니까 일시적으로 화면에서 지우고 나중에 백엔드가 되면 되는대로 바꾸는
-        //최적화 방법이라고는 하는디 일단 이렇게 해놓겠음.
+        // 일시적으로 화면에서 그룹 제거
         const updatedGroups = groups.filter(
           (group) => group.Group_Code !== selectedGroup.Group_Code
         );
@@ -101,7 +89,7 @@ const GroupScreen = ({ route }) => {
 
       <TouchableOpacity
         style={styles.CreateGroupButton}
-        onPress={() => navigation.navigate("Makegroup", {email })}
+        onPress={() => navigation.navigate("Makegroup", { email })}
       >
         <Text style={styles.CreateGroupButtonText}>새 그룹 만들기</Text>
       </TouchableOpacity>
@@ -172,7 +160,6 @@ const styles = StyleSheet.create({
     borderLeftWidth: 10,
     borderColor: "#F56D6D",
     elevation: 5,
-  
   },
   groupName: {
     fontSize: 18,
@@ -230,7 +217,7 @@ const styles = StyleSheet.create({
     borderColor: "#3679A4",
     borderRadius: 4,
     paddingVertical: 12,
-    borderWidth:1,
+    borderWidth: 1,
   },
   JoinGroupButtonText: {
     textAlign: "center",
