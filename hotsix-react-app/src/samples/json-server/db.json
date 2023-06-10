@@ -1,0 +1,108 @@
+{
+  "group": [
+    {
+      "id": 1,
+      "Group_Name": "Example Group"
+    },
+    {
+      "id": 2,
+      "Group_Name": "Example Group2"
+    }
+  ],
+  "my-tasks": [
+    {
+      "id": "1685707733082",
+      "text": "12313",
+      "status": "진행 안됨",
+      "groupcode": "1234235"
+    },
+    {
+      "id": "1685716853082",
+      "text": "1323131",
+      "status": "진행 안됨",
+      "groupcode": "12345"
+    },
+    {
+      "id": "1685716857993",
+      "text": "qeqweqweqw",
+      "status": "진행 중",
+      "groupcode": "12345"
+    },
+    {
+      "id": "1685716860374",
+      "text": "1323123123131",
+      "status": "진행 완료",
+      "groupcode": "12345"
+    },
+    {
+      "id": "1685716864155",
+      "text": "12312312",
+      "status": "진행 안됨",
+      "groupcode": "12345"
+    }
+  ],
+  "group-tasks": [
+    {
+      "id": 1,
+      "text": "Task 1",
+      "groupcode": "12345",
+      "author": "A",
+      "status": "진행 안됨"
+    },
+    {
+      "id": 2,
+      "text": "Task 2",
+      "groupcode": "12345",
+      "author": "A",
+      "status": "진행 안됨"
+    },
+    {
+      "id": 3,
+      "text": "Task 3",
+      "groupcode": "1234235",
+      "author": "송하연",
+      "status": "진행 안됨"
+    },
+    {
+      "id": 4,
+      "text": "Task 4",
+      "groupcode": "1234235",
+      "author": "D",
+      "status": "진행 완료"
+    },
+    {
+      "id": 5,
+      "text": "Task 5",
+      "groupcode": "1234235",
+      "author": "D",
+      "status": "진행 완료"
+    },
+    {
+      "id": 6,
+      "text": "Task 3",
+      "groupcode": "12345",
+      "author": "B",
+      "status": "진행 완료"
+    }
+  ],
+  "group-notices": [
+    {
+      "title": "asda",
+      "content": "asdasdasdas",
+      "groupcode": "12345",
+      "id": 1
+    },
+    {
+      "title": "notice2",
+      "content": "notice2 content",
+      "groupcode": "12345",
+      "id": 3
+    },
+    {
+      "title": "공지사항1",
+      "content": "공지사항 1의 내용",
+      "groupcode": "1234235",
+      "id": 4
+    }
+  ]
+}
