@@ -1,18 +1,17 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-const TimetableScreen = ({navigation}) => {
+const TimetableScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Register')}>
-      <Text style={styles.loginButtonText}>시간표 등록하기</Text>
+        <Text style={styles.loginButtonText}>시간표 등록하기</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.loginButton}>
         <Text style={styles.loginButtonText}>시간표 수정하기</Text>
       </TouchableOpacity>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -47,7 +46,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
   },
-});
+})
 
-
-export default TimetableScreen;
+export default TimetableScreen
