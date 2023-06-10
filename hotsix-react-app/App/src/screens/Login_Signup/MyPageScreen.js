@@ -1,37 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import { View, TouchableOpacity, Text, TextInput, Alert, StyleSheet,ImageBackground } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const SERVER_URL = 'http://192.168.0.12:3001'; // 백엔드 서버 주소로 변경해야함
 
 const MyPageScreen = ({ navigation }) => {
- 
   const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem('authToken');
-      await axios.post(`${SERVER_URL}/user/logout`);
-      Alert.alert('로그아웃 성공', '로그아웃되었습니다.');
-      navigation.navigate('Login');
-    } catch (error) {
-      console.log(error);
-      Alert.alert('로그아웃 실패', '로그아웃하는 데 실패했습니다.');
-    }
+    // try {
+    //   await AsyncStorage.removeItem('authToken');
+    //   await axios.post(`${SERVER_URL}/user/logout`);
+    //   Alert.alert('로그아웃 성공', '로그아웃되었습니다.');
+    //   navigation.navigate('Login');
+    // } catch (error) {
+    //   console.log(error);
+    //   Alert.alert('로그아웃 실패', '로그아웃하는 데 실패했습니다.');
+    // }
+    navigation.navigate('Home');
   };
 
   return (
-    <ImageBackground source={require("hotsix-react-app/assets/backgroundimg3.png")} style={styles.container}>
+    <ImageBackground
+      source={require('hotsix-react-app/assets/backgroundimg3.png')}
+      style={styles.container}
+    >
       <View style={styles.contentContainer}>
-      <View style={styles.iconContainer}>
-        <MaterialCommunityIcons name="account" style={styles.icon} />
-      </View>
-      <Text style={styles.title}>마이페이지</Text>
-     
+        <View style={styles.iconContainer}>
+          <MaterialCommunityIcons name='account' style={styles.icon} />
+        </View>
+        <Text style={styles.title}>마이페이지</Text>
 
-      <TouchableOpacity onPress={handleLogout} style={styles.Button}>
-        <Text style={styles.buttonText}>로그 아웃</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={handleLogout} style={styles.Button}>
+          <Text style={styles.buttonText}>로그 아웃</Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -45,14 +50,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   contentContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     width: 300,
     marginTop: 120,
-    paddingHorizontal:10,
-    paddingVertical:20,
-    borderRadius:15,
-    backgroundColor: "#ffffff",
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    borderRadius: 15,
+    backgroundColor: '#ffffff',
     elevation: 5,
   },
   title: {
