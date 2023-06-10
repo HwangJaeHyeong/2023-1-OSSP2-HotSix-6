@@ -1,10 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { FlatList, Text, View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import axios from 'axios';
+import {
+  SAMPLE_GROUP_TASK_DATA_LIST,
+  SAMPLE_TASK_DATA_LIST,
+} from '../../constant/task';
+
+let idCount = 5;
 
 const GroupTasksScreen = ({ route, navigation }) => {
-  const SERVER_URL = 'http://192.168.0.12:3001';
+  // const SERVER_URL = 'http://192.168.0.12:3001';
   // 그룹별 헤더
   const { group } = route.params;
   const groupcode = String(group.Group_Code);
@@ -23,81 +35,82 @@ const GroupTasksScreen = ({ route, navigation }) => {
   }, [navigation, group]);
 
   const [taskText, setTaskText] = useState('');
-  const [tasks, setTasks] = useState([]);
-  const [groupTasks, setGroupTasks] = useState([]);
-  
+  const [tasks, setTasks] = useState(SAMPLE_TASK_DATA_LIST);
+  const [groupTasks, setGroupTasks] = useState(SAMPLE_GROUP_TASK_DATA_LIST);
 
   //api 요청 : 그룹 업무 목록 가져오기
   useEffect(() => {
-    axios
-      .get(`${SERVER_URL}/group-tasks?groupcode=${groupcode}`)
-      .then((response) => {
-        const fetchedTasks = response.data;
-        setGroupTasks(fetchedTasks);
-      })
-      .catch((error) => {
-        console.error('그룹 업무 목록 가져오기 중 오류 발생:', error);
-      });
+    // axios
+    //   .get(`${SERVER_URL}/group-tasks?groupcode=${groupcode}`)
+    //   .then((response) => {
+    //     const fetchedTasks = response.data;
+    //     setGroupTasks(fetchedTasks);
+    //   })
+    //   .catch((error) => {
+    //     console.error('그룹 업무 목록 가져오기 중 오류 발생:', error);
+    //   });
   }, []);
-  
+
   //api 요청 : 내 업무 목록 가져오기
   useEffect(() => {
-    axios.get(`${SERVER_URL}/my-tasks?groupcode=${groupcode}`)
-
-      .then((response) => {
-        const fetchedTasks = response.data;
-        setTasks(fetchedTasks);
-      })
-      .catch((error) => {
-        console.error('할 일 목록 가져오기 중 오류 발생:', error);
-      });
+    // axios
+    //   .get(`${SERVER_URL}/my-tasks?groupcode=${groupcode}`)
+    //   .then((response) => {
+    //     const fetchedTasks = response.data;
+    //     setTasks(fetchedTasks);
+    //   })
+    //   .catch((error) => {
+    //     console.error('할 일 목록 가져오기 중 오류 발생:', error);
+    //   });
   }, []);
- 
-  
-// 새로운 항목 추가
-const addTask = () => {
-  if (taskText.trim() !== '') {
-    const newTask = {
-      id: Date.now().toString(),
-      text: taskText,
-      status: '진행 안됨',
-    };
-    setTaskText('');
 
-    // API 요청: 새로운 항목 추가
-    axios
-    .post(`${SERVER_URL}/my-tasks`, { ...newTask, groupcode } )
-      .then((response) => {
-        console.log('새로운 할 일이 성공적으로 추가되었습니다.');
-        const createdTask = response.data;
-        const color = getStatusColor(createdTask.status);
-        const updatedTask = { ...createdTask, color };
+  // 새로운 항목 추가
+  const addTask = () => {
+    if (taskText.trim() !== '') {
+      const newTask = {
+        id: Date.now().toString(),
+        text: taskText,
+        status: '진행 안됨',
+      };
+      setTaskText('');
+      setTasks((prev) => [
+        ...prev,
+        { id: idCount, text: taskText, status: '진행 안됨' },
+      ]);
+      idCount++;
 
-        setTasks((prevTasks) => [...prevTasks, updatedTask]);
-      })
-      .catch((error) => {
-        console.error('할 일 추가 중 오류 발생:', error);
-      });
-  }
-};
+      // API 요청: 새로운 항목 추가
+      // axios
+      //   .post(`${SERVER_URL}/my-tasks`, { ...newTask, groupcode })
+      //   .then((response) => {
+      //     console.log('새로운 할 일이 성공적으로 추가되었습니다.');
+      //     const createdTask = response.data;
+      //     const color = getStatusColor(createdTask.status);
+      //     const updatedTask = { ...createdTask, color };
 
+      //     setTasks((prevTasks) => [...prevTasks, updatedTask]);
+      //   })
+      //   .catch((error) => {
+      //     console.error('할 일 추가 중 오류 발생:', error);
+      //   });
+    }
+  };
 
-// 상태에 따른 색상을 반환
-const getStatusColor = (status) => {
-  switch (status) {
-    case '진행 안됨':
-      return '#888888';
-    case '진행 중':
-      return '#FF4646';
-    case '진행 완료':
-      return '#3679A4';
-    default:
-      return '#888888';
-  }
-};
+  // 상태에 따른 색상을 반환
+  const getStatusColor = (status) => {
+    switch (status) {
+      case '진행 안됨':
+        return '#888888';
+      case '진행 중':
+        return '#FF4646';
+      case '진행 완료':
+        return '#3679A4';
+      default:
+        return '#888888';
+    }
+  };
 
-
-  // 진행 상태별 정렬 
+  // 진행 상태별 정렬
   const sortTasks = () => {
     let sortedTasks = [...tasks];
     sortedTasks.sort((a, b) => {
@@ -106,7 +119,6 @@ const getStatusColor = (status) => {
     });
     setTasks(sortedTasks);
   };
-  
 
   // 진행 상태 표시 버튼
   const toggleTaskStatus = (id) => {
@@ -125,19 +137,28 @@ const getStatusColor = (status) => {
           updatedColor = '#888888';
         }
         // API 요청: 할 일 수정
-        axios
-        .patch(`${SERVER_URL}/my-tasks/${id}`, { status: updatedStatus })
-        .then((response) => {
-          console.log('할 일이 성공적으로 수정되었습니다.');
-          const updatedTask = { ...task, status: updatedStatus };
-          const updatedColor = getStatusColor(updatedStatus);
-          updatedTask.color = updatedColor;
-          const updatedTasks = tasks.map((item) => (item.id === id ? updatedTask : item));
-          setTasks(updatedTasks);
-        })
-        .catch((error) => {
-          console.error('할 일 수정 중 오류 발생:', error);
-        });
+        // axios
+        //   .patch(`${SERVER_URL}/my-tasks/${id}`, { status: updatedStatus })
+        //   .then((response) => {
+        //     console.log('할 일이 성공적으로 수정되었습니다.');
+        //     const updatedTask = { ...task, status: updatedStatus };
+        //     const updatedColor = getStatusColor(updatedStatus);
+        //     updatedTask.color = updatedColor;
+        //     const updatedTasks = tasks.map((item) =>
+        //       item.id === id ? updatedTask : item
+        //     );
+        //     setTasks(updatedTasks);
+        //   })
+        //   .catch((error) => {
+        //     console.error('할 일 수정 중 오류 발생:', error);
+        //   });
+
+        setTasks((prev) =>
+          prev.map((value) =>
+            value.id === id ? { ...value, status: updatedStatus } : value
+          )
+        );
+
         return {
           ...task,
           status: updatedStatus,
@@ -152,63 +173,71 @@ const getStatusColor = (status) => {
   // 리스트 삭제
   const deleteTask = (id) => {
     // API 요청: 할 일 삭제
-    axios
-      .delete(`${SERVER_URL}/my-tasks/${id}`)
-      .then((response) => {
-        console.log('할 일이 성공적으로 삭제되었습니다.');
-        const updatedTasks = tasks.filter((task) => task.id !== id);
-        setTasks(updatedTasks);
-      })
-      .catch((error) => {
-        console.error('할 일 삭제 중 오류 발생:', error);
-      });
+    // axios
+    //   .delete(`${SERVER_URL}/my-tasks/${id}`)
+    //   .then((response) => {
+    //     console.log('할 일이 성공적으로 삭제되었습니다.');
+    //     const updatedTasks = tasks.filter((task) => task.id !== id);
+    //     setTasks(updatedTasks);
+    //   })
+    //   .catch((error) => {
+    //     console.error('할 일 삭제 중 오류 발생:', error);
+    //   });
+    setTasks((prev) => prev.filter((value) => value.id !== id));
   };
 
   // 내 업무 추가 목록
   const renderItem = ({ item }) => {
     const taskColor = getStatusColor(item.status);
-  
+
     return (
       <View style={styles.taskItem}>
-        <View style={[styles.statusIndicator, { backgroundColor: taskColor }]} />
+        <View
+          style={[styles.statusIndicator, { backgroundColor: taskColor }]}
+        />
         <Text style={[styles.taskText, { color: 'black' }]}>{item.text}</Text>
         <TouchableOpacity
           onPress={() => toggleTaskStatus(item.id)}
           style={[styles.statusButton, { backgroundColor: taskColor }]}
         >
           <View>
-            <Text style={[styles.statusButtonText, { color: '#fff' }]}>{item.status}</Text>
+            <Text style={[styles.statusButtonText, { color: '#fff' }]}>
+              {item.status}
+            </Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => deleteTask(item.id)} style={styles.deleteButton}>
-          <MaterialCommunityIcons name="delete" size={25} color="black" />
+        <TouchableOpacity
+          onPress={() => deleteTask(item.id)}
+          style={styles.deleteButton}
+        >
+          <MaterialCommunityIcons name='delete' size={25} color='black' />
         </TouchableOpacity>
       </View>
     );
   };
-  
-  //그룹원 업무 
+
+  //그룹원 업무
   const renderGroupTaskItem = ({ item }) => {
     const taskColor = getStatusColor(item.status);
     return (
       <View style={styles.groupTaskItem}>
-          
         <View style={styles.groupTaskTitleContainer}>
-        <View style={[styles.statusIndicator, { backgroundColor: taskColor}]} />
-        <Text style={[styles.taskText, { color: 'black' }]}>{item.text}</Text>
+          <View
+            style={[styles.statusIndicator, { backgroundColor: taskColor }]}
+          />
+          <Text style={[styles.taskText, { color: 'black' }]}>{item.text}</Text>
           <Text style={styles.authorText}>담당: {item.author}</Text>
         </View>
-        
       </View>
     );
   };
 
   return (
-    <View >
+    <View>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="할 일을 입력하세요"
+          placeholder='할 일을 입력하세요'
           value={taskText}
           onChangeText={setTaskText}
         />
@@ -219,7 +248,7 @@ const getStatusColor = (status) => {
       <View style={styles.titleContainer}>
         <Text style={styles.title}>나의 업무 :</Text>
         <TouchableOpacity onPress={sortTasks} style={styles.sortButton}>
-          <MaterialCommunityIcons name="sort" size={20} color="#fff" />
+          <MaterialCommunityIcons name='sort' size={20} color='#fff' />
         </TouchableOpacity>
       </View>
       <View style={styles.listContainer}>
