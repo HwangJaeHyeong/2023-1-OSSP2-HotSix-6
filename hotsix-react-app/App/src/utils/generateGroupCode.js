@@ -6,5 +6,5 @@ export const generateGroupCode = () => {
       SAMPLE_GROUP_CODE_DATA_LIST.length
   );
 
-  return SAMPLE_GROUP_CODE_DATA_LIST[randomIndex];
+  return SAMPLE_GROUP_CODE_DATA_LIST[randomIndex].code;
 };
