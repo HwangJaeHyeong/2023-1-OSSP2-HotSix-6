@@ -15,7 +15,7 @@ const GroupScreen = ({ route }) => {
   const SERVER_URL = 'http://192.168.0.240:8000/';
   const navigation = useNavigation();
   const email = 'osh94230315@gmail.com';
-  //const { e } = route.params;
+  const { groupName, groupCode } = route.params;
   //예시 하나 넣어놨습니다. 원래는 비워놓아야합니다.
   const [groups, setGroups] = useState([
     {
@@ -31,6 +31,18 @@ const GroupScreen = ({ route }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (groupName && groupCode) {
+      setGroups((prev) => [
+        ...prev,
+        {
+          Group_Code: groupCode,
+          Group_Name: groupName,
+        },
+      ]);
+    }
+  }, [groupName, groupCode]);
 
   useEffect(() => {
     //사용자가 속한 그룹이름과 그룹코드를 가져온다. 위의 형식대로
